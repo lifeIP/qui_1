@@ -5,9 +5,11 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QGridLayout>
+#include <QStackedWidget>
 #include <QLabel>
 #include <QFrame>
 #include <QTime>
+#include <QDate>
 #include <QTimer>
 
 class MainWindow : public QMainWindow
@@ -24,19 +26,42 @@ public:
         QWidget *centralWidget = new QWidget(this);
         setCentralWidget(centralWidget);
 
-        // Главный вертикальный лэйаут
-        QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
-        mainLayout->setSpacing(20);
-        mainLayout->setContentsMargins(20, 20, 20, 20);
+        // Корневой вертикальный лэйаут
+        QVBoxLayout *rootLayout = new QVBoxLayout(centralWidget);
+        rootLayout->setSpacing(20);
+        rootLayout->setContentsMargins(20, 20, 20, 20);
 
-        // Панель статуса
-        createStatusBar(mainLayout);
+        // Панель статуса (общая для всех страниц)
+        createStatusBar(rootLayout);
 
-        // Секция "Легирование"
-        createDopingSection(mainLayout);
+        // Стек страниц
+        stackedWidget = new QStackedWidget(this);
+        rootLayout->addWidget(stackedWidget, 1);
 
-        // Секция "Регулировка расхода и давления"
-        createFlowPressureSection(mainLayout);
+        // Страница "Главный" (заглушка)
+        stackedWidget->addWidget(createSimplePage("Главный"));
+
+        // Страница "Легирование" с текущим интерфейсом
+        QWidget *dopingPage = new QWidget();
+        QVBoxLayout *dopingLayout = new QVBoxLayout(dopingPage);
+        dopingLayout->setSpacing(20);
+        createDopingSection(dopingLayout);
+        createFlowPressureSection(dopingLayout);
+        dopingLayout->addStretch();
+        stackedWidget->addWidget(dopingPage);
+
+        // Остальные страницы (заглушки)
+        stackedWidget->addWidget(createSimplePage("Финальные"));
+        stackedWidget->addWidget(createSimplePage("Автотяга"));
+        stackedWidget->addWidget(createSimplePage("Вакуум"));
+        stackedWidget->addWidget(createSimplePage("Газ. панель"));
+        stackedWidget->addWidget(createSimplePage("Настройки"));
+
+        // Нижняя навигация
+        createBottomNavigation(rootLayout);
+
+        // Активная страница по умолчанию — "Легирование"
+        setActivePage(1);
 
         // Таймер для обновления времени
         QTimer *timer = new QTimer(this);
@@ -48,7 +73,15 @@ public:
 private slots:
     void updateTime()
     {
-        timeLabel->setText(QTime::currentTime().toString("hh:mm:ss"));
+        const QTime t = QTime::currentTime();
+        const QDate d = QDate::currentDate();
+
+        if (timeLabel)
+            timeLabel->setText(t.toString("hh:mm:ss"));
+        if (bottomTimeLabel)
+            bottomTimeLabel->setText(t.toString("hh:mm"));
+        if (bottomDateLabel)
+            bottomDateLabel->setText(d.toString("dd/MM/yy"));
     }
 
     void onArgonStop()
@@ -80,11 +113,36 @@ private slots:
     }
 
 private:
+    // индексы страниц в QStackedWidget
+    enum PageIndex {
+        PageMain = 0,
+        PageDoping = 1,
+        PageFinal = 2,
+        PageAutot = 3,
+        PageVacuum = 4,
+        PageGasPanel = 5,
+        PageSettings = 6
+    };
+
     QLabel *timeLabel;
+    QLabel *bottomTimeLabel;
+    QLabel *bottomDateLabel;
+
     QPushButton *argonStopButton;
     QPushButton *injectionStartButton;
     QPushButton *phosphorusButton;
     QPushButton *diboraneButton;
+
+    QStackedWidget *stackedWidget;
+
+    // Кнопки навигации
+    QPushButton *navMainButton;
+    QPushButton *navDopingButton;
+    QPushButton *navFinalButton;
+    QPushButton *navAutotButton;
+    QPushButton *navVacuumButton;
+    QPushButton *navGasPanelButton;
+    QPushButton *navSettingsButton;
 
     void createStatusBar(QVBoxLayout *mainLayout)
     {
@@ -117,6 +175,20 @@ private:
         statusLayout->addWidget(resetButton);
 
         mainLayout->addWidget(statusFrame);
+    }
+
+    QWidget* createSimplePage(const QString &title)
+    {
+        QWidget *page = new QWidget();
+        QVBoxLayout *layout = new QVBoxLayout(page);
+        layout->setContentsMargins(0, 0, 0, 0);
+        QLabel *label = new QLabel(title);
+        label->setAlignment(Qt::AlignCenter);
+        label->setStyleSheet("QLabel { font-size: 24px; color: #bdc3c7; }");
+        layout->addStretch();
+        layout->addWidget(label);
+        layout->addStretch();
+        return page;
     }
 
     QFrame* createCard(const QString &title, const QString &value, QWidget *parent = nullptr)
@@ -222,7 +294,106 @@ private:
         flowLayout->addWidget(purgeCard);
 
         mainLayout->addWidget(flowFrame);
-        mainLayout->addStretch();
+    }
+
+    void createBottomNavigation(QVBoxLayout *rootLayout)
+    {
+        QFrame *navFrame = new QFrame();
+        navFrame->setStyleSheet("QFrame { background-color: #111111; }");
+        navFrame->setMinimumHeight(110);
+        QHBoxLayout *navLayout = new QHBoxLayout(navFrame);
+        navLayout->setContentsMargins(20, 10, 20, 10);
+        navLayout->setSpacing(30);
+
+        // Левая часть — кнопки навигации
+        QHBoxLayout *buttonsLayout = new QHBoxLayout();
+        buttonsLayout->setSpacing(25);
+
+        auto makeNavButton = [&](const QString &text, int pageIndex) -> QPushButton* {
+            QPushButton *btn = new QPushButton(text);
+            btn->setCheckable(true);
+            btn->setProperty("pageIndex", pageIndex);
+            btn->setStyleSheet(
+                "QPushButton { color: #bdc3c7; background-color: #222222; border: none; font-size: 16px; padding: 16px 10px; border-radius: 8px; }"
+                "QPushButton:pressed { background-color: #333333; }"
+                "QPushButton:checked { color: white; background-color: #ffffff; border-radius: 8px; }");
+            btn->setMinimumSize(110, 70);
+            btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            connect(btn, &QPushButton::clicked, this, &MainWindow::onNavButtonClicked);
+            return btn;
+        };
+
+        navMainButton      = makeNavButton("Главный",     PageMain);
+        navDopingButton    = makeNavButton("Легирование", PageDoping);
+        navFinalButton     = makeNavButton("Финальные",   PageFinal);
+        navAutotButton     = makeNavButton("Автотяга",    PageAutot);
+        navVacuumButton    = makeNavButton("Вакуум",      PageVacuum);
+        navGasPanelButton  = makeNavButton("Газ. панель", PageGasPanel);
+        navSettingsButton  = makeNavButton("Настройки",   PageSettings);
+
+        buttonsLayout->addWidget(navMainButton);
+        buttonsLayout->addWidget(navDopingButton);
+        buttonsLayout->addWidget(navFinalButton);
+        buttonsLayout->addWidget(navAutotButton);
+        buttonsLayout->addWidget(navVacuumButton);
+        buttonsLayout->addWidget(navGasPanelButton);
+        buttonsLayout->addWidget(navSettingsButton);
+
+        navLayout->addLayout(buttonsLayout, 1);
+
+        // Правая часть — время и дата
+        QVBoxLayout *dateTimeLayout = new QVBoxLayout();
+        dateTimeLayout->setSpacing(0);
+
+        bottomTimeLabel = new QLabel("00:00");
+        bottomTimeLabel->setStyleSheet("QLabel { color: white; font-size: 20px; font-weight: bold; }");
+        bottomTimeLabel->setAlignment(Qt::AlignRight);
+
+        bottomDateLabel = new QLabel("01/01/25");
+        bottomDateLabel->setStyleSheet("QLabel { color: #bdc3c7; font-size: 12px; }");
+        bottomDateLabel->setAlignment(Qt::AlignRight);
+
+        dateTimeLayout->addWidget(bottomTimeLabel);
+        dateTimeLayout->addWidget(bottomDateLabel);
+
+        navLayout->addLayout(dateTimeLayout);
+
+        rootLayout->addWidget(navFrame);
+    }
+
+    void setActivePage(int pageIndex)
+    {
+        if (!stackedWidget)
+            return;
+
+        stackedWidget->setCurrentIndex(pageIndex);
+
+        // Обновляем состояние кнопок навигации
+        QList<QPushButton*> buttons = {
+            navMainButton,
+            navDopingButton,
+            navFinalButton,
+            navAutotButton,
+            navVacuumButton,
+            navGasPanelButton,
+            navSettingsButton
+        };
+
+        for (QPushButton *btn : buttons) {
+            if (!btn) continue;
+            int idx = btn->property("pageIndex").toInt();
+            btn->setChecked(idx == pageIndex);
+        }
+    }
+
+private slots:
+    void onNavButtonClicked()
+    {
+        QPushButton *btn = qobject_cast<QPushButton*>(sender());
+        if (!btn)
+            return;
+        int pageIndex = btn->property("pageIndex").toInt();
+        setActivePage(pageIndex);
     }
 };
 
