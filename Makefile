@@ -52,8 +52,23 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp 
-OBJECTS       = main.o
+SOURCES       = main.cpp \
+		statusbarwidget.cpp \
+		bottomnavigationbar.cpp \
+		dopingpagewidget.cpp \
+		pages/mainpagewidget.cpp moc_statusbarwidget.cpp \
+		moc_bottomnavigationbar.cpp \
+		moc_dopingpagewidget.cpp \
+		moc_mainpagewidget.cpp
+OBJECTS       = main.o \
+		statusbarwidget.o \
+		bottomnavigationbar.o \
+		dopingpagewidget.o \
+		mainpagewidget.o \
+		moc_statusbarwidget.o \
+		moc_bottomnavigationbar.o \
+		moc_dopingpagewidget.o \
+		moc_mainpagewidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -131,7 +146,14 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		interface.pro  main.cpp
+		interface.pro statusbarwidget.h \
+		bottomnavigationbar.h \
+		dopingpagewidget.h \
+		pages/mainpagewidget.h main.cpp \
+		statusbarwidget.cpp \
+		bottomnavigationbar.cpp \
+		dopingpagewidget.cpp \
+		pages/mainpagewidget.cpp
 QMAKE_TARGET  = interface
 DESTDIR       = 
 TARGET        = interface
@@ -315,7 +337,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents statusbarwidget.h bottomnavigationbar.h dopingpagewidget.h pages/mainpagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp statusbarwidget.cpp bottomnavigationbar.cpp dopingpagewidget.cpp pages/mainpagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -347,14 +370,39 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all:
+compiler_moc_header_make_all: moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
 compiler_moc_header_clean:
+	-$(DEL_FILE) moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
+moc_statusbarwidget.cpp: statusbarwidget.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include statusbarwidget.h -o moc_statusbarwidget.cpp
+
+moc_bottomnavigationbar.cpp: bottomnavigationbar.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include bottomnavigationbar.h -o moc_bottomnavigationbar.cpp
+
+moc_dopingpagewidget.cpp: dopingpagewidget.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include dopingpagewidget.h -o moc_dopingpagewidget.cpp
+
+moc_mainpagewidget.cpp: pages/mainpagewidget.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/mainpagewidget.h -o moc_mainpagewidget.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all: main.moc
 compiler_moc_source_clean:
 	-$(DEL_FILE) main.moc
 main.moc: main.cpp \
+		statusbarwidget.h \
+		bottomnavigationbar.h \
+		dopingpagewidget.h \
+		pages/mainpagewidget.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include main.cpp -o main.moc
@@ -367,12 +415,40 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_source_clean 
+compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_moc_source_clean 
 
 ####### Compile
 
-main.o: main.cpp main.moc
+main.o: main.cpp statusbarwidget.h \
+		bottomnavigationbar.h \
+		dopingpagewidget.h \
+		pages/mainpagewidget.h \
+		main.moc
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+statusbarwidget.o: statusbarwidget.cpp statusbarwidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o statusbarwidget.o statusbarwidget.cpp
+
+bottomnavigationbar.o: bottomnavigationbar.cpp bottomnavigationbar.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bottomnavigationbar.o bottomnavigationbar.cpp
+
+dopingpagewidget.o: dopingpagewidget.cpp dopingpagewidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dopingpagewidget.o dopingpagewidget.cpp
+
+mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainpagewidget.o pages/mainpagewidget.cpp
+
+moc_statusbarwidget.o: moc_statusbarwidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_statusbarwidget.o moc_statusbarwidget.cpp
+
+moc_bottomnavigationbar.o: moc_bottomnavigationbar.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_bottomnavigationbar.o moc_bottomnavigationbar.cpp
+
+moc_dopingpagewidget.o: moc_dopingpagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dopingpagewidget.o moc_dopingpagewidget.cpp
+
+moc_mainpagewidget.o: moc_mainpagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainpagewidget.o moc_mainpagewidget.cpp
 
 ####### Install
 
