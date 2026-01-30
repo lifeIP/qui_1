@@ -6,10 +6,21 @@ TextButtonWidget::TextButtonWidget(const QString &text,
                                    int fontSize,
                                    QWidget *parent)
     : QPushButton(text, parent)
+    , isStartStopMode_(false)
+    , isStartState_(true)
+    , startText_("СТАРТ")
+    , stopText_("СТОП")
+    , startBgColor_("#29AC39")
+    , stopBgColor_("#e74c3c")
+    , textColor_(textColor)
+    , fontSize_(fontSize)
 {
     updateStyle(backgroundColor, textColor, fontSize);
     
     connect(this, &QPushButton::clicked, this, [this]() {
+        if (isStartStopMode_) {
+            toggleStartStop();
+        }
         if (onClickCallback) {
             onClickCallback();
         }
@@ -19,6 +30,40 @@ TextButtonWidget::TextButtonWidget(const QString &text,
 void TextButtonWidget::setOnClick(std::function<void()> callback)
 {
     onClickCallback = callback;
+}
+
+void TextButtonWidget::setStartStopMode(bool enabled)
+{
+    isStartStopMode_ = enabled;
+    if (enabled) {
+        isStartState_ = true;
+        startText_ = "СТАРТ";
+        stopText_ = "СТОП";
+        startBgColor_ = "#29AC39";  // Зеленый
+        stopBgColor_ = "#e74c3c";   // Красный
+        updateStartStopStyle();
+    }
+}
+
+void TextButtonWidget::toggleStartStop()
+{
+    if (!isStartStopMode_)
+        return;
+    
+    isStartState_ = !isStartState_;
+    updateStartStopStyle();
+}
+
+void TextButtonWidget::updateStartStopStyle()
+{
+    if (!isStartStopMode_)
+        return;
+    
+    QString text = isStartState_ ? startText_ : stopText_;
+    QString bgColor = isStartState_ ? startBgColor_ : stopBgColor_;
+    
+    setText(text);
+    updateStyle(bgColor, textColor_, fontSize_);
 }
 
 void TextButtonWidget::updateStyle(const QString &backgroundColor, 

@@ -16,8 +16,23 @@ public:
                              QWidget *parent = nullptr);
     
     void setOnClick(std::function<void()> callback);
+    
+    // Методы для работы с состояниями СТАРТ/СТОП
+    void setStartStopMode(bool enabled = true);
+    void toggleStartStop();
+    bool isStartState() const { return isStartState_; }
 
 private:
     std::function<void()> onClickCallback;
+    bool isStartStopMode_;
+    bool isStartState_;
+    QString startText_;
+    QString stopText_;
+    QString startBgColor_;
+    QString stopBgColor_;
+    QString textColor_;
+    int fontSize_;
+    
     void updateStyle(const QString &backgroundColor, const QString &textColor, int fontSize);
+    void updateStartStopStyle();
 };
