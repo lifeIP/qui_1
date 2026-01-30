@@ -1,4 +1,6 @@
 #include "pages/mainpagewidget.h"
+#include "widgets/iconbuttonwidget.h"
+#include "widgets/textbuttonwidget.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -57,10 +59,15 @@ public:
         grid->setHorizontalSpacing(8);
         grid->setVerticalSpacing(8);
 
-        QPushButton *up    = makeButton("↑", "#b8ecd0");
-        QPushButton *down  = makeButton("↓", "#b8ecd0");
-        QPushButton *left  = makeButton("←", "#b8ecd0");
-        QPushButton *right = makeButton("→", "#b8ecd0");
+        IconButtonWidget *up    = new IconButtonWidget("up_arrow", this, "#b8ecd0");
+        IconButtonWidget *down  = new IconButtonWidget("down_arrow", this, "#b8ecd0");
+        IconButtonWidget *left  = new IconButtonWidget("left_arrow", this, "#b8ecd0");
+        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#b8ecd0");
+        
+        up->setOnClick([]() { /* TODO: handle up */ });
+        down->setOnClick([]() { /* TODO: handle down */ });
+        left->setOnClick([]() { /* TODO: handle left */ });
+        right->setOnClick([]() { /* TODO: handle right */ });
 
         grid->addWidget(up,    0, 1);
         grid->addWidget(left,  1, 0);
@@ -93,25 +100,98 @@ public:
         v->setContentsMargins(16, 16, 16, 16);
         v->setSpacing(10);
 
-        v->addWidget(makeLabel("Смещение витка", 12, true));
+        // Горизонтальный layout для кнопок и информации
+        QHBoxLayout *h = new QHBoxLayout();
+        h->setSpacing(15);
 
-        QPushButton *down = makeButton("↓", "#cfd2dc");
-        down->setMinimumHeight(40);
-        v->addWidget(down, 0, Qt::AlignHCenter);
+        // Левая часть: кнопки up и down
+        QVBoxLayout *buttonsLayout = new QVBoxLayout();
+        buttonsLayout->setSpacing(8);
+        buttonsLayout->setAlignment(Qt::AlignCenter);
 
-        QGridLayout *grid = new QGridLayout();
-        grid->setHorizontalSpacing(10);
+        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#cfd2dc");
+        up->setOnClick([]() { /* TODO: handle coil up */ });
+        buttonsLayout->addWidget(up, 0, Qt::AlignHCenter);
 
-        grid->addWidget(makeLabel("Смещение", 10), 0, 0);
-        grid->addWidget(makeLabel("0.0 MM", 12, true), 1, 0);
+        QLabel *desc0Label = makeLabel("Смещение витка", 14, true);
+        desc0Label->setAlignment(Qt::AlignCenter);
+        buttonsLayout->addWidget(desc0Label);
 
-        grid->addWidget(makeLabel("Колебания", 10), 0, 1);
-        grid->addWidget(makeLabel("0.0 MM/мин", 12, true), 1, 1);
+        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#cfd2dc");
+        down->setOnClick([]() { /* TODO: handle coil down */ });
+        buttonsLayout->addWidget(down, 0, Qt::AlignHCenter);
 
-        v->addLayout(grid);
+        h->addLayout(buttonsLayout);
 
-        QPushButton *start = makeButton("Запуск колебаний", "#2d3436", "#ffffff", 12);
+        // Правая часть: параметры с разделителем
+        QVBoxLayout *infoLayout = new QVBoxLayout();
+        infoLayout->setSpacing(8);
+        infoLayout->setAlignment(Qt::AlignCenter);
+
+        // Первый параметр: Смещение
+        QVBoxLayout *param1Layout = new QVBoxLayout();
+        param1Layout->setSpacing(4);
+        param1Layout->setAlignment(Qt::AlignCenter);
+        
+        QLabel *value1Label = makeLabel("0.0 MM", 18, true);
+        value1Label->setAlignment(Qt::AlignCenter);
+        param1Layout->addWidget(value1Label);
+
+        QFrame *separator = new QFrame(this);
+        separator->setFrameShape(QFrame::HLine);
+        separator->setFrameShadow(QFrame::Sunken);
+        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setFixedHeight(2);
+        param1Layout->addWidget(separator);
+
+        QLabel *desc1Label = makeLabel("Смещение", 12);
+        desc1Label->setAlignment(Qt::AlignCenter);
+        param1Layout->addWidget(desc1Label);
+        
+        infoLayout->addLayout(param1Layout);
+
+
+
+        // Второй параметр: Колебания
+        QVBoxLayout *param2Layout = new QVBoxLayout();
+        param2Layout->setSpacing(4);
+        param2Layout->setAlignment(Qt::AlignCenter);
+        
+        QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
+        value2Label->setAlignment(Qt::AlignCenter);
+        param2Layout->addWidget(value2Label);
+
+        QFrame *separator1 = new QFrame(this);
+        separator1->setFrameShape(QFrame::HLine);
+        separator1->setFrameShadow(QFrame::Sunken);
+        separator1->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator1->setFixedHeight(2);
+        param2Layout->addWidget(separator1);
+        
+        QLabel *desc2Label = makeLabel("Колебания", 12);
+        desc2Label->setAlignment(Qt::AlignCenter);
+        param2Layout->addWidget(desc2Label);
+        
+        infoLayout->addLayout(param2Layout);
+
+        h->addLayout(infoLayout, 1);
+
+        v->addLayout(h);
+
+        // QGridLayout *grid = new QGridLayout();
+        // grid->setHorizontalSpacing(10);
+
+        // grid->addWidget(makeLabel("Смещение", 10), 0, 0);
+        // grid->addWidget(makeLabel("0.0 MM", 12, true), 1, 0);
+
+        // grid->addWidget(makeLabel("Колебания", 10), 0, 1);
+        // grid->addWidget(makeLabel("0.0 MM/мин", 12, true), 1, 1);
+
+        // v->addLayout(grid);
+
+        TextButtonWidget *start = new TextButtonWidget("Запуск колебаний", "#2d3436", "#ffffff", 12, this);
         start->setMinimumHeight(38);
+        start->setOnClick([]() { /* TODO: handle start oscillations */ });
         v->addWidget(start);
     }
 };
@@ -134,17 +214,28 @@ public:
         QHBoxLayout *arrows = new QHBoxLayout();
         arrows->setSpacing(8);
 
-        arrows->addWidget(makeButton("←", "#ffffff"));
-        arrows->addWidget(makeButton("↺", "#ffffff"));
-        arrows->addWidget(makeButton("↻", "#ffffff"));
-        arrows->addWidget(makeButton("→", "#ffffff"));
+        IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
+        IconButtonWidget *rotLeft = new IconButtonWidget("left_arrow", this, "#ffffff");  // TODO: add rotation icons
+        IconButtonWidget *rotRight = new IconButtonWidget("right_arrow", this, "#ffffff");
+        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
+        
+        left->setOnClick([]() { /* TODO: handle left */ });
+        rotLeft->setOnClick([]() { /* TODO: handle rotate left */ });
+        rotRight->setOnClick([]() { /* TODO: handle rotate right */ });
+        right->setOnClick([]() { /* TODO: handle right */ });
+
+        arrows->addWidget(left);
+        arrows->addWidget(rotLeft);
+        arrows->addWidget(rotRight);
+        arrows->addWidget(right);
 
         v->addLayout(arrows);
 
         // Кнопка скорости
         QHBoxLayout *speedRow = new QHBoxLayout();
         speedRow->setSpacing(8);
-        QPushButton *speedBtn = makeButton("Скорость", "#2d3436", "#ffffff", 12);
+        IconButtonWidget *speedBtn = new IconButtonWidget("main", this, "#2d3436");
+        speedBtn->setOnClick([]() { /* TODO: handle speed */ });
         speedRow->addWidget(speedBtn);
         v->addLayout(speedRow);
 
@@ -162,8 +253,8 @@ public:
         addLine("Позиция", "0.0 RPM");
 
         // Нижняя кнопка
-        QPushButton *stopBtn = makeButton("СТОП", "#2d3436", "#ffffff", 12);
-        stopBtn->setMinimumHeight(40);
+        IconButtonWidget *stopBtn = new IconButtonWidget("stop", this, "#2d3436");
+        stopBtn->setOnClick([]() { /* TODO: handle stop */ });
         v->addWidget(stopBtn);
     }
 };
@@ -184,8 +275,8 @@ public:
             QVBoxLayout *v = new QVBoxLayout(heat);
             v->setContentsMargins(12, 12, 12, 12);
             v->addWidget(makeLabel("Подогрев", 11, true));
-            QPushButton *toggle = makeButton("Вкл / Выкл", "#f2c94c");
-            toggle->setMinimumHeight(40);
+            IconButtonWidget *toggle = new IconButtonWidget("main", this, "#f2c94c");
+            toggle->setOnClick([]() { /* TODO: handle heating toggle */ });
             v->addWidget(toggle);
         }
         col->addWidget(heat);
@@ -233,8 +324,12 @@ public:
             v->setContentsMargins(16, 16, 16, 16);
             v->addWidget(makeLabel("Рефлектор", 12, true));
             QHBoxLayout *arrows = new QHBoxLayout();
-            arrows->addWidget(makeButton("↑", "#f0f0f0"));
-            arrows->addWidget(makeButton("↓", "#f0f0f0"));
+            IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#f0f0f0");
+            IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#f0f0f0");
+            up->setOnClick([]() { /* TODO: handle reflector up */ });
+            down->setOnClick([]() { /* TODO: handle reflector down */ });
+            arrows->addWidget(up);
+            arrows->addWidget(down);
             v->addLayout(arrows);
         }
         h->addWidget(reflector, 1);
@@ -250,12 +345,20 @@ public:
 
             QHBoxLayout *modeRow = new QHBoxLayout();
             modeRow->setSpacing(6);
-            modeRow->addWidget(makeButton("ВСЁ", "#f5cd5b"));
-            modeRow->addWidget(makeButton("50%", "#ffffff"));
+            IconButtonWidget *allBtn = new IconButtonWidget("main", this, "#f5cd5b");
+            IconButtonWidget *halfBtn = new IconButtonWidget("main", this, "#ffffff");
+            allBtn->setOnClick([]() { /* TODO: handle all lighting */ });
+            halfBtn->setOnClick([]() { /* TODO: handle 50% lighting */ });
+            modeRow->addWidget(allBtn);
+            modeRow->addWidget(halfBtn);
             v->addLayout(modeRow);
 
-            v->addWidget(makeButton("Открыть азот. кран", "#ffffff"));
-            v->addWidget(makeButton("Автолевигировать", "#ffffff"));
+            IconButtonWidget *nitrogenBtn = new IconButtonWidget("main", this, "#ffffff");
+            IconButtonWidget *autoBtn = new IconButtonWidget("main", this, "#ffffff");
+            nitrogenBtn->setOnClick([]() { /* TODO: handle nitrogen valve */ });
+            autoBtn->setOnClick([]() { /* TODO: handle auto-doping */ });
+            v->addWidget(nitrogenBtn);
+            v->addWidget(autoBtn);
         }
         h->addWidget(lighting, 2);
     }

@@ -1,4 +1,4 @@
-#include "statusbarwidget.h"
+#include "widgets/statusbarwidget.h"
 
 #include <QHBoxLayout>
 #include <QLabel>

@@ -5,12 +5,16 @@ TEMPLATE = app
 TARGET   = interface
 
 SOURCES += main.cpp \
-           statusbarwidget.cpp \
-           bottomnavigationbar.cpp \
-           dopingpagewidget.cpp \
+           widgets/statusbarwidget.cpp \
+           widgets/bottomnavigationbar.cpp \
+           widgets/iconbuttonwidget.cpp \
+           widgets/textbuttonwidget.cpp \
+           pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp
 
-HEADERS += statusbarwidget.h \
-           bottomnavigationbar.h \
-           dopingpagewidget.h \
+HEADERS += widgets/statusbarwidget.h \
+           widgets/bottomnavigationbar.h \
+           widgets/iconbuttonwidget.h \
+           widgets/textbuttonwidget.h \
+           pages/dopingpagewidget.h \
            pages/mainpagewidget.h

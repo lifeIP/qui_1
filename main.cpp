@@ -7,10 +7,11 @@
 #include <QTime>
 #include <QDate>
 #include <QTimer>
+#include <QKeyEvent>
 
-#include "statusbarwidget.h"
-#include "bottomnavigationbar.h"
-#include "dopingpagewidget.h"
+#include "widgets/statusbarwidget.h"
+#include "widgets/bottomnavigationbar.h"
+#include "pages/dopingpagewidget.h"
 #include "pages/mainpagewidget.h"
 
 class MainWindow : public QMainWindow
@@ -21,16 +22,15 @@ public:
     MainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
     {
         setWindowTitle("Панель управления");
-        setMinimumSize(1000, 700);
 
         // Центральный виджет
         QWidget *centralWidget = new QWidget(this);
         setCentralWidget(centralWidget);
 
-        // Корневой вертикальный лэйаут
+        // Корневой вертикальный лэйаут без отступов по краям
         QVBoxLayout *rootLayout = new QVBoxLayout(centralWidget);
-        rootLayout->setSpacing(20);
-        rootLayout->setContentsMargins(20, 20, 20, 20);
+        rootLayout->setSpacing(0);
+        rootLayout->setContentsMargins(0, 0, 0, 0);
 
         // Панель статуса (общая для всех страниц)
         statusBar = new StatusBarWidget(this);
@@ -61,13 +61,16 @@ public:
                 this, &MainWindow::setActivePage);
 
         // Активная страница по умолчанию — "Легирование"
-        setActivePage(1);
+        setActivePage(0);
 
         // Таймер для обновления времени
         QTimer *timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
         timer->start(1000);
         updateTime();
+
+        // Запуск приложения в full-screen режиме
+        showFullScreen();
     }
 
 private slots:
@@ -121,6 +124,22 @@ private:
         stackedWidget->setCurrentIndex(pageIndex);
         if (bottomNav)
             bottomNav->setActivePage(pageIndex);
+    }
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override
+    {
+        if (event->key() == Qt::Key_F11) {
+            if (isFullScreen()) {
+                showNormal();
+            } else {
+                showFullScreen();
+            }
+            event->accept();
+            return;
+        }
+
+        QMainWindow::keyPressEvent(event);
     }
 };
 

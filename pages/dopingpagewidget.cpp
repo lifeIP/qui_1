@@ -1,4 +1,4 @@
-#include "dopingpagewidget.h"
+#include "pages/dopingpagewidget.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
