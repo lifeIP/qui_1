@@ -1,6 +1,7 @@
 #include "pages/mainpagewidget.h"
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/textbuttonwidget.h"
+#include "widgets/selector.hpp"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -8,6 +9,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
+#include <QGraphicsDropShadowEffect>
 
 namespace {
 
@@ -45,6 +47,14 @@ public:
         setStyleSheet(QString(
             "QFrame { background-color: %1; border-radius: 16px; }")
                           .arg(bgColor));
+        
+        // Добавляем тень
+        QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+        shadow->setBlurRadius(10);
+        shadow->setXOffset(0);
+        shadow->setYOffset(2);
+        shadow->setColor(QColor(0, 0, 0, 60));  // Полупрозрачный черный цвет
+        setGraphicsEffect(shadow);
     }
 };
 
@@ -274,10 +284,23 @@ public:
         {
             QVBoxLayout *v = new QVBoxLayout(heat);
             v->setContentsMargins(12, 12, 12, 12);
-            v->addWidget(makeLabel("Подогрев", 11, true));
-            IconButtonWidget *toggle = new IconButtonWidget("main", this, "#f2c94c");
-            toggle->setOnClick([]() { /* TODO: handle heating toggle */ });
-            v->addWidget(toggle);
+            v->addWidget(makeLabel("Подогрев", 11, true), 0, Qt::AlignHCenter);
+
+            QFrame *separator2 = new QFrame(this);
+            separator2->setFrameShape(QFrame::HLine);
+            separator2->setFrameShadow(QFrame::Sunken);
+            separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator2->setFixedHeight(2);
+            v->addWidget(separator2);
+
+
+            selector *toggle = new selector(this);
+            toggle->set(false, false);  // Начальное состояние: выключено
+            toggle->setOnStateChanged([](int state) {
+                // state: 0 = Выкл, 1 = Вкл
+                // TODO: обработать изменение состояния подогрева
+            });
+            v->addWidget(toggle, 0, Qt::AlignHCenter);
         }
         col->addWidget(heat);
 
@@ -286,8 +309,16 @@ public:
         {
             QVBoxLayout *v = new QVBoxLayout(grid);
             v->setContentsMargins(12, 12, 12, 12);
-            v->addWidget(makeLabel("GRID", 11, true));
-            v->addWidget(makeLabel("0.00 AMP", 12, true));
+            v->addWidget(makeLabel("0.00 AMP", 12, true), 0, Qt::AlignHCenter);
+
+            QFrame *separator3 = new QFrame(this);
+            separator3->setFrameShape(QFrame::HLine);
+            separator3->setFrameShadow(QFrame::Sunken);
+            separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator3->setFixedHeight(2);
+            v->addWidget(separator3);
+        
+            v->addWidget(makeLabel("GRID", 11, true), 0, Qt::AlignHCenter);
         }
         col->addWidget(grid);
 
@@ -296,8 +327,16 @@ public:
             CardFrame *c = new CardFrame("#e6dbff");
             QVBoxLayout *v = new QVBoxLayout(c);
             v->setContentsMargins(10, 8, 10, 8);
-            v->addWidget(makeLabel(name, 10));
-            v->addWidget(makeLabel("0.0 %", 12, true));
+            v->addWidget(makeLabel("0.0 %", 12, true), 0, Qt::AlignHCenter);
+            
+            QFrame *separator4 = new QFrame(this);
+            separator4->setFrameShape(QFrame::HLine);
+            separator4->setFrameShadow(QFrame::Sunken);
+            separator4->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator4->setFixedHeight(2);
+            v->addWidget(separator4);
+
+            v->addWidget(makeLabel(name, 10), 0, Qt::AlignHCenter);
             return c;
         };
 

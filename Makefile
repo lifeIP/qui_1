@@ -57,11 +57,15 @@ SOURCES       = main.cpp \
 		widgets/bottomnavigationbar.cpp \
 		widgets/iconbuttonwidget.cpp \
 		widgets/textbuttonwidget.cpp \
+		widgets/selector.cpp \
+		widgets/selector-button.cpp \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp moc_statusbarwidget.cpp \
 		moc_bottomnavigationbar.cpp \
 		moc_iconbuttonwidget.cpp \
 		moc_textbuttonwidget.cpp \
+		moc_selector.cpp \
+		moc_selector-button.cpp \
 		moc_dopingpagewidget.cpp \
 		moc_mainpagewidget.cpp
 OBJECTS       = main.o \
@@ -69,12 +73,16 @@ OBJECTS       = main.o \
 		bottomnavigationbar.o \
 		iconbuttonwidget.o \
 		textbuttonwidget.o \
+		selector.o \
+		selector-button.o \
 		dopingpagewidget.o \
 		mainpagewidget.o \
 		moc_statusbarwidget.o \
 		moc_bottomnavigationbar.o \
 		moc_iconbuttonwidget.o \
 		moc_textbuttonwidget.o \
+		moc_selector.o \
+		moc_selector-button.o \
 		moc_dopingpagewidget.o \
 		moc_mainpagewidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
@@ -158,12 +166,16 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		widgets/bottomnavigationbar.h \
 		widgets/iconbuttonwidget.h \
 		widgets/textbuttonwidget.h \
+		widgets/selector.hpp \
+		widgets/selector-button.hpp \
 		pages/dopingpagewidget.h \
 		pages/mainpagewidget.h main.cpp \
 		widgets/statusbarwidget.cpp \
 		widgets/bottomnavigationbar.cpp \
 		widgets/iconbuttonwidget.cpp \
 		widgets/textbuttonwidget.cpp \
+		widgets/selector.cpp \
+		widgets/selector-button.cpp \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp
 QMAKE_TARGET  = interface
@@ -349,8 +361,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h pages/dopingpagewidget.h pages/mainpagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -382,9 +394,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_iconbuttonwidget.cpp moc_textbuttonwidget.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
+compiler_moc_header_make_all: moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_iconbuttonwidget.cpp moc_textbuttonwidget.cpp moc_selector.cpp moc_selector-button.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_iconbuttonwidget.cpp moc_textbuttonwidget.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
+	-$(DEL_FILE) moc_statusbarwidget.cpp moc_bottomnavigationbar.cpp moc_iconbuttonwidget.cpp moc_textbuttonwidget.cpp moc_selector.cpp moc_selector-button.cpp moc_dopingpagewidget.cpp moc_mainpagewidget.cpp
 moc_statusbarwidget.cpp: widgets/statusbarwidget.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -404,6 +416,16 @@ moc_textbuttonwidget.cpp: widgets/textbuttonwidget.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include widgets/textbuttonwidget.h -o moc_textbuttonwidget.cpp
+
+moc_selector.cpp: widgets/selector.hpp \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include widgets/selector.hpp -o moc_selector.cpp
+
+moc_selector-button.cpp: widgets/selector-button.hpp \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/artem/Programming/interface/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/artem/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/12 -I/usr/include/x86_64-linux-gnu/c++/12 -I/usr/include/c++/12/backward -I/usr/lib/gcc/x86_64-linux-gnu/12/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include widgets/selector-button.hpp -o moc_selector-button.cpp
 
 moc_dopingpagewidget.cpp: pages/dopingpagewidget.h \
 		moc_predefs.h \
@@ -460,12 +482,19 @@ iconbuttonwidget.o: widgets/iconbuttonwidget.cpp widgets/iconbuttonwidget.h
 textbuttonwidget.o: widgets/textbuttonwidget.cpp widgets/textbuttonwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o textbuttonwidget.o widgets/textbuttonwidget.cpp
 
+selector.o: widgets/selector.cpp widgets/selector.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o selector.o widgets/selector.cpp
+
+selector-button.o: widgets/selector-button.cpp widgets/selector-button.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o selector-button.o widgets/selector-button.cpp
+
 dopingpagewidget.o: pages/dopingpagewidget.cpp pages/dopingpagewidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dopingpagewidget.o pages/dopingpagewidget.cpp
 
 mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h \
 		widgets/iconbuttonwidget.h \
-		widgets/textbuttonwidget.h
+		widgets/textbuttonwidget.h \
+		widgets/selector.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainpagewidget.o pages/mainpagewidget.cpp
 
 moc_statusbarwidget.o: moc_statusbarwidget.cpp 
@@ -479,6 +508,12 @@ moc_iconbuttonwidget.o: moc_iconbuttonwidget.cpp
 
 moc_textbuttonwidget.o: moc_textbuttonwidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_textbuttonwidget.o moc_textbuttonwidget.cpp
+
+moc_selector.o: moc_selector.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_selector.o moc_selector.cpp
+
+moc_selector-button.o: moc_selector-button.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_selector-button.o moc_selector-button.cpp
 
 moc_dopingpagewidget.o: moc_dopingpagewidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_dopingpagewidget.o moc_dopingpagewidget.cpp
