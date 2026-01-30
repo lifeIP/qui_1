@@ -32,6 +32,11 @@ void TextButtonWidget::setOnClick(std::function<void()> callback)
     onClickCallback = callback;
 }
 
+void TextButtonWidget::setBackgroundColor(const QString &backgroundColor)
+{
+    updateStyle(backgroundColor, textColor_, fontSize_);
+}
+
 void TextButtonWidget::setStartStopMode(bool enabled)
 {
     isStartStopMode_ = enabled;

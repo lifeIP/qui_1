@@ -264,19 +264,17 @@ public:
     }
 };
 
-class SpindleControlWidget : public CardFrame
+class UpperSpindleControlWidget : public CardFrame
 {
 public:
-    explicit SpindleControlWidget(const QString &title,
-                                  const QString &bgColor,
-                                  QWidget *parent = nullptr)
-        : CardFrame(bgColor, parent)
+    explicit UpperSpindleControlWidget(QWidget *parent = nullptr)
+        : CardFrame("#fff4bf", parent)
     {
         QVBoxLayout *v = new QVBoxLayout(this);
         v->setContentsMargins(16, 16, 16, 16);
         v->setSpacing(8);
 
-        v->addWidget(makeLabel(title, 14, true), 0);
+        v->addWidget(makeLabel("Управление верхним шпинделем", 14, true), 0);
         v->addStretch();  // Заполнитель между тайтлом и содержимым
 
         // Горизонтальный layout для кнопок и информации
@@ -288,14 +286,14 @@ public:
         arrows->setSpacing(8);
         IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
         IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
-        left->setOnClick([]() { /* TODO: handle left */ });
-        right->setOnClick([]() { /* TODO: handle right */ });
+        left->setOnClick([]() { /* TODO: handle upper spindle left */ });
+        right->setOnClick([]() { /* TODO: handle upper spindle right */ });
         arrows->addWidget(left);
         arrows->addWidget(right);
 
         TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
         speed_btn->setMinimumHeight(38);
-        speed_btn->setOnClick([]() { /* TODO: handle start oscillations */ });
+        speed_btn->setOnClick([]() { /* TODO: handle upper spindle speed */ });
 
         // 
         QVBoxLayout *btn_container = new QVBoxLayout();
@@ -307,8 +305,8 @@ public:
         arrows2->setSpacing(8);
         IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
-        up->setOnClick([]() { /* TODO: handle left */ });
-        down->setOnClick([]() { /* TODO: handle right */ });
+        up->setOnClick([]() { /* TODO: handle upper spindle up */ });
+        down->setOnClick([]() { /* TODO: handle upper spindle down */ });
         arrows2->addWidget(up);
         arrows2->addWidget(down);
 
@@ -317,8 +315,8 @@ public:
         arrows3->setSpacing(8);
         IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
-        upup->setOnClick([]() { /* TODO: handle left */ });
-        downdown->setOnClick([]() { /* TODO: handle right */ });
+        upup->setOnClick([]() { /* TODO: handle upper spindle upup */ });
+        downdown->setOnClick([]() { /* TODO: handle upper spindle downdown */ });
         arrows3->addWidget(upup);
         arrows3->addWidget(downdown);
 
@@ -333,12 +331,12 @@ public:
         start_stop_btn->setMinimumHeight(38);
         start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
         start_stop_btn->setOnClick([start_stop_btn]() {
-            // Обработка нажатия на кнопку СТАРТ/СТОП
+            // Обработка нажатия на кнопку СТАРТ/СТОП верхнего шпинделя
             bool isStart = start_stop_btn->isStartState();
             if (isStart) {
-                // TODO: обработать состояние СТАРТ
+                // TODO: обработать состояние СТАРТ верхнего шпинделя
             } else {
-                // TODO: обработать состояние СТОП
+                // TODO: обработать состояние СТОП верхнего шпинделя
             }
         });
 
@@ -353,7 +351,7 @@ public:
         infoLayout->setSpacing(8);
         infoLayout->setAlignment(Qt::AlignCenter);
 
-        // Первый параметр: X OFFSET
+        // Первый параметр: Верхняя тяга
         QVBoxLayout *param1Layout = new QVBoxLayout();
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
@@ -425,7 +423,192 @@ public:
         h->addLayout(infoLayout, 1);
 
         v->addLayout(h);
-        v->addStretch();  // Заполнитель в конце блока
+        // Убрали addStretch() чтобы виджет не растягивался по вертикали
+    }
+};
+
+class LowerSpindleControlWidget : public CardFrame
+{
+public:
+    explicit LowerSpindleControlWidget(QWidget *parent = nullptr)
+        : CardFrame("#ffd6de", parent)
+    {
+        QVBoxLayout *v = new QVBoxLayout(this);
+        v->setContentsMargins(16, 16, 16, 16);
+        v->setSpacing(8);
+
+        v->addWidget(makeLabel("Управление нижним шпинделем", 14, true), 0);
+        v->addStretch();  // Заполнитель между тайтлом и содержимым
+
+        // Горизонтальный layout для кнопок и информации
+        QHBoxLayout *h = new QHBoxLayout();
+        h->setSpacing(15);
+
+        // Верхняя строка с стрелками
+        QHBoxLayout *arrows = new QHBoxLayout();
+        arrows->setSpacing(8);
+        IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
+        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
+        left->setOnClick([]() { /* TODO: handle lower spindle left */ });
+        right->setOnClick([]() { /* TODO: handle lower spindle right */ });
+        arrows->addWidget(left);
+        arrows->addWidget(right);
+
+        TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
+        speed_btn->setMinimumHeight(38);
+        speed_btn->setOnClick([]() { /* TODO: handle lower spindle speed */ });
+
+        // 
+        QVBoxLayout *btn_container = new QVBoxLayout();
+        btn_container->addLayout(arrows);
+        btn_container->addWidget(speed_btn);
+
+
+        QVBoxLayout *arrows2 = new QVBoxLayout();
+        arrows2->setSpacing(8);
+        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
+        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
+        up->setOnClick([]() { /* TODO: handle lower spindle up */ });
+        down->setOnClick([]() { /* TODO: handle lower spindle down */ });
+        arrows2->addWidget(up);
+        arrows2->addWidget(down);
+
+
+        QVBoxLayout *arrows3 = new QVBoxLayout();
+        arrows3->setSpacing(8);
+        IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
+        IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
+        upup->setOnClick([]() { /* TODO: handle lower spindle upup */ });
+        downdown->setOnClick([]() { /* TODO: handle lower spindle downdown */ });
+        arrows3->addWidget(upup);
+        arrows3->addWidget(downdown);
+
+
+        QHBoxLayout *btn_container2 = new QHBoxLayout();
+        btn_container2->addLayout(btn_container, 0);
+        btn_container2->addLayout(arrows2, 0);
+        btn_container2->addLayout(arrows3, 0);
+
+
+        TextButtonWidget *start_stop_btn = new TextButtonWidget("СТАРТ", "#29AC39", "#ffffff", 12, this);
+        start_stop_btn->setMinimumHeight(38);
+        start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
+        start_stop_btn->setOnClick([start_stop_btn]() {
+            // Обработка нажатия на кнопку СТАРТ/СТОП нижнего шпинделя
+            bool isStart = start_stop_btn->isStartState();
+            if (isStart) {
+                // TODO: обработать состояние СТАРТ нижнего шпинделя
+            } else {
+                // TODO: обработать состояние СТОП нижнего шпинделя
+            }
+        });
+
+        QVBoxLayout *btn_container3 = new QVBoxLayout();
+        btn_container3->addLayout(btn_container2);
+        btn_container3->addWidget(start_stop_btn);
+
+        h->addLayout(btn_container3);
+
+        // Колонка с кнопками: Удерживание, Осциллировать, Автотяга
+        QVBoxLayout *middleButtonsLayout = new QVBoxLayout();
+        middleButtonsLayout->setSpacing(8);
+        middleButtonsLayout->setAlignment(Qt::AlignCenter);
+
+        TextButtonWidget *holdBtn = new TextButtonWidget("Удерживание", "#808080", "#ffffff", 12, this);
+        holdBtn->setMinimumHeight(38);
+        holdBtn->setOnClick([]() { /* TODO: handle lower spindle hold */ });
+        middleButtonsLayout->addWidget(holdBtn);
+
+        TextButtonWidget *oscillateBtn = new TextButtonWidget("Осциллировать", "#2d3436", "#ffffff", 12, this);
+        oscillateBtn->setMinimumHeight(38);
+        oscillateBtn->setOnClick([]() { /* TODO: handle lower spindle oscillate */ });
+        middleButtonsLayout->addWidget(oscillateBtn);
+
+        TextButtonWidget *autotBtn = new TextButtonWidget("Автотяга", "#2d3436", "#ffffff", 12, this);
+        autotBtn->setMinimumHeight(38);
+        autotBtn->setOnClick([]() { /* TODO: handle lower spindle autot */ });
+        middleButtonsLayout->addWidget(autotBtn);
+
+        h->addLayout(middleButtonsLayout);
+
+        // Правая часть: параметры с разделителем
+        QVBoxLayout *infoLayout = new QVBoxLayout();
+        infoLayout->setSpacing(8);
+        infoLayout->setAlignment(Qt::AlignCenter);
+
+        // Первый параметр: Верхняя тяга
+        QVBoxLayout *param1Layout = new QVBoxLayout();
+        param1Layout->setSpacing(4);
+        param1Layout->setAlignment(Qt::AlignCenter);
+        
+        QLabel *value1Label = makeLabel("0.0 MM", 18, true);
+        value1Label->setAlignment(Qt::AlignCenter);
+        param1Layout->addWidget(value1Label);
+
+        QFrame *separator = new QFrame(this);
+        separator->setFrameShape(QFrame::HLine);
+        separator->setFrameShadow(QFrame::Sunken);
+        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setFixedHeight(2);
+        separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        param1Layout->addWidget(separator);
+
+        QLabel *desc1Label = makeLabel("Верхняя тяга", 12);
+        desc1Label->setAlignment(Qt::AlignCenter);
+        param1Layout->addWidget(desc1Label);
+        
+        infoLayout->addLayout(param1Layout);
+
+        // Второй параметр: Скорость
+        QVBoxLayout *param2Layout = new QVBoxLayout();
+        param2Layout->setSpacing(4);
+        param2Layout->setAlignment(Qt::AlignCenter);
+        
+        QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
+        value2Label->setAlignment(Qt::AlignCenter);
+        param2Layout->addWidget(value2Label);
+
+        QFrame *separator2 = new QFrame(this);
+        separator2->setFrameShape(QFrame::HLine);
+        separator2->setFrameShadow(QFrame::Sunken);
+        separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator2->setFixedHeight(2);
+        separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        param2Layout->addWidget(separator2);
+
+        QLabel *desc2Label = makeLabel("Скорость", 12);
+        desc2Label->setAlignment(Qt::AlignCenter);
+        param2Layout->addWidget(desc2Label);
+        
+        infoLayout->addLayout(param2Layout);
+
+        // Третий параметр: Позиция
+        QVBoxLayout *param3Layout = new QVBoxLayout();
+        param3Layout->setSpacing(4);
+        param3Layout->setAlignment(Qt::AlignCenter);
+        
+        QLabel *value3Label = makeLabel("0.0 MM", 18, true);
+        value3Label->setAlignment(Qt::AlignCenter);
+        param3Layout->addWidget(value3Label);
+
+        QFrame *separator3 = new QFrame(this);
+        separator3->setFrameShape(QFrame::HLine);
+        separator3->setFrameShadow(QFrame::Sunken);
+        separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator3->setFixedHeight(2);
+        separator3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        param3Layout->addWidget(separator3);
+
+        QLabel *desc3Label = makeLabel("Позиция", 12);
+        desc3Label->setAlignment(Qt::AlignCenter);
+        param3Layout->addWidget(desc3Label);
+        
+        infoLayout->addLayout(param3Layout);
+
+        h->addLayout(infoLayout, 1);
+
+        v->addLayout(h);
+        // Убрали addStretch() чтобы виджет не растягивался по вертикали
     }
 };
 
@@ -519,19 +702,19 @@ public:
         // Рефлектор
         CardFrame *reflector = new CardFrame("#ffffff");
         {
-            QVBoxLayout *v = new QVBoxLayout(reflector);
-            v->setContentsMargins(16, 16, 16, 16);
-            v->addWidget(makeLabel("Рефлектор", 12, true));
-            QHBoxLayout *arrows = new QHBoxLayout();
+            QHBoxLayout *reflectorLayout = new QHBoxLayout(reflector);
+            reflectorLayout->setContentsMargins(16, 16, 16, 16);
+            reflectorLayout->setSpacing(10);  // Минимальное расстояние между элементами
             IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#f0f0f0");
             IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#f0f0f0");
             up->setOnClick([]() { /* TODO: handle reflector up */ });
             down->setOnClick([]() { /* TODO: handle reflector down */ });
-            arrows->addWidget(up);
-            arrows->addWidget(down);
-            v->addLayout(arrows);
+            reflectorLayout->addWidget(up);
+            reflectorLayout->addWidget(down);
+            reflectorLayout->addWidget(makeLabel("Рефлектор", 15, true));
+            reflectorLayout->addStretch();  // Заполнитель справа для выравнивания влево
         }
-        h->addWidget(reflector, 1);
+        h->addWidget(reflector, 0);
 
         // Освещение / Автолевигирование и т.п.
         CardFrame *lighting = new CardFrame("#f5f0d8");
@@ -542,24 +725,69 @@ public:
 
             v->addWidget(makeLabel("Освещение", 12, true));
 
+            // Кнопки выбора режима освещения (Всё/50%)
             QHBoxLayout *modeRow = new QHBoxLayout();
             modeRow->setSpacing(6);
-            IconButtonWidget *allBtn = new IconButtonWidget("main", this, "#f5cd5b");
-            IconButtonWidget *halfBtn = new IconButtonWidget("main", this, "#ffffff");
-            allBtn->setOnClick([]() { /* TODO: handle all lighting */ });
-            halfBtn->setOnClick([]() { /* TODO: handle 50% lighting */ });
+            
+            TextButtonWidget *allBtn = new TextButtonWidget("Всё", "#808080", "#ffffff", 12, lighting);
+            TextButtonWidget *halfBtn = new TextButtonWidget("50%", "#808080", "#ffffff", 12, lighting);
+            
+            // Лямбда-функция для обработки переключения режимов
+            auto updateLightingMode = [allBtn, halfBtn](int mode) {
+                // mode: 0 = Всё, 1 = 50%
+                if (mode == 0) {
+                    // Выбран режим "Всё"
+                    allBtn->setBackgroundColor("#2d3436");  // Черный
+                    halfBtn->setBackgroundColor("#808080");  // Серый
+                } else {
+                    // Выбран режим "50%"
+                    allBtn->setBackgroundColor("#808080");  // Серый
+                    halfBtn->setBackgroundColor("#2d3436");  // Черный
+                }
+                // TODO: обработать изменение режима освещения
+            };
+            
+            // Начальное состояние: "Всё" выбрано
+            allBtn->setBackgroundColor("#2d3436");
+            halfBtn->setBackgroundColor("#808080");
+            
+            allBtn->setOnClick([updateLightingMode]() {
+                updateLightingMode(0);  // Режим "Всё"
+            });
+            
+            halfBtn->setOnClick([updateLightingMode]() {
+                updateLightingMode(1);  // Режим "50%"
+            });
+            
+            allBtn->setMinimumHeight(38);
+            halfBtn->setMinimumHeight(38);
+            
             modeRow->addWidget(allBtn);
             modeRow->addWidget(halfBtn);
             v->addLayout(modeRow);
-
-            IconButtonWidget *nitrogenBtn = new IconButtonWidget("main", this, "#ffffff");
-            IconButtonWidget *autoBtn = new IconButtonWidget("main", this, "#ffffff");
-            nitrogenBtn->setOnClick([]() { /* TODO: handle nitrogen valve */ });
-            autoBtn->setOnClick([]() { /* TODO: handle auto-doping */ });
-            v->addWidget(nitrogenBtn);
-            v->addWidget(autoBtn);
         }
-        h->addWidget(lighting, 2);
+        h->addWidget(lighting, 0);
+
+        // Кнопки ниже блока освещения (в столбец)
+        QVBoxLayout *buttonsCol = new QVBoxLayout();
+        buttonsCol->setSpacing(8);
+        buttonsCol->setContentsMargins(0, 0, 0, 0);
+
+        TextButtonWidget *nitrogenBtn = new TextButtonWidget("Открыть азот. кран", "#2d3436", "#ffffff", 12, this);
+        nitrogenBtn->setMinimumHeight(38);
+        nitrogenBtn->setOnClick([]() {
+            // TODO: обработать открытие азотного крана
+        });
+        buttonsCol->addWidget(nitrogenBtn);
+
+        TextButtonWidget *autodopeBtn = new TextButtonWidget("Автолегировать", "#2d3436", "#ffffff", 12, this);
+        autodopeBtn->setMinimumHeight(38);
+        autodopeBtn->setOnClick([]() {
+            // TODO: обработать автолегирование
+        });
+        buttonsCol->addWidget(autodopeBtn);
+
+        h->addLayout(buttonsCol);
     }
 };
 
@@ -573,24 +801,39 @@ MainPageWidget::MainPageWidget(QWidget *parent)
     root->setContentsMargins(15, 0, 15, 0);  // Отступы по бокам от карточек и экрана
 
     // Левая большая колонка
-    QVBoxLayout *leftCol = new QVBoxLayout();
+    QWidget *leftColWidget = new QWidget(this);
+    QVBoxLayout *leftCol = new QVBoxLayout(leftColWidget);
     leftCol->setSpacing(12);
+    leftColWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
     // Верхний ряд: XY и смещение витка
     QHBoxLayout *topRow = new QHBoxLayout();
     topRow->setSpacing(12);
-    topRow->addWidget(new XYControlWidget(), 2);
-    topRow->addWidget(new CoilControlWidget(), 2);
+
+
+    XYControlWidget *xy_control = new XYControlWidget();
+    CoilControlWidget *coil_control = new CoilControlWidget();
+    coil_control->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    topRow->addWidget(xy_control, 2);
+    topRow->addWidget(coil_control, 2);
     leftCol->addLayout(topRow);
 
     // Управление верхним и нижним шпинделем
-    leftCol->addWidget(new SpindleControlWidget("Управление верхним шпинделем", "#fff4bf"), 2);
-    leftCol->addWidget(new SpindleControlWidget("Управление нижним шпинделем", "#ffd6de"), 2);
+    UpperSpindleControlWidget *upperSpindle = new UpperSpindleControlWidget();
+    upperSpindle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    leftCol->addWidget(upperSpindle, 0);
+    
+    LowerSpindleControlWidget *lowerSpindle = new LowerSpindleControlWidget();
+    lowerSpindle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    leftCol->addWidget(lowerSpindle, 0);
+    
 
     // Нижние кнопки
-    leftCol->addWidget(new BottomControlsWidget(), 1);
-
-    root->addLayout(leftCol, 4);
+    BottomControlsWidget *bottom_controls = new BottomControlsWidget();
+    bottom_controls->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    leftCol->addWidget(bottom_controls, 0);
+    
+    root->addWidget(leftColWidget, 4, Qt::AlignTop);
 
     // Правая колонка с подогревом, GRID, P/I/U и т.п.
     QVBoxLayout *rightCol = new QVBoxLayout();

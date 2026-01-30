@@ -17,6 +17,9 @@ public:
     
     void setOnClick(std::function<void()> callback);
     
+    // Метод для изменения цвета фона
+    void setBackgroundColor(const QString &backgroundColor);
+    
     // Методы для работы с состояниями СТАРТ/СТОП
     void setStartStopMode(bool enabled = true);
     void toggleStartStop();
