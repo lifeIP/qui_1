@@ -23,9 +23,9 @@ ParameterEditDialog::ParameterEditDialog(const QString &title,
     setAttribute(Qt::WA_TranslucentBackground);
 
     setMinimumWidth(700);
-    setMinimumHeight(360);
+    setMinimumHeight(390);
     setMaximumWidth(750);
-    setMaximumHeight(400);
+    setMaximumHeight(460);
 
     // Основной контейнер с фоном и скругленными углами
     QWidget *container = new QWidget(this);
@@ -49,12 +49,14 @@ ParameterEditDialog::ParameterEditDialog(const QString &title,
     mainLayout->addWidget(container);
 
     QHBoxLayout *contentLayout = new QHBoxLayout(container);
-    contentLayout->setSpacing(24);
-    contentLayout->setContentsMargins(24, 20, 24, 20);
+    contentLayout->setSpacing(20);
+    // Чуть уменьшаем отступы контейнера, чтобы освободить вертикальное место
+    contentLayout->setContentsMargins(18, 12, 18, 16);
 
     // Левая колонка: заголовок, диапазон, поле ввода и большая кнопка "ОК"
     QVBoxLayout *leftCol = new QVBoxLayout();
-    leftCol->setSpacing(12);
+    // Меньше вертикальный шаг между элементами
+    leftCol->setSpacing(8);
 
     // Верхняя строка: заголовок слева, кнопка закрытия справа
     QHBoxLayout *titleRow = new QHBoxLayout();
@@ -95,7 +97,7 @@ ParameterEditDialog::ParameterEditDialog(const QString &title,
         "  background-color: #ffffff;"
         "  border: none;"
         "  border-radius: 10px;"
-        "  padding: 14px 18px;"
+        "  padding: 10px 16px;"
         "  font-size: 24px;"
         "  color: #2c3e50;"
         "  text-align: center;"

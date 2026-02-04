@@ -4,6 +4,8 @@
 #include <QString>
 #include <functional>
 
+class QPropertyAnimation;
+
 class IconButtonWidget : public QPushButton
 {
     Q_OBJECT
@@ -23,7 +25,14 @@ private:
     QString currentIconName;
     QString currentBackgroundColor;
     std::function<void()> onClickCallback;
+    QSize baseIconSize{30, 30};
+    QPropertyAnimation *pressAnimation = nullptr;
+    QPropertyAnimation *releaseAnimation = nullptr;
     
     QString getIconPath(const QString &iconName) const;
     void updateStyle();
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
 };

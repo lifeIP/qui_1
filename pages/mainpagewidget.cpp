@@ -31,44 +31,56 @@ QLabel* makeLabel(const QString &text, int ptSize = 12, bool bold = false)
 }
 
 // Обработчик клика по числовым параметрам на главной странице.
-// При клике открывается ParameterEditDialog, а затем при подтверждении
-// обновляется текст лейбла и вызывается переданный callback.
+// "Параметр" включает значение, разделительную линию и подпись
+// и завёрнут в отдельный контейнер QWidget.
 class ParameterClickHandler : public QObject
 {
 public:
-    ParameterClickHandler(QLabel *label,
+    ParameterClickHandler(QWidget *container,
+                          QLabel *valueLabel,
                           const QString &title,
                           const QString &description,
                           const QString &suffix,
                           std::function<void(double)> onChanged)
-        : QObject(label)
-        , label_(label)
+        : QObject(container)
+        , container_(container)
+        , valueLabel_(valueLabel)
         , title_(title)
         , description_(description)
         , suffix_(suffix)
         , onChanged_(std::move(onChanged))
     {
-        if (label_) {
-            label_->setCursor(Qt::PointingHandCursor);
-            label_->installEventFilter(this);
+        if (!container_ || !valueLabel_)
+            return;
+
+        // Вешаем фильтр на контейнер
+        container_->setCursor(Qt::PointingHandCursor);
+        container_->installEventFilter(this);
+
+        // И на все дочерние виджеты, чтобы клик по тексту/линии тоже ловился
+        const auto children = container_->findChildren<QWidget*>();
+        for (QWidget *w : children) {
+            w->setCursor(Qt::PointingHandCursor);
+            w->installEventFilter(this);
         }
     }
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override
     {
-        if (obj == label_ && event->type() == QEvent::MouseButtonPress) {
+        if (event->type() == QEvent::MouseButtonPress &&
+            (obj == container_ || obj->parent() == container_))
+        {
             auto *me = static_cast<QMouseEvent*>(event);
-            if (me->button() == Qt::LeftButton && label_) {
-                // Текущее значение без единиц измерения
-                QString text = label_->text();
+            if (me->button() == Qt::LeftButton && valueLabel_) {
+                QString text = valueLabel_->text();
                 QString numPart = text.section(' ', 0, 0);
                 bool ok = false;
                 double current = numPart.replace(',', '.').toDouble(&ok);
                 if (!ok)
                     current = 0.0;
 
-                QWidget *root = label_->window();
+                QWidget *root = valueLabel_->window();
                 QWidget *overlay = new QWidget(root);
                 overlay->setStyleSheet("QWidget { background-color: rgba(0, 0, 0, 150); }");
                 overlay->setGeometry(root->geometry());
@@ -81,7 +93,7 @@ protected:
 
                 if (accepted) {
                     double newValue = dialog.getValue();
-                    label_->setText(QString::number(newValue, 'f', 1) + suffix_);
+                    valueLabel_->setText(QString::number(newValue, 'f', 1) + suffix_);
                     if (onChanged_)
                         onChanged_(newValue);
                 }
@@ -94,23 +106,26 @@ protected:
     }
 
 private:
-    QLabel *label_;
+    QWidget *container_;
+    QLabel *valueLabel_;
     QString title_;
     QString description_;
     QString suffix_;
     std::function<void(double)> onChanged_;
 };
 
-static void makeEditableParameter(QLabel *label,
+static void makeEditableParameter(QWidget *container,
+                                  QLabel *valueLabel,
                                   const QString &title,
                                   const QString &description,
                                   const QString &suffix,
                                   std::function<void(double)> onChanged)
 {
-    if (!label)
+    if (!container || !valueLabel)
         return;
-    // handler привязывается к label как родитель и будет жить столько же
-    new ParameterClickHandler(label, title, description, suffix, std::move(onChanged));
+    new ParameterClickHandler(container, valueLabel,
+                              title, description, suffix,
+                              std::move(onChanged));
 }
 
 QPushButton* makeButton(const QString &text,
@@ -166,10 +181,10 @@ public:
         buttonsGrid->setSpacing(8);
         buttonsGrid->setAlignment(Qt::AlignCenter);
 
-        IconButtonWidget *up    = new IconButtonWidget("up_arrow", this, "#b8ecd0");
-        IconButtonWidget *down  = new IconButtonWidget("down_arrow", this, "#b8ecd0");
-        IconButtonWidget *left  = new IconButtonWidget("left_arrow", this, "#b8ecd0");
-        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#b8ecd0");
+        IconButtonWidget *up    = new IconButtonWidget("up_arrow", this, "#505050");
+        IconButtonWidget *down  = new IconButtonWidget("down_arrow", this, "#505050");
+        IconButtonWidget *left  = new IconButtonWidget("left_arrow", this, "#505050");
+        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#505050");
         
         up->setOnClick([]() { Activity::handleXYUp(); });
         down->setOnClick([]() { Activity::handleXYDown(); });
@@ -198,19 +213,14 @@ public:
         infoLayout->setAlignment(Qt::AlignCenter);
 
         // Первый параметр: X OFFSET
-        QVBoxLayout *param1Layout = new QVBoxLayout();
+        QWidget *param1Widget = new QWidget(this);
+        QVBoxLayout *param1Layout = new QVBoxLayout(param1Widget);
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
         
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
         Values::registerXYOffsetX(value1Label);
-        makeEditableParameter(
-            value1Label,
-            QString::fromUtf8("Вперёд/назад X:"),
-            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
-            QString::fromUtf8(" MM"),
-            [](double v) { Values::updateXYOffsetX(v); });
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -223,23 +233,25 @@ public:
         QLabel *desc1Label = makeLabel("X OFFSET", 12);
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
+        makeEditableParameter(
+            param1Widget,
+            value1Label,
+            QString::fromUtf8("Вперёд/назад X:"),
+            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateXYOffsetX(v); });
         
-        infoLayout->addLayout(param1Layout);
+        infoLayout->addWidget(param1Widget);
 
         // Второй параметр: Y OFFSET
-        QVBoxLayout *param2Layout = new QVBoxLayout();
+        QWidget *param2Widget = new QWidget(this);
+        QVBoxLayout *param2Layout = new QVBoxLayout(param2Widget);
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
         
         QLabel *value2Label = makeLabel("0.0 MM", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
         Values::registerXYOffsetY(value2Label);
-        makeEditableParameter(
-            value2Label,
-            QString::fromUtf8("Вперёд/назад Y:"),
-            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
-            QString::fromUtf8(" MM"),
-            [](double v) { Values::updateXYOffsetY(v); });
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -252,8 +264,15 @@ public:
         QLabel *desc2Label = makeLabel("Y OFFSET", 12);
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
+        makeEditableParameter(
+            param2Widget,
+            value2Label,
+            QString::fromUtf8("Вперёд/назад Y:"),
+            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateXYOffsetY(v); });
         
-        infoLayout->addLayout(param2Layout);
+        infoLayout->addWidget(param2Widget);
 
         h->addLayout(infoLayout, 1);
 
@@ -280,7 +299,7 @@ public:
         buttonsLayout->setSpacing(8);
         buttonsLayout->setAlignment(Qt::AlignCenter);
 
-        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#cfd2dc");
+        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
         up->setOnClick([]() { Activity::handleCoilUp(); });
         buttonsLayout->addWidget(up, 0, Qt::AlignHCenter);
 
@@ -288,7 +307,7 @@ public:
         desc0Label->setAlignment(Qt::AlignCenter);
         buttonsLayout->addWidget(desc0Label);
 
-        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#cfd2dc");
+        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
         down->setOnClick([]() { Activity::handleCoilDown(); });
         buttonsLayout->addWidget(down, 0, Qt::AlignHCenter);
 
@@ -300,19 +319,14 @@ public:
         infoLayout->setAlignment(Qt::AlignCenter);
 
         // Первый параметр: Смещение
-        QVBoxLayout *param1Layout = new QVBoxLayout();
+        QWidget *param1Widget = new QWidget(this);
+        QVBoxLayout *param1Layout = new QVBoxLayout(param1Widget);
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
         
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
         Values::registerCoilOffset(value1Label);
-        makeEditableParameter(
-            value1Label,
-            QString::fromUtf8("Смещение витка:"),
-            QString::fromUtf8("Задайте смещение витка, мм"),
-            QString::fromUtf8(" MM"),
-            [](double v) { Values::updateCoilOffset(v); });
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -325,25 +339,27 @@ public:
         QLabel *desc1Label = makeLabel("Смещение", 12);
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
+        makeEditableParameter(
+            param1Widget,
+            value1Label,
+            QString::fromUtf8("Смещение витка:"),
+            QString::fromUtf8("Задайте смещение витка, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateCoilOffset(v); });
         
-        infoLayout->addLayout(param1Layout);
+        infoLayout->addWidget(param1Widget);
 
 
 
         // Второй параметр: Колебания
-        QVBoxLayout *param2Layout = new QVBoxLayout();
+        QWidget *param2Widget = new QWidget(this);
+        QVBoxLayout *param2Layout = new QVBoxLayout(param2Widget);
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
         
         QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
         Values::registerCoilOscillations(value2Label);
-        makeEditableParameter(
-            value2Label,
-            QString::fromUtf8("Колебания:"),
-            QString::fromUtf8("Задайте амплитуду колебаний, мм/мин"),
-            QString::fromUtf8(" MM/мин"),
-            [](double v) { Values::updateCoilOscillations(v); });
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -356,8 +372,15 @@ public:
         QLabel *desc2Label = makeLabel("Колебания", 12);
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
+        makeEditableParameter(
+            param2Widget,
+            value2Label,
+            QString::fromUtf8("Колебания:"),
+            QString::fromUtf8("Задайте амплитуду колебаний, мм/мин"),
+            QString::fromUtf8(" MM/мин"),
+            [](double v) { Values::updateCoilOscillations(v); });
         
-        infoLayout->addLayout(param2Layout);
+        infoLayout->addWidget(param2Widget);
 
         h->addLayout(infoLayout, 1);
 
@@ -401,8 +424,8 @@ public:
         // Верхняя строка с стрелками
         QHBoxLayout *arrows = new QHBoxLayout();
         arrows->setSpacing(8);
-        IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
-        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
+        IconButtonWidget *left = new IconButtonWidget("upleft_arrow", this, "#505050");
+        IconButtonWidget *right = new IconButtonWidget("upright_arrow", this, "#505050");
         left->setOnClick([]() { Activity::handleUpperSpindleLeft(); });
         right->setOnClick([]() { Activity::handleUpperSpindleRight(); });
         arrows->addWidget(left);
@@ -420,8 +443,8 @@ public:
 
         QVBoxLayout *arrows2 = new QVBoxLayout();
         arrows2->setSpacing(8);
-        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
-        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
+        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
+        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
         up->setOnClick([]() { Activity::handleUpperSpindleUp(); });
         down->setOnClick([]() { Activity::handleUpperSpindleDown(); });
         arrows2->addWidget(up);
@@ -430,8 +453,8 @@ public:
 
         QVBoxLayout *arrows3 = new QVBoxLayout();
         arrows3->setSpacing(8);
-        IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
-        IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
+        IconButtonWidget *upup = new IconButtonWidget("upup_arrow", this, "#505050");
+        IconButtonWidget *downdown = new IconButtonWidget("downdown_arrow", this, "#505050");
         upup->setOnClick([]() { Activity::handleUpperSpindleUpUp(); });
         downdown->setOnClick([]() { Activity::handleUpperSpindleDownDown(); });
         arrows3->addWidget(upup);
@@ -460,11 +483,13 @@ public:
 
         // Правая часть: параметры с разделителем
         QVBoxLayout *infoLayout = new QVBoxLayout();
-        infoLayout->setSpacing(8);
+        infoLayout->setSpacing(3);
         infoLayout->setAlignment(Qt::AlignCenter);
 
         // Первый параметр: Верхняя тяга
-        QVBoxLayout *param1Layout = new QVBoxLayout();
+        QWidget *param1Widget = new QWidget(this);
+        param1Widget->setMinimumHeight(60);
+        QVBoxLayout *param1Layout = new QVBoxLayout(param1Widget);
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
         
@@ -484,10 +509,12 @@ public:
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
         
-        infoLayout->addLayout(param1Layout);
+        infoLayout->addWidget(param1Widget);
 
         // Второй параметр: Скорость
-        QVBoxLayout *param2Layout = new QVBoxLayout();
+        QWidget *param2Widget = new QWidget(this);
+        param2Widget->setMinimumHeight(60);
+        QVBoxLayout *param2Layout = new QVBoxLayout(param2Widget);
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
         
@@ -507,10 +534,12 @@ public:
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
         
-        infoLayout->addLayout(param2Layout);
+        infoLayout->addWidget(param2Widget);
 
         // Третий параметр: Позиция
-        QVBoxLayout *param3Layout = new QVBoxLayout();
+        QWidget *param3Widget = new QWidget(this);
+        param3Widget->setMinimumHeight(60);
+        QVBoxLayout *param3Layout = new QVBoxLayout(param3Widget);
         param3Layout->setSpacing(4);
         param3Layout->setAlignment(Qt::AlignCenter);
         
@@ -530,7 +559,32 @@ public:
         desc3Label->setAlignment(Qt::AlignCenter);
         param3Layout->addWidget(desc3Label);
         
-        infoLayout->addLayout(param3Layout);
+        infoLayout->addWidget(param3Widget);
+
+        // Сделать параметры кликабельными
+        makeEditableParameter(
+            param1Widget,
+            value1Label,
+            QString::fromUtf8("Верхняя тяга:"),
+            QString::fromUtf8("Задайте величину верхней тяги, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateUpperSpindleXOffset(v); });
+
+        makeEditableParameter(
+            param2Widget,
+            value2Label,
+            QString::fromUtf8("Скорость верхнего шпинделя:"),
+            QString::fromUtf8("Задайте скорость верхнего шпинделя, мм/мин"),
+            QString::fromUtf8(" MM/мин"),
+            [](double v) { Values::updateUpperSpindleSpeed(v); });
+
+        makeEditableParameter(
+            param3Widget,
+            value3Label,
+            QString::fromUtf8("Позиция верхнего шпинделя:"),
+            QString::fromUtf8("Задайте позицию верхнего шпинделя, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateUpperSpindlePosition(v); });
 
         h->addLayout(infoLayout, 1);
 
@@ -559,8 +613,8 @@ public:
         // Верхняя строка с стрелками
         QHBoxLayout *arrows = new QHBoxLayout();
         arrows->setSpacing(8);
-        IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
-        IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
+        IconButtonWidget *left = new IconButtonWidget("upleft_arrow", this, "#505050");
+        IconButtonWidget *right = new IconButtonWidget("upright_arrow", this, "#505050");
         left->setOnClick([]() { Activity::handleLowerSpindleLeft(); });
         right->setOnClick([]() { Activity::handleLowerSpindleRight(); });
         arrows->addWidget(left);
@@ -578,8 +632,8 @@ public:
 
         QVBoxLayout *arrows2 = new QVBoxLayout();
         arrows2->setSpacing(8);
-        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
-        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
+        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
+        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
         up->setOnClick([]() { Activity::handleLowerSpindleUp(); });
         down->setOnClick([]() { Activity::handleLowerSpindleDown(); });
         arrows2->addWidget(up);
@@ -588,8 +642,8 @@ public:
 
         QVBoxLayout *arrows3 = new QVBoxLayout();
         arrows3->setSpacing(8);
-        IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
-        IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
+        IconButtonWidget *upup = new IconButtonWidget("upup_arrow", this, "#505050");
+        IconButtonWidget *downdown = new IconButtonWidget("downdown_arrow", this, "#505050");
         upup->setOnClick([]() { Activity::handleLowerSpindleUpUp(); });
         downdown->setOnClick([]() { Activity::handleLowerSpindleDownDown(); });
         arrows3->addWidget(upup);
@@ -644,7 +698,9 @@ public:
         infoLayout->setAlignment(Qt::AlignCenter);
 
         // Первый параметр: Верхняя тяга
-        QVBoxLayout *param1Layout = new QVBoxLayout();
+        QWidget *param1Widget = new QWidget(this);
+        param1Widget->setMinimumHeight(60);
+        QVBoxLayout *param1Layout = new QVBoxLayout(param1Widget);
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
         
@@ -664,10 +720,12 @@ public:
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
         
-        infoLayout->addLayout(param1Layout);
+        infoLayout->addWidget(param1Widget);
 
         // Второй параметр: Скорость
-        QVBoxLayout *param2Layout = new QVBoxLayout();
+        QWidget *param2Widget = new QWidget(this);
+        param2Widget->setMinimumHeight(60);
+        QVBoxLayout *param2Layout = new QVBoxLayout(param2Widget);
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
         
@@ -687,10 +745,12 @@ public:
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
         
-        infoLayout->addLayout(param2Layout);
+        infoLayout->addWidget(param2Widget);
 
         // Третий параметр: Позиция
-        QVBoxLayout *param3Layout = new QVBoxLayout();
+        QWidget *param3Widget = new QWidget(this);
+        param3Widget->setMinimumHeight(60);
+        QVBoxLayout *param3Layout = new QVBoxLayout(param3Widget);
         param3Layout->setSpacing(4);
         param3Layout->setAlignment(Qt::AlignCenter);
         
@@ -710,7 +770,32 @@ public:
         desc3Label->setAlignment(Qt::AlignCenter);
         param3Layout->addWidget(desc3Label);
         
-        infoLayout->addLayout(param3Layout);
+        infoLayout->addWidget(param3Widget);
+
+        // Кликабельные параметры нижнего шпинделя
+        makeEditableParameter(
+            param1Widget,
+            value1Label,
+            QString::fromUtf8("Нижняя тяга:"),
+            QString::fromUtf8("Задайте величину нижней тяги, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateLowerSpindleXOffset(v); });
+
+        makeEditableParameter(
+            param2Widget,
+            value2Label,
+            QString::fromUtf8("Скорость нижнего шпинделя:"),
+            QString::fromUtf8("Задайте скорость нижнего шпинделя, мм/мин"),
+            QString::fromUtf8(" MM/мин"),
+            [](double v) { Values::updateLowerSpindleSpeed(v); });
+
+        makeEditableParameter(
+            param3Widget,
+            value3Label,
+            QString::fromUtf8("Позиция нижнего шпинделя:"),
+            QString::fromUtf8("Задайте позицию нижнего шпинделя, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateLowerSpindlePosition(v); });
 
         h->addLayout(infoLayout, 1);
 
@@ -760,12 +845,6 @@ public:
             v->setContentsMargins(12, 12, 12, 12);
             QLabel *gridLabel = makeLabel("0.00 AMP", 12, true);
             Values::registerGridAmp(gridLabel);
-            makeEditableParameter(
-                gridLabel,
-                QString::fromUtf8("GRID ток:"),
-                QString::fromUtf8("Задайте ток GRID, А"),
-                QString::fromUtf8(" AMP"),
-                [](double v) { Values::updateGridAmp(v); });
             v->addWidget(gridLabel, 0, Qt::AlignHCenter);
 
             QFrame *separator3 = new QFrame(this);
@@ -775,7 +854,16 @@ public:
             separator3->setFixedHeight(2);
             v->addWidget(separator3);
         
-            v->addWidget(makeLabel("GRID", 11, true), 0, Qt::AlignHCenter);
+            QLabel *gridText = makeLabel("GRID", 11, true);
+            v->addWidget(gridText, 0, Qt::AlignHCenter);
+
+            makeEditableParameter(
+                grid,
+                gridLabel,
+                QString::fromUtf8("GRID ток:"),
+                QString::fromUtf8("Задайте ток GRID, А"),
+                QString::fromUtf8(" AMP"),
+                [](double v) { Values::updateGridAmp(v); });
         }
         col->addWidget(grid);
 
@@ -785,31 +873,6 @@ public:
             QVBoxLayout *v = new QVBoxLayout(c);
             v->setContentsMargins(10, 8, 10, 8);
             QLabel *percentLabel = makeLabel("0.0 %", 12, true);
-            if (name == "P") {
-                Values::registerPValue(percentLabel);
-                makeEditableParameter(
-                    percentLabel,
-                    QString::fromUtf8("Параметр P:"),
-                    QString::fromUtf8("Задайте коэффициент P, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updatePValue(v); });
-            } else if (name == "I") {
-                Values::registerIValue(percentLabel);
-                makeEditableParameter(
-                    percentLabel,
-                    QString::fromUtf8("Параметр I:"),
-                    QString::fromUtf8("Задайте коэффициент I, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updateIValue(v); });
-            } else if (name == "U") {
-                Values::registerUValue(percentLabel);
-                makeEditableParameter(
-                    percentLabel,
-                    QString::fromUtf8("Параметр U:"),
-                    QString::fromUtf8("Задайте коэффициент U, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updateUValue(v); });
-            }
             v->addWidget(percentLabel, 0, Qt::AlignHCenter);
             
             QFrame *separator4 = new QFrame(this);
@@ -819,7 +882,37 @@ public:
             separator4->setFixedHeight(2);
             v->addWidget(separator4);
 
-            v->addWidget(makeLabel(name, 10), 0, Qt::AlignHCenter);
+            QLabel *nameLabel = makeLabel(name, 10);
+            v->addWidget(nameLabel, 0, Qt::AlignHCenter);
+
+            if (name == "P") {
+                Values::registerPValue(percentLabel);
+                makeEditableParameter(
+                    c,
+                    percentLabel,
+                    QString::fromUtf8("Параметр P:"),
+                    QString::fromUtf8("Задайте коэффициент P, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updatePValue(v); });
+            } else if (name == "I") {
+                Values::registerIValue(percentLabel);
+                makeEditableParameter(
+                    c,
+                    percentLabel,
+                    QString::fromUtf8("Параметр I:"),
+                    QString::fromUtf8("Задайте коэффициент I, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updateIValue(v); });
+            } else if (name == "U") {
+                Values::registerUValue(percentLabel);
+                makeEditableParameter(
+                    c,
+                    percentLabel,
+                    QString::fromUtf8("Параметр U:"),
+                    QString::fromUtf8("Задайте коэффициент U, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updateUValue(v); });
+            }
             return c;
         };
 
@@ -843,17 +936,17 @@ public:
             });
             v->addWidget(resetBtn);
 
+            // Параметр мощности генератора, завернутый в отдельный QWidget
+            QWidget *paramWidget = new QWidget(generator);
+            QVBoxLayout *paramLayout = new QVBoxLayout(paramWidget);
+            paramLayout->setContentsMargins(0, 0, 0, 0);
+            paramLayout->setSpacing(4);
+
             // Процентное отображение "0.0 %"
             QLabel *percentLabel = makeLabel("0.0 %", 18, true);
             percentLabel->setAlignment(Qt::AlignCenter);
             Values::registerGeneratorPercent(percentLabel);
-            makeEditableParameter(
-                percentLabel,
-                QString::fromUtf8("Мощность генератора:"),
-                QString::fromUtf8("Задайте мощность генератора, %"),
-                QString::fromUtf8(" %"),
-                [](double v) { Values::updateGeneratorPercent(v); });
-            v->addWidget(percentLabel);
+            paramLayout->addWidget(percentLabel);
 
             // Разделительная линия
             QFrame *separator = new QFrame(generator);
@@ -861,12 +954,22 @@ public:
             separator->setFrameShadow(QFrame::Sunken);
             separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
             separator->setFixedHeight(2);
-            v->addWidget(separator);
+            paramLayout->addWidget(separator);
 
             // Текст "Генератор"
             QLabel *generatorLabel = makeLabel("Генератор", 12, false);
             generatorLabel->setAlignment(Qt::AlignCenter);
-            v->addWidget(generatorLabel);
+            paramLayout->addWidget(generatorLabel);
+
+            v->addWidget(paramWidget);
+
+            makeEditableParameter(
+                paramWidget,
+                percentLabel,
+                QString::fromUtf8("Мощность генератора:"),
+                QString::fromUtf8("Задайте мощность генератора, %"),
+                QString::fromUtf8(" %"),
+                [](double v) { Values::updateGeneratorPercent(v); });
 
             // Selector (переключатель вкл/выкл) внизу слева
             QHBoxLayout *selectorLayout = new QHBoxLayout();
@@ -967,8 +1070,8 @@ public:
             QHBoxLayout *reflectorLayout = new QHBoxLayout(reflector);
             reflectorLayout->setContentsMargins(16, 16, 16, 16);
             reflectorLayout->setSpacing(10);  // Минимальное расстояние между элементами
-            IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#f0f0f0");
-            IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#f0f0f0");
+            IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
+            IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
             up->setOnClick([]() { Activity::handleReflectorUp(); });
             down->setOnClick([]() { Activity::handleReflectorDown(); });
             reflectorLayout->addWidget(up);

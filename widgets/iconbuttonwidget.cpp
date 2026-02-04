@@ -4,6 +4,9 @@
 #include <QSize>
 #include <QStringList>
 #include <QMap>
+#include <QPropertyAnimation>
+#include <QEasingCurve>
+#include <QMouseEvent>
 
 IconButtonWidget::IconButtonWidget(const QString &iconName, 
                                    QWidget *parent,
@@ -17,7 +20,15 @@ IconButtonWidget::IconButtonWidget(const QString &iconName,
     
     setIcon(iconName);
     updateStyle();
-    
+    // Анимация нажатия (уменьшение/расширение иконки)
+    pressAnimation = new QPropertyAnimation(this, "iconSize", this);
+    pressAnimation->setDuration(90);
+    pressAnimation->setEasingCurve(QEasingCurve::OutQuad);
+
+    releaseAnimation = new QPropertyAnimation(this, "iconSize", this);
+    releaseAnimation->setDuration(140);
+    releaseAnimation->setEasingCurve(QEasingCurve::OutBack);
+
     connect(this, &QPushButton::clicked, this, [this]() {
         if (onClickCallback) {
             onClickCallback();
@@ -38,7 +49,7 @@ void IconButtonWidget::setIcon(const QString &iconName)
     if (!iconPath.isEmpty()) {
         QIcon icon(iconPath);
         QPushButton::setIcon(icon);
-        setIconSize(QSize(30, 30));
+        setIconSize(baseIconSize);
     }
 }
 
@@ -54,6 +65,8 @@ void IconButtonWidget::updateStyle()
     QString hoverColor = currentBackgroundColor;
     if (hoverColor == "#303030") {
         hoverColor = "#404040";
+    } else if (hoverColor == "#505050") {
+        hoverColor = "#606060";
     } else if (hoverColor == "#b8ecd0") {
         hoverColor = "#c8f0e0";
     } else if (hoverColor == "#cfd2dc") {
@@ -69,6 +82,8 @@ void IconButtonWidget::updateStyle()
     QString pressedColor = currentBackgroundColor;
     if (pressedColor == "#303030") {
         pressedColor = "#484848";
+    } else if (pressedColor == "#505050") {
+        pressedColor = "#404040";
     } else if (pressedColor == "#b8ecd0") {
         pressedColor = "#a8dcc0";
     } else if (pressedColor == "#cfd2dc") {
@@ -97,6 +112,39 @@ void IconButtonWidget::updateStyle()
     ).arg(currentBackgroundColor, hoverColor, pressedColor);
     
     setStyleSheet(style);
+}
+
+void IconButtonWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (pressAnimation && releaseAnimation) {
+        pressAnimation->stop();
+        releaseAnimation->stop();
+
+        QSize current = iconSize();
+        QSize target(qMax(20, baseIconSize.width()  * 8 / 10),
+                     qMax(20, baseIconSize.height() * 8 / 10));
+
+        pressAnimation->setStartValue(current);
+        pressAnimation->setEndValue(target);
+        pressAnimation->start();
+    }
+
+    QPushButton::mousePressEvent(event);
+}
+
+void IconButtonWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (pressAnimation && releaseAnimation) {
+        pressAnimation->stop();
+        releaseAnimation->stop();
+
+        QSize current = iconSize();
+        releaseAnimation->setStartValue(current);
+        releaseAnimation->setEndValue(baseIconSize);
+        releaseAnimation->start();
+    }
+
+    QPushButton::mouseReleaseEvent(event);
 }
 
 QStringList IconButtonWidget::getAvailableIcons()
@@ -136,7 +184,14 @@ QString IconButtonWidget::getIconPath(const QString &iconName) const
         {"right_arrow", "icons/RoundedButton/right.png"},
         {"up_arrow", "icons/RoundedButton/up.png"},
         {"down_arrow", "icons/RoundedButton/down.png"},
+
+        {"upup_arrow", "icons/RoundedButton/upup.png"},
+        {"downdown_arrow", "icons/RoundedButton/downdown.png"},
         
+        {"upright_arrow", "icons/RoundedButton/upright.png"},
+        {"upleft_arrow", "icons/RoundedButton/upleft.png"},
+        
+
         // Другие действия
         {"stop", "icons/main.png"},
         {"start", "icons/main.png"},
