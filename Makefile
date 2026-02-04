@@ -572,6 +572,7 @@ build/obj/mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h \
 		widgets/iconbuttonwidget.h \
 		widgets/textbuttonwidget.h \
 		widgets/selector.hpp \
+		widgets/parametereditdialog.h \
 		activity.h \
 		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/mainpagewidget.o pages/mainpagewidget.cpp

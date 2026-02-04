@@ -2,6 +2,7 @@
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/textbuttonwidget.h"
 #include "widgets/selector.hpp"
+#include "widgets/parametereditdialog.h"
 #include "activity.h"
 #include "values.h"
 
@@ -12,6 +13,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QGraphicsDropShadowEffect>
+#include <QMouseEvent>
 
 namespace {
 
@@ -24,6 +26,89 @@ QLabel* makeLabel(const QString &text, int ptSize = 12, bool bold = false)
     style += " }";
     l->setStyleSheet(style);
     return l;
+}
+
+// Обработчик клика по числовым параметрам на главной странице.
+// При клике открывается ParameterEditDialog, а затем при подтверждении
+// обновляется текст лейбла и вызывается переданный callback.
+class ParameterClickHandler : public QObject
+{
+public:
+    ParameterClickHandler(QLabel *label,
+                          const QString &title,
+                          const QString &description,
+                          const QString &suffix,
+                          std::function<void(double)> onChanged)
+        : QObject(label)
+        , label_(label)
+        , title_(title)
+        , description_(description)
+        , suffix_(suffix)
+        , onChanged_(std::move(onChanged))
+    {
+        if (label_) {
+            label_->setCursor(Qt::PointingHandCursor);
+            label_->installEventFilter(this);
+        }
+    }
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override
+    {
+        if (obj == label_ && event->type() == QEvent::MouseButtonPress) {
+            auto *me = static_cast<QMouseEvent*>(event);
+            if (me->button() == Qt::LeftButton && label_) {
+                // Текущее значение без единиц измерения
+                QString text = label_->text();
+                QString numPart = text.section(' ', 0, 0);
+                bool ok = false;
+                double current = numPart.replace(',', '.').toDouble(&ok);
+                if (!ok)
+                    current = 0.0;
+
+                QWidget *root = label_->window();
+                QWidget *overlay = new QWidget(root);
+                overlay->setStyleSheet("QWidget { background-color: rgba(0, 0, 0, 150); }");
+                overlay->setGeometry(root->geometry());
+                overlay->show();
+                overlay->raise();
+
+                ParameterEditDialog dialog(title_, description_, current, overlay);
+                dialog.raise();
+                bool accepted = (dialog.exec() == QDialog::Accepted);
+
+                if (accepted) {
+                    double newValue = dialog.getValue();
+                    label_->setText(QString::number(newValue, 'f', 1) + suffix_);
+                    if (onChanged_)
+                        onChanged_(newValue);
+                }
+
+                overlay->deleteLater();
+                return true;
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+
+private:
+    QLabel *label_;
+    QString title_;
+    QString description_;
+    QString suffix_;
+    std::function<void(double)> onChanged_;
+};
+
+static void makeEditableParameter(QLabel *label,
+                                  const QString &title,
+                                  const QString &description,
+                                  const QString &suffix,
+                                  std::function<void(double)> onChanged)
+{
+    if (!label)
+        return;
+    // handler привязывается к label как родитель и будет жить столько же
+    new ParameterClickHandler(label, title, description, suffix, std::move(onChanged));
 }
 
 QPushButton* makeButton(const QString &text,
@@ -118,6 +203,12 @@ public:
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
         Values::registerXYOffsetX(value1Label);
+        makeEditableParameter(
+            value1Label,
+            QString::fromUtf8("Вперёд/назад X:"),
+            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateXYOffsetX(v); });
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -141,6 +232,12 @@ public:
         QLabel *value2Label = makeLabel("0.0 MM", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
         Values::registerXYOffsetY(value2Label);
+        makeEditableParameter(
+            value2Label,
+            QString::fromUtf8("Вперёд/назад Y:"),
+            QString::fromUtf8("Диапазон: от -10 до 10 мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateXYOffsetY(v); });
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -208,6 +305,12 @@ public:
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
         Values::registerCoilOffset(value1Label);
+        makeEditableParameter(
+            value1Label,
+            QString::fromUtf8("Смещение витка:"),
+            QString::fromUtf8("Задайте смещение витка, мм"),
+            QString::fromUtf8(" MM"),
+            [](double v) { Values::updateCoilOffset(v); });
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -233,6 +336,12 @@ public:
         QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
         Values::registerCoilOscillations(value2Label);
+        makeEditableParameter(
+            value2Label,
+            QString::fromUtf8("Колебания:"),
+            QString::fromUtf8("Задайте амплитуду колебаний, мм/мин"),
+            QString::fromUtf8(" MM/мин"),
+            [](double v) { Values::updateCoilOscillations(v); });
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -649,6 +758,12 @@ public:
             v->setContentsMargins(12, 12, 12, 12);
             QLabel *gridLabel = makeLabel("0.00 AMP", 12, true);
             Values::registerGridAmp(gridLabel);
+            makeEditableParameter(
+                gridLabel,
+                QString::fromUtf8("GRID ток:"),
+                QString::fromUtf8("Задайте ток GRID, А"),
+                QString::fromUtf8(" AMP"),
+                [](double v) { Values::updateGridAmp(v); });
             v->addWidget(gridLabel, 0, Qt::AlignHCenter);
 
             QFrame *separator3 = new QFrame(this);
@@ -670,10 +785,28 @@ public:
             QLabel *percentLabel = makeLabel("0.0 %", 12, true);
             if (name == "P") {
                 Values::registerPValue(percentLabel);
+                makeEditableParameter(
+                    percentLabel,
+                    QString::fromUtf8("Параметр P:"),
+                    QString::fromUtf8("Задайте коэффициент P, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updatePValue(v); });
             } else if (name == "I") {
                 Values::registerIValue(percentLabel);
+                makeEditableParameter(
+                    percentLabel,
+                    QString::fromUtf8("Параметр I:"),
+                    QString::fromUtf8("Задайте коэффициент I, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updateIValue(v); });
             } else if (name == "U") {
                 Values::registerUValue(percentLabel);
+                makeEditableParameter(
+                    percentLabel,
+                    QString::fromUtf8("Параметр U:"),
+                    QString::fromUtf8("Задайте коэффициент U, %"),
+                    QString::fromUtf8(" %"),
+                    [](double v) { Values::updateUValue(v); });
             }
             v->addWidget(percentLabel, 0, Qt::AlignHCenter);
             
@@ -712,6 +845,12 @@ public:
             QLabel *percentLabel = makeLabel("0.0 %", 18, true);
             percentLabel->setAlignment(Qt::AlignCenter);
             Values::registerGeneratorPercent(percentLabel);
+            makeEditableParameter(
+                percentLabel,
+                QString::fromUtf8("Мощность генератора:"),
+                QString::fromUtf8("Задайте мощность генератора, %"),
+                QString::fromUtf8(" %"),
+                [](double v) { Values::updateGeneratorPercent(v); });
             v->addWidget(percentLabel);
 
             // Разделительная линия
