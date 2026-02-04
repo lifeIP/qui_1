@@ -17,6 +17,7 @@
 #include "pages/autotpagewidget.h"
 #include "pages/vacuumpagewidget.h"
 #include "pages/gaspanelpagewidget.h"
+#include "pages/settingspagewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -61,7 +62,7 @@ public:
         // Остальные страницы
         stackedWidget->addWidget(new VacuumPageWidget(this));
         stackedWidget->addWidget(new GasPanelPageWidget(this));
-        stackedWidget->addWidget(createSimplePage("Настройки"));
+        stackedWidget->addWidget(new SettingsPageWidget(this));
 
         // Нижняя навигация
         bottomNav = new BottomNavigationBar(this);

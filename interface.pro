@@ -31,7 +31,8 @@ SOURCES += main.cpp \
            pages/finalpagewidget.cpp \
            pages/autotpagewidget.cpp \
             pages/vacuumpagewidget.cpp \
-            pages/gaspanelpagewidget.cpp
+            pages/gaspanelpagewidget.cpp \
+            pages/settingspagewidget.cpp
 
 HEADERS += activity.h \
            values.h \
@@ -48,4 +49,5 @@ HEADERS += activity.h \
            pages/finalpagewidget.h \
            pages/autotpagewidget.h \
             pages/vacuumpagewidget.h \
-            pages/gaspanelpagewidget.h
+            pages/gaspanelpagewidget.h \
+            pages/settingspagewidget.h
