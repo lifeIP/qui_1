@@ -274,4 +274,11 @@ void handleStatusBarReset()
     // TODO: реализовать сброс статус-бара
 }
 
+// Final Page
+void handleApplyToAutot()
+{
+    qDebug() << "Activity: Apply to Autot";
+    // TODO: реализовать применение финальных параметров к автотяге
+}
+
 } // namespace Activity

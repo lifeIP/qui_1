@@ -27,7 +27,7 @@ public:
 
     void set(bool state, bool animated = true);
     bool getState() const { return state_; }
-    
+
     void setOnStateChanged(std::function<void(int)> callback);
 
 private:

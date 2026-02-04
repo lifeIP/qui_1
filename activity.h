@@ -66,4 +66,7 @@ void handleDiboraneSelect();
 // Status Bar
 void handleStatusBarReset();
 
+// Final Page
+void handleApplyToAutot();
+
 } // namespace Activity

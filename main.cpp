@@ -13,6 +13,7 @@
 #include "widgets/bottomnavigationbar.h"
 #include "pages/dopingpagewidget.h"
 #include "pages/mainpagewidget.h"
+#include "pages/finalpagewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -46,8 +47,10 @@ public:
         // Страница "Легирование" с текущим интерфейсом
         stackedWidget->addWidget(new DopingPageWidget(this));
 
+        // Страница "Финальные"
+        stackedWidget->addWidget(new FinalPageWidget(this));
+
         // Остальные страницы (заглушки)
-        stackedWidget->addWidget(createSimplePage("Финальные"));
         stackedWidget->addWidget(createSimplePage("Автотяга"));
         stackedWidget->addWidget(createSimplePage("Вакуум"));
         stackedWidget->addWidget(createSimplePage("Газ. панель"));

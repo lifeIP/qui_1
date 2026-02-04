@@ -38,6 +38,12 @@ static QLabel *flowDopingGasLabel = nullptr;
 static QLabel *flowInjectionLabel = nullptr;
 static QLabel *flowPurgeLabel = nullptr;
 
+static QLabel *finalGrowthRateLabel = nullptr;
+static QLabel *finalDiameterLabel = nullptr;
+static QLabel *finalLowSpeedLabel = nullptr;
+static QLabel *finalPolysiliconDiameterLabel = nullptr;
+static QLabel *finalHighSpeedLabel = nullptr;
+
 // Регистрация виджетов
 void registerXYOffsetX(QLabel *label) { xyOffsetXLabel = label; }
 void registerXYOffsetY(QLabel *label) { xyOffsetYLabel = label; }
@@ -70,6 +76,12 @@ void registerFlowArgon(QLabel *label) { flowArgonLabel = label; }
 void registerFlowDopingGas(QLabel *label) { flowDopingGasLabel = label; }
 void registerFlowInjection(QLabel *label) { flowInjectionLabel = label; }
 void registerFlowPurge(QLabel *label) { flowPurgeLabel = label; }
+
+void registerFinalGrowthRate(QLabel *label) { finalGrowthRateLabel = label; }
+void registerFinalDiameter(QLabel *label) { finalDiameterLabel = label; }
+void registerFinalLowSpeed(QLabel *label) { finalLowSpeedLabel = label; }
+void registerFinalPolysiliconDiameter(QLabel *label) { finalPolysiliconDiameterLabel = label; }
+void registerFinalHighSpeed(QLabel *label) { finalHighSpeedLabel = label; }
 
 // Вспомогательная функция для форматирования значения
 static QString formatValue(double value, const QString &unit = "")
@@ -285,6 +297,47 @@ void updateFlowPurge(double value, const QString &unit)
     if (flowPurgeLabel) {
         flowPurgeLabel->setText(formatValue(value, unit));
         qDebug() << "Values: Flow Purge =" << value << unit;
+    }
+}
+
+// Final Page
+void updateFinalGrowthRate(double value)
+{
+    if (finalGrowthRateLabel) {
+        finalGrowthRateLabel->setText(formatValue(value));
+        qDebug() << "Values: Final Growth Rate =" << value;
+    }
+}
+
+void updateFinalDiameter(double value)
+{
+    if (finalDiameterLabel) {
+        finalDiameterLabel->setText(formatValue(value));
+        qDebug() << "Values: Final Diameter =" << value;
+    }
+}
+
+void updateFinalLowSpeed(double value)
+{
+    if (finalLowSpeedLabel) {
+        finalLowSpeedLabel->setText(formatValue(value));
+        qDebug() << "Values: Final Low Speed =" << value;
+    }
+}
+
+void updateFinalPolysiliconDiameter(double value)
+{
+    if (finalPolysiliconDiameterLabel) {
+        finalPolysiliconDiameterLabel->setText(formatValue(value));
+        qDebug() << "Values: Final Polysilicon Diameter =" << value;
+    }
+}
+
+void updateFinalHighSpeed(double value)
+{
+    if (finalHighSpeedLabel) {
+        finalHighSpeedLabel->setText(formatValue(value));
+        qDebug() << "Values: Final High Speed =" << value;
     }
 }
 

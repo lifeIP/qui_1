@@ -41,6 +41,13 @@ void registerFlowDopingGas(QLabel *label);
 void registerFlowInjection(QLabel *label);
 void registerFlowPurge(QLabel *label);
 
+// Final Page
+void registerFinalGrowthRate(QLabel *label);
+void registerFinalDiameter(QLabel *label);
+void registerFinalLowSpeed(QLabel *label);
+void registerFinalPolysiliconDiameter(QLabel *label);
+void registerFinalHighSpeed(QLabel *label);
+
 // Функции обновления значений
 void updateXYOffsetX(double value);  // в MM
 void updateXYOffsetY(double value);  // в MM
@@ -73,5 +80,12 @@ void updateFlowArgon(double value, const QString &unit = "л/мин");
 void updateFlowDopingGas(double value, const QString &unit = "мл/мин");
 void updateFlowInjection(double value, const QString &unit = "мл/мин");
 void updateFlowPurge(double value, const QString &unit = "бар");
+
+// Final Page
+void updateFinalGrowthRate(double value);  // в мм
+void updateFinalDiameter(double value);  // в мм
+void updateFinalLowSpeed(double value);  // в мм
+void updateFinalPolysiliconDiameter(double value);  // в мм
+void updateFinalHighSpeed(double value);  // в мм
 
 } // namespace Values
