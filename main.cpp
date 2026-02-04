@@ -14,6 +14,7 @@
 #include "pages/dopingpagewidget.h"
 #include "pages/mainpagewidget.h"
 #include "pages/finalpagewidget.h"
+#include "pages/autotpagewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -52,8 +53,10 @@ public:
         // Страница "Финальные"
         stackedWidget->addWidget(new FinalPageWidget(this));
 
+        // Страница "Автотяга"
+        stackedWidget->addWidget(new AutotPageWidget(this));
+
         // Остальные страницы (заглушки)
-        stackedWidget->addWidget(createSimplePage("Автотяга"));
         stackedWidget->addWidget(createSimplePage("Вакуум"));
         stackedWidget->addWidget(createSimplePage("Газ. панель"));
         stackedWidget->addWidget(createSimplePage("Настройки"));

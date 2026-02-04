@@ -26,7 +26,8 @@ SOURCES += main.cpp \
            widgets/selector-button.cpp \
            pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp \
-           pages/finalpagewidget.cpp
+           pages/finalpagewidget.cpp \
+           pages/autotpagewidget.cpp
 
 HEADERS += activity.h \
            values.h \
@@ -38,4 +39,5 @@ HEADERS += activity.h \
            widgets/selector-button.hpp \
            pages/dopingpagewidget.h \
            pages/mainpagewidget.h \
-           pages/finalpagewidget.h
+           pages/finalpagewidget.h \
+           pages/autotpagewidget.h
