@@ -53,6 +53,8 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = main.cpp \
+		activity.cpp \
+		values.cpp \
 		widgets/statusbarwidget.cpp \
 		widgets/bottomnavigationbar.cpp \
 		widgets/iconbuttonwidget.cpp \
@@ -69,6 +71,8 @@ SOURCES       = main.cpp \
 		moc_dopingpagewidget.cpp \
 		moc_mainpagewidget.cpp
 OBJECTS       = main.o \
+		activity.o \
+		values.o \
 		statusbarwidget.o \
 		bottomnavigationbar.o \
 		iconbuttonwidget.o \
@@ -162,7 +166,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		interface.pro widgets/statusbarwidget.h \
+		interface.pro activity.h \
+		values.h \
+		widgets/statusbarwidget.h \
 		widgets/bottomnavigationbar.h \
 		widgets/iconbuttonwidget.h \
 		widgets/textbuttonwidget.h \
@@ -170,6 +176,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		widgets/selector-button.hpp \
 		pages/dopingpagewidget.h \
 		pages/mainpagewidget.h main.cpp \
+		activity.cpp \
+		values.cpp \
 		widgets/statusbarwidget.cpp \
 		widgets/bottomnavigationbar.cpp \
 		widgets/iconbuttonwidget.cpp \
@@ -361,8 +369,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents activity.h values.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -470,7 +478,14 @@ main.o: main.cpp widgets/statusbarwidget.h \
 		main.moc
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
-statusbarwidget.o: widgets/statusbarwidget.cpp widgets/statusbarwidget.h
+activity.o: activity.cpp activity.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o activity.o activity.cpp
+
+values.o: values.cpp values.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o values.o values.cpp
+
+statusbarwidget.o: widgets/statusbarwidget.cpp widgets/statusbarwidget.h \
+		activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o statusbarwidget.o widgets/statusbarwidget.cpp
 
 bottomnavigationbar.o: widgets/bottomnavigationbar.cpp widgets/bottomnavigationbar.h
@@ -488,13 +503,16 @@ selector.o: widgets/selector.cpp widgets/selector.hpp
 selector-button.o: widgets/selector-button.cpp widgets/selector-button.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o selector-button.o widgets/selector-button.cpp
 
-dopingpagewidget.o: pages/dopingpagewidget.cpp pages/dopingpagewidget.h
+dopingpagewidget.o: pages/dopingpagewidget.cpp pages/dopingpagewidget.h \
+		activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dopingpagewidget.o pages/dopingpagewidget.cpp
 
 mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h \
 		widgets/iconbuttonwidget.h \
 		widgets/textbuttonwidget.h \
-		widgets/selector.hpp
+		widgets/selector.hpp \
+		activity.h \
+		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainpagewidget.o pages/mainpagewidget.cpp
 
 moc_statusbarwidget.o: moc_statusbarwidget.cpp 

@@ -13,12 +13,6 @@ class DopingPageWidget : public QWidget
 public:
     explicit DopingPageWidget(QWidget *parent = nullptr);
 
-private slots:
-    void onArgonStop();
-    void onInjectionStart();
-    void onPhosphorusSelect();
-    void onDiboraneSelect();
-
 private:
     QPushButton *argonStopButton;
     QPushButton *injectionStartButton;

@@ -1,4 +1,5 @@
 #include "widgets/statusbarwidget.h"
+#include "activity.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -7,32 +8,69 @@
 StatusBarWidget::StatusBarWidget(QWidget *parent)
     : QFrame(parent)
 {
-    setStyleSheet("QFrame { background-color: #ecf0f1; border-radius: 5px; padding: 10px; }");
+    setStyleSheet("QFrame { background-color: #ecf0f1; border-radius: 8px; }");
 
     QHBoxLayout *statusLayout = new QHBoxLayout(this);
-    statusLayout->setContentsMargins(15, 10, 15, 10);
+    statusLayout->setContentsMargins(20, 12, 20, 12);
+    statusLayout->setSpacing(15);
 
     // Время
     timeLabel = new QLabel(this);
-    timeLabel->setStyleSheet("QLabel { font-size: 16px; font-weight: bold; }");
+    timeLabel->setStyleSheet(
+        "QLabel {"
+        "  font-size: 17px;"
+        "  font-weight: bold;"
+        "  color: #2c3e50;"
+        "  background: transparent;"
+        "  padding: 0px;"
+        "}");
     statusLayout->addWidget(timeLabel);
 
     statusLayout->addStretch();
 
     // Красная точка и статус
     QLabel *statusDot = new QLabel("●", this);
-    statusDot->setStyleSheet("QLabel { color: #e74c3c; font-size: 20px; }");
+    statusDot->setStyleSheet(
+        "QLabel {"
+        "  color: #e74c3c;"
+        "  font-size: 18px;"
+        "  background: transparent;"
+        "  padding: 0px;"
+        "}");
     statusLayout->addWidget(statusDot);
 
     QLabel *statusText = new QLabel("Нет связи с контроллером", this);
-    statusText->setStyleSheet("QLabel { font-size: 16px; color: #2c3e50; }");
+    statusText->setStyleSheet(
+        "QLabel {"
+        "  font-size: 15px;"
+        "  color: #2c3e50;"
+        "  background: transparent;"
+        "  padding: 0px;"
+        "}");
     statusLayout->addWidget(statusText);
 
     statusLayout->addStretch();
 
     // Кнопка сброса
     QPushButton *resetButton = new QPushButton("Сбросить", this);
-    resetButton->setStyleSheet("QPushButton { background-color: #3498db; color: white; border: none; border-radius: 5px; font-size: 14px; padding: 8px 20px; }");
+    resetButton->setStyleSheet(
+        "QPushButton {"
+        "  background-color: #3498db;"
+        "  color: #ffffff;"
+        "  border: none;"
+        "  border-radius: 6px;"
+        "  font-size: 14px;"
+        "  font-weight: 500;"
+        "  padding: 8px 24px;"
+        "}"
+        "QPushButton:hover {"
+        "  background-color: #2980b9;"
+        "}"
+        "QPushButton:pressed {"
+        "  background-color: #21618c;"
+        "}");
+    resetButton->setCursor(Qt::PointingHandCursor);
+    connect(resetButton, &QPushButton::clicked, this, []() { Activity::handleStatusBarReset(); });
     statusLayout->addWidget(resetButton);
 }
 

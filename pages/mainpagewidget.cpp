@@ -2,6 +2,8 @@
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/textbuttonwidget.h"
 #include "widgets/selector.hpp"
+#include "activity.h"
+#include "values.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -82,10 +84,10 @@ public:
         IconButtonWidget *left  = new IconButtonWidget("left_arrow", this, "#b8ecd0");
         IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#b8ecd0");
         
-        up->setOnClick([]() { /* TODO: handle up */ });
-        down->setOnClick([]() { /* TODO: handle down */ });
-        left->setOnClick([]() { /* TODO: handle left */ });
-        right->setOnClick([]() { /* TODO: handle right */ });
+        up->setOnClick([]() { Activity::handleXYUp(); });
+        down->setOnClick([]() { Activity::handleXYDown(); });
+        left->setOnClick([]() { Activity::handleXYLeft(); });
+        right->setOnClick([]() { Activity::handleXYRight(); });
 
         buttonsGrid->addWidget(up,    0, 1);
         buttonsGrid->addWidget(left,  1, 0);
@@ -115,6 +117,7 @@ public:
         
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
+        Values::registerXYOffsetX(value1Label);
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -137,6 +140,7 @@ public:
         
         QLabel *value2Label = makeLabel("0.0 MM", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
+        Values::registerXYOffsetY(value2Label);
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -178,7 +182,7 @@ public:
         buttonsLayout->setAlignment(Qt::AlignCenter);
 
         IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#cfd2dc");
-        up->setOnClick([]() { /* TODO: handle coil up */ });
+        up->setOnClick([]() { Activity::handleCoilUp(); });
         buttonsLayout->addWidget(up, 0, Qt::AlignHCenter);
 
         QLabel *desc0Label = makeLabel("Смещение витка", 14, true);
@@ -186,7 +190,7 @@ public:
         buttonsLayout->addWidget(desc0Label);
 
         IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#cfd2dc");
-        down->setOnClick([]() { /* TODO: handle coil down */ });
+        down->setOnClick([]() { Activity::handleCoilDown(); });
         buttonsLayout->addWidget(down, 0, Qt::AlignHCenter);
 
         h->addLayout(buttonsLayout);
@@ -203,6 +207,7 @@ public:
         
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
+        Values::registerCoilOffset(value1Label);
         param1Layout->addWidget(value1Label);
 
         QFrame *separator = new QFrame(this);
@@ -227,6 +232,7 @@ public:
         
         QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
+        Values::registerCoilOscillations(value2Label);
         param2Layout->addWidget(value2Label);
 
         QFrame *separator1 = new QFrame(this);
@@ -259,7 +265,7 @@ public:
 
         TextButtonWidget *start = new TextButtonWidget("Запуск колебаний", "#2d3436", "#ffffff", 12, this);
         start->setMinimumHeight(38);
-        start->setOnClick([]() { /* TODO: handle start oscillations */ });
+        start->setOnClick([]() { Activity::handleStartOscillations(); });
         v->addWidget(start);
     }
 };
@@ -286,14 +292,14 @@ public:
         arrows->setSpacing(8);
         IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
         IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
-        left->setOnClick([]() { /* TODO: handle upper spindle left */ });
-        right->setOnClick([]() { /* TODO: handle upper spindle right */ });
+        left->setOnClick([]() { Activity::handleUpperSpindleLeft(); });
+        right->setOnClick([]() { Activity::handleUpperSpindleRight(); });
         arrows->addWidget(left);
         arrows->addWidget(right);
 
         TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
         speed_btn->setMinimumHeight(38);
-        speed_btn->setOnClick([]() { /* TODO: handle upper spindle speed */ });
+        speed_btn->setOnClick([]() { Activity::handleUpperSpindleSpeed(); });
 
         // 
         QVBoxLayout *btn_container = new QVBoxLayout();
@@ -305,8 +311,8 @@ public:
         arrows2->setSpacing(8);
         IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
-        up->setOnClick([]() { /* TODO: handle upper spindle up */ });
-        down->setOnClick([]() { /* TODO: handle upper spindle down */ });
+        up->setOnClick([]() { Activity::handleUpperSpindleUp(); });
+        down->setOnClick([]() { Activity::handleUpperSpindleDown(); });
         arrows2->addWidget(up);
         arrows2->addWidget(down);
 
@@ -315,8 +321,8 @@ public:
         arrows3->setSpacing(8);
         IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
-        upup->setOnClick([]() { /* TODO: handle upper spindle upup */ });
-        downdown->setOnClick([]() { /* TODO: handle upper spindle downdown */ });
+        upup->setOnClick([]() { Activity::handleUpperSpindleUpUp(); });
+        downdown->setOnClick([]() { Activity::handleUpperSpindleDownDown(); });
         arrows3->addWidget(upup);
         arrows3->addWidget(downdown);
 
@@ -331,13 +337,8 @@ public:
         start_stop_btn->setMinimumHeight(38);
         start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
         start_stop_btn->setOnClick([start_stop_btn]() {
-            // Обработка нажатия на кнопку СТАРТ/СТОП верхнего шпинделя
             bool isStart = start_stop_btn->isStartState();
-            if (isStart) {
-                // TODO: обработать состояние СТАРТ верхнего шпинделя
-            } else {
-                // TODO: обработать состояние СТОП верхнего шпинделя
-            }
+            Activity::handleUpperSpindleStartStop(isStart);
         });
 
         QVBoxLayout *btn_container3 = new QVBoxLayout();
@@ -449,14 +450,14 @@ public:
         arrows->setSpacing(8);
         IconButtonWidget *left = new IconButtonWidget("left_arrow", this, "#ffffff");
         IconButtonWidget *right = new IconButtonWidget("right_arrow", this, "#ffffff");
-        left->setOnClick([]() { /* TODO: handle lower spindle left */ });
-        right->setOnClick([]() { /* TODO: handle lower spindle right */ });
+        left->setOnClick([]() { Activity::handleLowerSpindleLeft(); });
+        right->setOnClick([]() { Activity::handleLowerSpindleRight(); });
         arrows->addWidget(left);
         arrows->addWidget(right);
 
         TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
         speed_btn->setMinimumHeight(38);
-        speed_btn->setOnClick([]() { /* TODO: handle lower spindle speed */ });
+        speed_btn->setOnClick([]() { Activity::handleLowerSpindleSpeed(); });
 
         // 
         QVBoxLayout *btn_container = new QVBoxLayout();
@@ -468,8 +469,8 @@ public:
         arrows2->setSpacing(8);
         IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#ffffff");
-        up->setOnClick([]() { /* TODO: handle lower spindle up */ });
-        down->setOnClick([]() { /* TODO: handle lower spindle down */ });
+        up->setOnClick([]() { Activity::handleLowerSpindleUp(); });
+        down->setOnClick([]() { Activity::handleLowerSpindleDown(); });
         arrows2->addWidget(up);
         arrows2->addWidget(down);
 
@@ -478,8 +479,8 @@ public:
         arrows3->setSpacing(8);
         IconButtonWidget *upup = new IconButtonWidget("up_arrow", this, "#ffffff");
         IconButtonWidget *downdown = new IconButtonWidget("down_arrow", this, "#ffffff");
-        upup->setOnClick([]() { /* TODO: handle lower spindle upup */ });
-        downdown->setOnClick([]() { /* TODO: handle lower spindle downdown */ });
+        upup->setOnClick([]() { Activity::handleLowerSpindleUpUp(); });
+        downdown->setOnClick([]() { Activity::handleLowerSpindleDownDown(); });
         arrows3->addWidget(upup);
         arrows3->addWidget(downdown);
 
@@ -494,13 +495,8 @@ public:
         start_stop_btn->setMinimumHeight(38);
         start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
         start_stop_btn->setOnClick([start_stop_btn]() {
-            // Обработка нажатия на кнопку СТАРТ/СТОП нижнего шпинделя
             bool isStart = start_stop_btn->isStartState();
-            if (isStart) {
-                // TODO: обработать состояние СТАРТ нижнего шпинделя
-            } else {
-                // TODO: обработать состояние СТОП нижнего шпинделя
-            }
+            Activity::handleLowerSpindleStartStop(isStart);
         });
 
         QVBoxLayout *btn_container3 = new QVBoxLayout();
@@ -516,17 +512,17 @@ public:
 
         TextButtonWidget *holdBtn = new TextButtonWidget("Удерживание", "#808080", "#ffffff", 12, this);
         holdBtn->setMinimumHeight(38);
-        holdBtn->setOnClick([]() { /* TODO: handle lower spindle hold */ });
+        holdBtn->setOnClick([]() { Activity::handleLowerSpindleHold(); });
         middleButtonsLayout->addWidget(holdBtn);
 
         TextButtonWidget *oscillateBtn = new TextButtonWidget("Осциллировать", "#2d3436", "#ffffff", 12, this);
         oscillateBtn->setMinimumHeight(38);
-        oscillateBtn->setOnClick([]() { /* TODO: handle lower spindle oscillate */ });
+        oscillateBtn->setOnClick([]() { Activity::handleLowerSpindleOscillate(); });
         middleButtonsLayout->addWidget(oscillateBtn);
 
         TextButtonWidget *autotBtn = new TextButtonWidget("Автотяга", "#2d3436", "#ffffff", 12, this);
         autotBtn->setMinimumHeight(38);
-        autotBtn->setOnClick([]() { /* TODO: handle lower spindle autot */ });
+        autotBtn->setOnClick([]() { Activity::handleLowerSpindleAutot(); });
         middleButtonsLayout->addWidget(autotBtn);
 
         h->addLayout(middleButtonsLayout);
@@ -640,8 +636,7 @@ public:
             selector *toggle = new selector(this);
             toggle->set(false, false);  // Начальное состояние: выключено
             toggle->setOnStateChanged([](int state) {
-                // state: 0 = Выкл, 1 = Вкл
-                // TODO: обработать изменение состояния подогрева
+                Activity::handleHeatingStateChanged(state);
             });
             v->addWidget(toggle, 0, Qt::AlignHCenter);
         }
@@ -652,7 +647,9 @@ public:
         {
             QVBoxLayout *v = new QVBoxLayout(grid);
             v->setContentsMargins(12, 12, 12, 12);
-            v->addWidget(makeLabel("0.00 AMP", 12, true), 0, Qt::AlignHCenter);
+            QLabel *gridLabel = makeLabel("0.00 AMP", 12, true);
+            Values::registerGridAmp(gridLabel);
+            v->addWidget(gridLabel, 0, Qt::AlignHCenter);
 
             QFrame *separator3 = new QFrame(this);
             separator3->setFrameShape(QFrame::HLine);
@@ -670,7 +667,15 @@ public:
             CardFrame *c = new CardFrame("#e6dbff");
             QVBoxLayout *v = new QVBoxLayout(c);
             v->setContentsMargins(10, 8, 10, 8);
-            v->addWidget(makeLabel("0.0 %", 12, true), 0, Qt::AlignHCenter);
+            QLabel *percentLabel = makeLabel("0.0 %", 12, true);
+            if (name == "P") {
+                Values::registerPValue(percentLabel);
+            } else if (name == "I") {
+                Values::registerIValue(percentLabel);
+            } else if (name == "U") {
+                Values::registerUValue(percentLabel);
+            }
+            v->addWidget(percentLabel, 0, Qt::AlignHCenter);
             
             QFrame *separator4 = new QFrame(this);
             separator4->setFrameShape(QFrame::HLine);
@@ -686,6 +691,89 @@ public:
         col->addWidget(makeValueCard("P"));
         col->addWidget(makeValueCard("I"));
         col->addWidget(makeValueCard("U"));
+
+
+        // Блок "Генератор"
+        CardFrame *generator = new CardFrame("#f5f0d8");
+        {
+            QVBoxLayout *v = new QVBoxLayout(generator);
+            v->setContentsMargins(16, 16, 16, 16);
+            v->setSpacing(8);
+
+            // Кнопка "Сброс" вверху
+            TextButtonWidget *resetBtn = new TextButtonWidget("Сброс", "#2d3436", "#ffffff", 12, generator);
+            resetBtn->setMinimumHeight(38);
+            resetBtn->setOnClick([]() {
+                Activity::handleGeneratorReset();
+            });
+            v->addWidget(resetBtn);
+
+            // Процентное отображение "0.0 %"
+            QLabel *percentLabel = makeLabel("0.0 %", 18, true);
+            percentLabel->setAlignment(Qt::AlignCenter);
+            Values::registerGeneratorPercent(percentLabel);
+            v->addWidget(percentLabel);
+
+            // Разделительная линия
+            QFrame *separator = new QFrame(generator);
+            separator->setFrameShape(QFrame::HLine);
+            separator->setFrameShadow(QFrame::Sunken);
+            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator->setFixedHeight(2);
+            v->addWidget(separator);
+
+            // Текст "Генератор"
+            QLabel *generatorLabel = makeLabel("Генератор", 12, false);
+            generatorLabel->setAlignment(Qt::AlignCenter);
+            v->addWidget(generatorLabel);
+
+            // Selector (переключатель вкл/выкл) внизу слева
+            QHBoxLayout *selectorLayout = new QHBoxLayout();
+            selectorLayout->setContentsMargins(0, 0, 0, 0);
+            selector *toggle = new selector(generator);
+            toggle->set(false, false);  // Начальное состояние: выключено
+            toggle->setOnStateChanged([](int state) {
+                Activity::handleGeneratorStateChanged(state);
+            });
+            selectorLayout->addWidget(toggle, 0, Qt::AlignLeft);
+            selectorLayout->addStretch();  // Заполнитель справа
+            v->addLayout(selectorLayout);
+        }
+        col->addWidget(generator);
+
+        // Блок "Секундомер"
+        CardFrame *stopwatch = new CardFrame("#A4E3DB");
+        {
+            QVBoxLayout *v = new QVBoxLayout(stopwatch);
+            v->setContentsMargins(16, 16, 16, 16);
+            v->setSpacing(8);
+
+            // Процентное отображение "0.0 %"
+            QLabel *percentLabel = makeLabel("0.0 %", 18, true);
+            percentLabel->setAlignment(Qt::AlignCenter);
+            v->addWidget(percentLabel);
+
+            // Разделительная линия
+            QFrame *separator = new QFrame(stopwatch);
+            separator->setFrameShape(QFrame::HLine);
+            separator->setFrameShadow(QFrame::Sunken);
+            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator->setFixedHeight(2);
+            v->addWidget(separator);
+
+            // Текст "Генератор"
+            QLabel *stopwatchLabel = makeLabel("Генератор", 12, false);
+            stopwatchLabel->setAlignment(Qt::AlignCenter);
+            v->addWidget(stopwatchLabel);
+
+            TextButtonWidget *resetBtn = new TextButtonWidget("Пуск", "#2d3436", "#ffffff", 12, stopwatch);
+            resetBtn->setMinimumHeight(38);
+            resetBtn->setOnClick([]() {
+                Activity::handleGeneratorReset();
+            });
+            v->addWidget(resetBtn);
+        }
+        col->addWidget(stopwatch);
     }
 };
 
@@ -707,8 +795,8 @@ public:
             reflectorLayout->setSpacing(10);  // Минимальное расстояние между элементами
             IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#f0f0f0");
             IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#f0f0f0");
-            up->setOnClick([]() { /* TODO: handle reflector up */ });
-            down->setOnClick([]() { /* TODO: handle reflector down */ });
+            up->setOnClick([]() { Activity::handleReflectorUp(); });
+            down->setOnClick([]() { Activity::handleReflectorDown(); });
             reflectorLayout->addWidget(up);
             reflectorLayout->addWidget(down);
             reflectorLayout->addWidget(makeLabel("Рефлектор", 15, true));
@@ -716,10 +804,16 @@ public:
         }
         h->addWidget(reflector, 0);
 
-        // Освещение / Автолевигирование и т.п.
+
+        QVBoxLayout *vert = new QVBoxLayout();
+
+        QVBoxLayout *buttonsCol = new QVBoxLayout();
+        buttonsCol->setSpacing(8);
+        buttonsCol->setContentsMargins(0, 0, 0, 0);
+
         CardFrame *lighting = new CardFrame("#f5f0d8");
         {
-            QVBoxLayout *v = new QVBoxLayout(lighting);
+            QHBoxLayout *v = new QHBoxLayout(lighting);
             v->setContentsMargins(16, 16, 16, 16);
             v->setSpacing(8);
 
@@ -744,7 +838,7 @@ public:
                     allBtn->setBackgroundColor("#808080");  // Серый
                     halfBtn->setBackgroundColor("#2d3436");  // Черный
                 }
-                // TODO: обработать изменение режима освещения
+                Activity::handleLightingMode(mode);
             };
             
             // Начальное состояние: "Всё" выбрано
@@ -766,24 +860,20 @@ public:
             modeRow->addWidget(halfBtn);
             v->addLayout(modeRow);
         }
-        h->addWidget(lighting, 0);
+        buttonsCol->addWidget(lighting, 0);
 
         // Кнопки ниже блока освещения (в столбец)
-        QVBoxLayout *buttonsCol = new QVBoxLayout();
-        buttonsCol->setSpacing(8);
-        buttonsCol->setContentsMargins(0, 0, 0, 0);
-
         TextButtonWidget *nitrogenBtn = new TextButtonWidget("Открыть азот. кран", "#2d3436", "#ffffff", 12, this);
         nitrogenBtn->setMinimumHeight(38);
         nitrogenBtn->setOnClick([]() {
-            // TODO: обработать открытие азотного крана
+            Activity::handleNitrogenValveOpen();
         });
         buttonsCol->addWidget(nitrogenBtn);
 
         TextButtonWidget *autodopeBtn = new TextButtonWidget("Автолегировать", "#2d3436", "#ffffff", 12, this);
         autodopeBtn->setMinimumHeight(38);
         autodopeBtn->setOnClick([]() {
-            // TODO: обработать автолегирование
+            Activity::handleAutodope();
         });
         buttonsCol->addWidget(autodopeBtn);
 

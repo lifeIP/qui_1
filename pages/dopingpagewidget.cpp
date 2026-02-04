@@ -1,4 +1,5 @@
 #include "pages/dopingpagewidget.h"
+#include "activity.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -56,7 +57,7 @@ void DopingPageWidget::createDopingSection(QVBoxLayout *mainLayout)
     QVBoxLayout *argonLayout = qobject_cast<QVBoxLayout*>(argonCard->layout());
     argonStopButton = new QPushButton("СТОП");
     argonStopButton->setStyleSheet("QPushButton { background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }");
-    connect(argonStopButton, &QPushButton::clicked, this, &DopingPageWidget::onArgonStop);
+    connect(argonStopButton, &QPushButton::clicked, this, []() { Activity::handleArgonStop(); });
     argonLayout->addWidget(argonStopButton);
     gridLayout->addWidget(argonCard, 0, 0);
 
@@ -68,10 +69,10 @@ void DopingPageWidget::createDopingSection(QVBoxLayout *mainLayout)
     gasButtonsLayout->setSpacing(10);
     phosphorusButton = new QPushButton("Фосфор");
     phosphorusButton->setStyleSheet("QPushButton { background-color: #95a5a6; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-    connect(phosphorusButton, &QPushButton::clicked, this, &DopingPageWidget::onPhosphorusSelect);
+    connect(phosphorusButton, &QPushButton::clicked, this, []() { Activity::handlePhosphorusSelect(); });
     diboraneButton = new QPushButton("Диборан");
     diboraneButton->setStyleSheet("QPushButton { background-color: #34495e; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-    connect(diboraneButton, &QPushButton::clicked, this, &DopingPageWidget::onDiboraneSelect);
+    connect(diboraneButton, &QPushButton::clicked, this, []() { Activity::handleDiboraneSelect(); });
     gasButtonsLayout->addWidget(phosphorusButton);
     gasButtonsLayout->addWidget(diboraneButton);
     dopingGasLayout->addLayout(gasButtonsLayout);
@@ -83,7 +84,7 @@ void DopingPageWidget::createDopingSection(QVBoxLayout *mainLayout)
     QVBoxLayout *injectionLayout = qobject_cast<QVBoxLayout*>(injectionCard->layout());
     injectionStartButton = new QPushButton("ПУСК");
     injectionStartButton->setStyleSheet("QPushButton { background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }");
-    connect(injectionStartButton, &QPushButton::clicked, this, &DopingPageWidget::onInjectionStart);
+    connect(injectionStartButton, &QPushButton::clicked, this, []() { Activity::handleInjectionStart(); });
     injectionLayout->addWidget(injectionStartButton);
     gridLayout->addWidget(injectionCard, 1, 0);
 
@@ -123,31 +124,4 @@ void DopingPageWidget::createFlowPressureSection(QVBoxLayout *mainLayout)
     mainLayout->addWidget(flowFrame);
 }
 
-void DopingPageWidget::onArgonStop()
-{
-    argonStopButton->setText(argonStopButton->text() == "СТОП" ? "ПУСК" : "СТОП");
-    argonStopButton->setStyleSheet(argonStopButton->text() == "СТОП"
-        ? "QPushButton { background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }"
-        : "QPushButton { background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }");
-}
-
-void DopingPageWidget::onInjectionStart()
-{
-    injectionStartButton->setText(injectionStartButton->text() == "ПУСК" ? "СТОП" : "ПУСК");
-    injectionStartButton->setStyleSheet(injectionStartButton->text() == "ПУСК"
-        ? "QPushButton { background-color: #27ae60; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }"
-        : "QPushButton { background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; padding: 15px; }");
-}
-
-void DopingPageWidget::onPhosphorusSelect()
-{
-    phosphorusButton->setStyleSheet("QPushButton { background-color: #34495e; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-    diboraneButton->setStyleSheet("QPushButton { background-color: #95a5a6; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-}
-
-void DopingPageWidget::onDiboraneSelect()
-{
-    diboraneButton->setStyleSheet("QPushButton { background-color: #34495e; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-    phosphorusButton->setStyleSheet("QPushButton { background-color: #95a5a6; color: white; border: none; border-radius: 8px; font-size: 14px; padding: 10px; }");
-}
 

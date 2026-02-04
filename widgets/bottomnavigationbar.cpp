@@ -83,33 +83,34 @@ BottomNavigationBar::BottomNavigationBar(QWidget *parent)
         "  background-color: #303030;"
         "  border: 2px solid #505050;"
         "  border-radius: 18px;"
-        "  padding: 10px 20px;"
         "}");
     dateTimeFrame->setMinimumSize(110, 70);
     dateTimeFrame->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     
     QVBoxLayout *dateTimeLayout = new QVBoxLayout(dateTimeFrame);
-    dateTimeLayout->setSpacing(4);
-    dateTimeLayout->setContentsMargins(0, 0, 0, 0);
+    dateTimeLayout->setSpacing(2);
+    dateTimeLayout->setContentsMargins(15, 12, 15, 12);
 
     bottomTimeLabel = new QLabel("00:00", dateTimeFrame);
     bottomTimeLabel->setStyleSheet(
         "QLabel {"
         "  color: #ffffff;"
-        "  font-size: 20px;"
+        "  font-size: 22px;"
         "  font-weight: bold;"
         "  background: transparent;"
+        "  padding: 0px;"
         "}");
-    bottomTimeLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    bottomTimeLabel->setAlignment(Qt::AlignCenter);
 
     bottomDateLabel = new QLabel("01/01/25", dateTimeFrame);
     bottomDateLabel->setStyleSheet(
         "QLabel {"
         "  color: #bdc3c7;"
-        "  font-size: 12px;"
+        "  font-size: 13px;"
         "  background: transparent;"
+        "  padding: 0px;"
         "}");
-    bottomDateLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    bottomDateLabel->setAlignment(Qt::AlignCenter);
 
     dateTimeLayout->addWidget(bottomTimeLabel);
     dateTimeLayout->addWidget(bottomDateLabel);

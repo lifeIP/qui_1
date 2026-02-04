@@ -4,7 +4,12 @@ CONFIG   += c++11
 TEMPLATE = app
 TARGET   = interface
 
+# Открывать консоль для отладки (вывод qDebug и других сообщений)
+CONFIG += console
+
 SOURCES += main.cpp \
+           activity.cpp \
+           values.cpp \
            widgets/statusbarwidget.cpp \
            widgets/bottomnavigationbar.cpp \
            widgets/iconbuttonwidget.cpp \
@@ -14,7 +19,9 @@ SOURCES += main.cpp \
            pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp
 
-HEADERS += widgets/statusbarwidget.h \
+HEADERS += activity.h \
+           values.h \
+           widgets/statusbarwidget.h \
            widgets/bottomnavigationbar.h \
            widgets/iconbuttonwidget.h \
            widgets/textbuttonwidget.h \
