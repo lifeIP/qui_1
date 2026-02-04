@@ -25,6 +25,7 @@ SOURCES += main.cpp \
            widgets/selector.cpp \
            widgets/doorselector.cpp \
            widgets/selector-button.cpp \
+           widgets/parametereditdialog.cpp \
            pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp \
            pages/finalpagewidget.cpp \
@@ -40,6 +41,7 @@ HEADERS += activity.h \
            widgets/selector.hpp \
            widgets/doorselector.hpp \
            widgets/selector-button.hpp \
+           widgets/parametereditdialog.h \
            pages/dopingpagewidget.h \
            pages/mainpagewidget.h \
            pages/finalpagewidget.h \

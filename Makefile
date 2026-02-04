@@ -62,6 +62,7 @@ SOURCES       = main.cpp \
 		widgets/selector.cpp \
 		widgets/doorselector.cpp \
 		widgets/selector-button.cpp \
+		widgets/parametereditdialog.cpp \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
@@ -88,6 +89,7 @@ OBJECTS       = build/obj/main.o \
 		build/obj/selector.o \
 		build/obj/doorselector.o \
 		build/obj/selector-button.o \
+		build/obj/parametereditdialog.o \
 		build/obj/dopingpagewidget.o \
 		build/obj/mainpagewidget.o \
 		build/obj/finalpagewidget.o \
@@ -191,6 +193,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		widgets/selector.hpp \
 		widgets/doorselector.hpp \
 		widgets/selector-button.hpp \
+		widgets/parametereditdialog.h \
 		pages/dopingpagewidget.h \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
@@ -205,6 +208,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		widgets/selector.cpp \
 		widgets/doorselector.cpp \
 		widgets/selector-button.cpp \
+		widgets/parametereditdialog.cpp \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
@@ -394,8 +398,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents activity.h values.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/vacuumpagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/vacuumpagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents activity.h values.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp widgets/parametereditdialog.h pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/vacuumpagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp widgets/parametereditdialog.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/vacuumpagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -557,6 +561,9 @@ build/obj/doorselector.o: widgets/doorselector.cpp widgets/doorselector.hpp
 build/obj/selector-button.o: widgets/selector-button.cpp widgets/selector-button.hpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/selector-button.o widgets/selector-button.cpp
 
+build/obj/parametereditdialog.o: widgets/parametereditdialog.cpp widgets/parametereditdialog.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/parametereditdialog.o widgets/parametereditdialog.cpp
+
 build/obj/dopingpagewidget.o: pages/dopingpagewidget.cpp pages/dopingpagewidget.h \
 		activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/dopingpagewidget.o pages/dopingpagewidget.cpp
@@ -572,6 +579,7 @@ build/obj/mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h \
 build/obj/finalpagewidget.o: pages/finalpagewidget.cpp pages/finalpagewidget.h \
 		widgets/textbuttonwidget.h \
 		widgets/iconbuttonwidget.h \
+		widgets/parametereditdialog.h \
 		values.h \
 		activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/finalpagewidget.o pages/finalpagewidget.cpp
