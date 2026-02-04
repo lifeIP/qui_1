@@ -14,6 +14,8 @@
 #include <QPushButton>
 #include <QGraphicsDropShadowEffect>
 #include <QMouseEvent>
+#include <QTimer>
+#include <memory>
 
 namespace {
 
@@ -887,10 +889,10 @@ public:
             v->setContentsMargins(16, 16, 16, 16);
             v->setSpacing(8);
 
-            // Процентное отображение "0.0 %"
-            QLabel *percentLabel = makeLabel("0.0 %", 18, true);
-            percentLabel->setAlignment(Qt::AlignCenter);
-            v->addWidget(percentLabel);
+            // Отображение времени секундомера
+            QLabel *timeLabel = makeLabel("00:00", 18, true);
+            timeLabel->setAlignment(Qt::AlignCenter);
+            v->addWidget(timeLabel);
 
             // Разделительная линия
             QFrame *separator = new QFrame(stopwatch);
@@ -900,17 +902,50 @@ public:
             separator->setFixedHeight(2);
             v->addWidget(separator);
 
-            // Текст "Генератор"
-            QLabel *stopwatchLabel = makeLabel("Генератор", 12, false);
+            // Текст "Секундомер"
+            QLabel *stopwatchLabel = makeLabel(QString::fromUtf8("Секундомер"), 12, false);
             stopwatchLabel->setAlignment(Qt::AlignCenter);
             v->addWidget(stopwatchLabel);
 
-            TextButtonWidget *resetBtn = new TextButtonWidget("Пуск", "#2d3436", "#ffffff", 12, stopwatch);
-            resetBtn->setMinimumHeight(38);
-            resetBtn->setOnClick([]() {
-                Activity::handleGeneratorReset();
+            TextButtonWidget *button = new TextButtonWidget("Пуск", "#2d3436", "#ffffff", 12, stopwatch);
+            button->setMinimumHeight(38);
+            v->addWidget(button);
+
+            // Логика секундомера
+            QTimer *timer = new QTimer(stopwatch);
+            timer->setInterval(1000);
+
+            struct StopwatchState { bool running = false; int elapsed = 0; };
+            auto state = std::make_shared<StopwatchState>();
+
+            QObject::connect(timer, &QTimer::timeout, stopwatch, [timeLabel, state]() {
+                ++state->elapsed;
+                int minutes = state->elapsed / 60;
+                int seconds = state->elapsed % 60;
+                timeLabel->setText(
+                    QString("%1:%2")
+                        .arg(minutes, 2, 10, QChar('0'))
+                        .arg(seconds, 2, 10, QChar('0')));
             });
-            v->addWidget(resetBtn);
+
+            QObject::connect(button, &QPushButton::clicked, stopwatch, [button, timer, timeLabel, state]() {
+                if (!state->running) {
+                    // Старт
+                    state->running = true;
+                    state->elapsed = 0;
+                    timer->start();
+                    button->setText(QString::fromUtf8("Стоп"));
+                    button->setBackgroundColor("#e74c3c");
+                } else {
+                    // Стоп и сброс
+                    state->running = false;
+                    timer->stop();
+                    state->elapsed = 0;
+                    timeLabel->setText("00:00");
+                    button->setText(QString::fromUtf8("Пуск"));
+                    button->setBackgroundColor("#2d3436");
+                }
+            });
         }
         col->addWidget(stopwatch);
     }
