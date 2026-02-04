@@ -50,7 +50,7 @@ BottomNavigationBar::BottomNavigationBar(QWidget *parent)
             "  background-color: #ffffff;"
             "  border-color: #ffffff;"
             "}");
-        btn->setMinimumSize(110, 70);
+        btn->setMinimumSize(90, 70);
         btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         connect(btn, &QPushButton::clicked, this, [this, pageIndex]() {
             emit pageSelected(pageIndex);
