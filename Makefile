@@ -64,7 +64,8 @@ SOURCES       = main.cpp \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
-		pages/autotpagewidget.cpp build/moc/moc_statusbarwidget.cpp \
+		pages/autotpagewidget.cpp \
+		pages/vacuumpagewidget.cpp build/moc/moc_statusbarwidget.cpp \
 		build/moc/moc_bottomnavigationbar.cpp \
 		build/moc/moc_iconbuttonwidget.cpp \
 		build/moc/moc_textbuttonwidget.cpp \
@@ -73,7 +74,8 @@ SOURCES       = main.cpp \
 		build/moc/moc_dopingpagewidget.cpp \
 		build/moc/moc_mainpagewidget.cpp \
 		build/moc/moc_finalpagewidget.cpp \
-		build/moc/moc_autotpagewidget.cpp
+		build/moc/moc_autotpagewidget.cpp \
+		build/moc/moc_vacuumpagewidget.cpp
 OBJECTS       = build/obj/main.o \
 		build/obj/activity.o \
 		build/obj/values.o \
@@ -87,6 +89,7 @@ OBJECTS       = build/obj/main.o \
 		build/obj/mainpagewidget.o \
 		build/obj/finalpagewidget.o \
 		build/obj/autotpagewidget.o \
+		build/obj/vacuumpagewidget.o \
 		build/obj/moc_statusbarwidget.o \
 		build/obj/moc_bottomnavigationbar.o \
 		build/obj/moc_iconbuttonwidget.o \
@@ -96,7 +99,8 @@ OBJECTS       = build/obj/main.o \
 		build/obj/moc_dopingpagewidget.o \
 		build/obj/moc_mainpagewidget.o \
 		build/obj/moc_finalpagewidget.o \
-		build/obj/moc_autotpagewidget.o
+		build/obj/moc_autotpagewidget.o \
+		build/obj/moc_vacuumpagewidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -185,7 +189,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/dopingpagewidget.h \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
-		pages/autotpagewidget.h main.cpp \
+		pages/autotpagewidget.h \
+		pages/vacuumpagewidget.h main.cpp \
 		activity.cpp \
 		values.cpp \
 		widgets/statusbarwidget.cpp \
@@ -197,7 +202,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/dopingpagewidget.cpp \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
-		pages/autotpagewidget.cpp
+		pages/autotpagewidget.cpp \
+		pages/vacuumpagewidget.cpp
 QMAKE_TARGET  = interface
 DESTDIR       = build/
 TARGET        = build/interface
@@ -382,8 +388,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents activity.h values.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents activity.h values.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/selector-button.hpp pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/vacuumpagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/selector-button.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/vacuumpagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -415,9 +421,9 @@ compiler_moc_predefs_clean:
 build/moc/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o build/moc/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp
+compiler_moc_header_make_all: build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp
+	-$(DEL_FILE) build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp
 build/moc/moc_statusbarwidget.cpp: widgets/statusbarwidget.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -468,6 +474,11 @@ build/moc/moc_autotpagewidget.cpp: pages/autotpagewidget.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/autotpagewidget.h -o build/moc/moc_autotpagewidget.cpp
 
+build/moc/moc_vacuumpagewidget.cpp: pages/vacuumpagewidget.h \
+		build/moc/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/vacuumpagewidget.h -o build/moc/moc_vacuumpagewidget.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all: build/moc/main.moc
@@ -480,6 +491,7 @@ build/moc/main.moc: main.cpp \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
 		pages/autotpagewidget.h \
+		pages/vacuumpagewidget.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include main.cpp -o build/moc/main.moc
@@ -502,6 +514,7 @@ build/obj/main.o: main.cpp widgets/statusbarwidget.h \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
 		pages/autotpagewidget.h \
+		pages/vacuumpagewidget.h \
 		build/moc/main.moc
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/main.o main.cpp
 
@@ -552,6 +565,12 @@ build/obj/finalpagewidget.o: pages/finalpagewidget.cpp pages/finalpagewidget.h \
 build/obj/autotpagewidget.o: pages/autotpagewidget.cpp pages/autotpagewidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/autotpagewidget.o pages/autotpagewidget.cpp
 
+build/obj/vacuumpagewidget.o: pages/vacuumpagewidget.cpp pages/vacuumpagewidget.h \
+		widgets/textbuttonwidget.h \
+		widgets/iconbuttonwidget.h \
+		widgets/selector.hpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/vacuumpagewidget.o pages/vacuumpagewidget.cpp
+
 build/obj/moc_statusbarwidget.o: build/moc/moc_statusbarwidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_statusbarwidget.o build/moc/moc_statusbarwidget.cpp
 
@@ -581,6 +600,9 @@ build/obj/moc_finalpagewidget.o: build/moc/moc_finalpagewidget.cpp
 
 build/obj/moc_autotpagewidget.o: build/moc/moc_autotpagewidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_autotpagewidget.o build/moc/moc_autotpagewidget.cpp
+
+build/obj/moc_vacuumpagewidget.o: build/moc/moc_vacuumpagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_vacuumpagewidget.o build/moc/moc_vacuumpagewidget.cpp
 
 ####### Install
 

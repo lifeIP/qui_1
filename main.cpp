@@ -15,6 +15,7 @@
 #include "pages/mainpagewidget.h"
 #include "pages/finalpagewidget.h"
 #include "pages/autotpagewidget.h"
+#include "pages/vacuumpagewidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -57,7 +58,7 @@ public:
         stackedWidget->addWidget(new AutotPageWidget(this));
 
         // Остальные страницы (заглушки)
-        stackedWidget->addWidget(createSimplePage("Вакуум"));
+        stackedWidget->addWidget(new VacuumPageWidget(this));
         stackedWidget->addWidget(createSimplePage("Газ. панель"));
         stackedWidget->addWidget(createSimplePage("Настройки"));
 

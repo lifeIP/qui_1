@@ -27,7 +27,8 @@ SOURCES += main.cpp \
            pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp \
            pages/finalpagewidget.cpp \
-           pages/autotpagewidget.cpp
+           pages/autotpagewidget.cpp \
+           pages/vacuumpagewidget.cpp
 
 HEADERS += activity.h \
            values.h \
@@ -40,4 +41,5 @@ HEADERS += activity.h \
            pages/dopingpagewidget.h \
            pages/mainpagewidget.h \
            pages/finalpagewidget.h \
-           pages/autotpagewidget.h
+           pages/autotpagewidget.h \
+           pages/vacuumpagewidget.h
