@@ -4,6 +4,14 @@ CONFIG   += c++11
 TEMPLATE = app
 TARGET   = interface
 
+# Все артефакты сборки (бинарник, объектные файлы, moc/ui/rcc)
+# будут складываться в подпапку build относitelьно корня проекта
+DESTDIR     = build
+OBJECTS_DIR = build/obj
+MOC_DIR     = build/moc
+RCC_DIR     = build/rcc
+UI_DIR      = build/ui
+
 # Открывать консоль для отладки (вывод qDebug и других сообщений)
 CONFIG += console
 

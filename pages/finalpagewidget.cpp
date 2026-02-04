@@ -15,6 +15,9 @@
 #include <QPushButton>
 #include <QDoubleValidator>
 #include <QMouseEvent>
+#include <QGraphicsDropShadowEffect>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
 
 namespace {
     QLabel* makeLabel(const QString &text, int ptSize = 12, bool bold = false)
@@ -55,121 +58,161 @@ namespace {
         ParameterEditDialog(const QString &title, const QString &description, double currentValue, QWidget *parent = nullptr)
             : QDialog(parent)
         {
-            setWindowTitle(title);
+            // Убираем рамку окна для эффекта всплывающего окна
+            setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
             setModal(true);
-            setMinimumWidth(500);
-            setMinimumHeight(300);
-            setStyleSheet(
-                "QDialog { background-color: #ecf0f1; border-radius: 12px; }"
+            setAttribute(Qt::WA_TranslucentBackground);
+            
+            setMinimumWidth(450);
+            setMinimumHeight(280);
+            setMaximumWidth(500);
+            setMaximumHeight(320);
+            
+            // Основной контейнер с фоном и скругленными углами
+            QWidget *container = new QWidget(this);
+            container->setStyleSheet(
+                "QWidget {"
+                "  background-color: #ffffff;"
+                "  border-radius: 16px;"
+                "}"
             );
-
-            QVBoxLayout *layout = new QVBoxLayout(this);
-            layout->setSpacing(20);
-            layout->setContentsMargins(30, 30, 30, 30);
+            
+            // Добавляем тень для эффекта всплывающего окна
+            QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(container);
+            shadow->setBlurRadius(30);
+            shadow->setXOffset(0);
+            shadow->setYOffset(4);
+            shadow->setColor(QColor(0, 0, 0, 120));
+            container->setGraphicsEffect(shadow);
+            
+            QVBoxLayout *mainLayout = new QVBoxLayout(this);
+            mainLayout->setContentsMargins(0, 0, 0, 0);
+            mainLayout->addWidget(container);
+            
+            QVBoxLayout *contentLayout = new QVBoxLayout(container);
+            contentLayout->setSpacing(20);
+            contentLayout->setContentsMargins(30, 25, 30, 25);
 
             // Заголовок
-            QLabel *titleLabel = new QLabel(title, this);
-            titleLabel->setStyleSheet("QLabel { font-size: 20px; font-weight: bold; color: #2c3e50; }");
+            QLabel *titleLabel = new QLabel(title, container);
+            titleLabel->setStyleSheet("QLabel { font-size: 18px; font-weight: bold; color: #2c3e50; }");
             titleLabel->setAlignment(Qt::AlignCenter);
-            layout->addWidget(titleLabel);
+            contentLayout->addWidget(titleLabel);
 
             // Описание
-            QLabel *descLabel = new QLabel(description, this);
-            descLabel->setStyleSheet("QLabel { font-size: 12px; color: #7f8c8d; }");
+            QLabel *descLabel = new QLabel(description, container);
+            descLabel->setStyleSheet("QLabel { font-size: 11px; color: #7f8c8d; }");
             descLabel->setAlignment(Qt::AlignCenter);
             descLabel->setWordWrap(true);
-            layout->addWidget(descLabel);
+            contentLayout->addWidget(descLabel);
 
             // Горизонтальный layout для поля ввода и кнопок стрелок
             QHBoxLayout *inputLayout = new QHBoxLayout();
             inputLayout->setSpacing(15);
 
             // Кнопка вниз
-            IconButtonWidget *downBtn = new IconButtonWidget("down_arrow", this, "#3498db");
-            downBtn->setFixedSize(60, 60);
+            IconButtonWidget *downBtn = new IconButtonWidget("down_arrow", container, "#3498db");
+            downBtn->setFixedSize(55, 55);
             downBtn->setOnClick([this]() {
                 changeValue(-0.1);
             });
             inputLayout->addWidget(downBtn);
 
             // Поле ввода
-            valueEdit = new QLineEdit(this);
+            valueEdit = new QLineEdit(container);
             valueEdit->setText(QString::number(currentValue, 'f', 1));
             valueEdit->setStyleSheet(
                 "QLineEdit {"
-                "  background-color: #ffffff;"
-                "  border: 2px solid #bdc3c7;"
-                "  border-radius: 8px;"
-                "  padding: 12px;"
-                "  font-size: 24px;"
+                "  background-color: #f8f9fa;"
+                "  border: 2px solid #e1e8ed;"
+                "  border-radius: 10px;"
+                "  padding: 14px;"
+                "  font-size: 22px;"
                 "  color: #2c3e50;"
                 "  text-align: center;"
                 "}"
                 "QLineEdit:focus {"
                 "  border-color: #3498db;"
+                "  background-color: #ffffff;"
                 "}"
             );
             valueEdit->setAlignment(Qt::AlignCenter);
-            QDoubleValidator *validator = new QDoubleValidator(-999999.0, 999999.0, 2, this);
+            QDoubleValidator *validator = new QDoubleValidator(-999999.0, 999999.0, 2, container);
             validator->setNotation(QDoubleValidator::StandardNotation);
             valueEdit->setValidator(validator);
             valueEdit->selectAll();
             inputLayout->addWidget(valueEdit, 1);
 
             // Кнопка вверх
-            IconButtonWidget *upBtn = new IconButtonWidget("up_arrow", this, "#3498db");
-            upBtn->setFixedSize(60, 60);
+            IconButtonWidget *upBtn = new IconButtonWidget("up_arrow", container, "#3498db");
+            upBtn->setFixedSize(55, 55);
             upBtn->setOnClick([this]() {
                 changeValue(0.1);
             });
             inputLayout->addWidget(upBtn);
 
-            layout->addLayout(inputLayout);
+            contentLayout->addLayout(inputLayout);
 
             // Кнопки
             QHBoxLayout *buttonLayout = new QHBoxLayout();
-            buttonLayout->setSpacing(15);
+            buttonLayout->setSpacing(12);
 
-            QPushButton *cancelBtn = new QPushButton("Отмена", this);
+            QPushButton *cancelBtn = new QPushButton("Отмена", container);
             cancelBtn->setStyleSheet(
                 "QPushButton {"
-                "  background-color: #95a5a6;"
-                "  color: #ffffff;"
+                "  background-color: #e1e8ed;"
+                "  color: #2c3e50;"
                 "  border: none;"
-                "  border-radius: 8px;"
-                "  padding: 12px 24px;"
+                "  border-radius: 10px;"
+                "  padding: 10px 20px;"
                 "  font-size: 14px;"
-                "  font-weight: bold;"
+                "  font-weight: 500;"
                 "}"
                 "QPushButton:hover {"
-                "  background-color: #7f8c8d;"
+                "  background-color: #d1d9e0;"
+                "}"
+                "QPushButton:pressed {"
+                "  background-color: #c1c9d0;"
                 "}"
             );
             connect(cancelBtn, &QPushButton::clicked, this, &QDialog::reject);
 
-            QPushButton *okBtn = new QPushButton("Применить", this);
+            QPushButton *okBtn = new QPushButton("Применить", container);
             okBtn->setStyleSheet(
                 "QPushButton {"
                 "  background-color: #27ae60;"
                 "  color: #ffffff;"
                 "  border: none;"
-                "  border-radius: 8px;"
-                "  padding: 12px 24px;"
+                "  border-radius: 10px;"
+                "  padding: 10px 20px;"
                 "  font-size: 14px;"
-                "  font-weight: bold;"
+                "  font-weight: 500;"
                 "}"
                 "QPushButton:hover {"
                 "  background-color: #229954;"
+                "}"
+                "QPushButton:pressed {"
+                "  background-color: #1e8449;"
                 "}"
             );
             connect(okBtn, &QPushButton::clicked, this, &QDialog::accept);
 
             buttonLayout->addWidget(cancelBtn);
             buttonLayout->addWidget(okBtn);
-            layout->addLayout(buttonLayout);
+            contentLayout->addLayout(buttonLayout);
 
             // Устанавливаем фокус на поле ввода
             valueEdit->setFocus();
+        }
+        
+        void showEvent(QShowEvent *event) override
+        {
+            QDialog::showEvent(event);
+            // Центрируем диалог на экране
+            if (parentWidget()) {
+                QPoint parentCenter = parentWidget()->mapToGlobal(parentWidget()->rect().center());
+                move(parentCenter.x() - width() / 2, parentCenter.y() - height() / 2);
+            }
         }
 
         double getValue() const
@@ -356,9 +399,19 @@ bool FinalPageWidget::eventFilter(QObject *obj, QEvent *event)
 
 void FinalPageWidget::showEditDialog(QFrame *card, const QString &title, const QString &description, const QString &parameterType, double currentValue)
 {
-    ParameterEditDialog dialog(title, description, currentValue, this);
+    // Создаем затемнение фона
+    QWidget *overlay = new QWidget(this->window());
+    overlay->setStyleSheet("QWidget { background-color: rgba(0, 0, 0, 150); }");
+    overlay->setGeometry(this->window()->geometry());
+    overlay->show();
+    overlay->raise();
     
-    if (dialog.exec() == QDialog::Accepted) {
+    ParameterEditDialog dialog(title, description, currentValue, overlay);
+    dialog.raise();
+    
+    bool accepted = (dialog.exec() == QDialog::Accepted);
+    
+    if (accepted) {
         double newValue = dialog.getValue();
         
         // Обновляем значение через Values
@@ -383,6 +436,9 @@ void FinalPageWidget::showEditDialog(QFrame *card, const QString &title, const Q
             }
         }
     }
+    
+    // Удаляем затемнение
+    overlay->deleteLater();
 }
 
 QFrame* FinalPageWidget::createParameterCard(const QString &label, const QString &description, QWidget *parent)

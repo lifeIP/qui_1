@@ -23,6 +23,8 @@ public:
     MainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
     {
         setWindowTitle("Панель управления");
+        setMinimumSize(768, 1024);
+        resize(768, 1024);
 
         // Центральный виджет
         QWidget *centralWidget = new QWidget(this);
@@ -135,7 +137,9 @@ protected:
         if (event->key() == Qt::Key_F11) {
             if (isFullScreen()) {
                 showNormal();
+                setFixedSize(768, 1024);
             } else {
+                setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
                 showFullScreen();
             }
             event->accept();
