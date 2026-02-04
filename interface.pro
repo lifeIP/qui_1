@@ -23,6 +23,7 @@ SOURCES += main.cpp \
            widgets/iconbuttonwidget.cpp \
            widgets/textbuttonwidget.cpp \
            widgets/selector.cpp \
+           widgets/doorselector.cpp \
            widgets/selector-button.cpp \
            pages/dopingpagewidget.cpp \
            pages/mainpagewidget.cpp \
@@ -37,6 +38,7 @@ HEADERS += activity.h \
            widgets/iconbuttonwidget.h \
            widgets/textbuttonwidget.h \
            widgets/selector.hpp \
+           widgets/doorselector.hpp \
            widgets/selector-button.hpp \
            pages/dopingpagewidget.h \
            pages/mainpagewidget.h \

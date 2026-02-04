@@ -3,6 +3,7 @@
 #include "widgets/textbuttonwidget.h"
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/selector.hpp"
+#include "widgets/doorselector.hpp"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -53,7 +54,14 @@ VacuumPageWidget::VacuumPageWidget(QWidget *parent)
     root->addWidget(createStatusCard(this));
     root->addWidget(createPumpControlCard(this));
     root->addWidget(createDoorControlCard(this));
-    root->addWidget(createLightingCard(this), 1);
+    
+    // Карточка освещения по центру окна по оси X
+    QHBoxLayout *lightingRow = new QHBoxLayout();
+    lightingRow->setContentsMargins(0, 0, 0, 0);
+    lightingRow->addStretch();
+    lightingRow->addWidget(createLightingCard(this), 0, Qt::AlignCenter);
+    lightingRow->addStretch();
+    root->addLayout(lightingRow, 1);
 }
 
 QFrame* VacuumPageWidget::createStatusCard(QWidget *parent)
@@ -170,17 +178,11 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
         vl->addWidget(lbl, 0, Qt::AlignLeft);
 
         if (hasTwoButtons) {
-            QHBoxLayout *buttons = new QHBoxLayout();
-            buttons->setSpacing(8);
-
-            TextButtonWidget *open = new TextButtonWidget(QString::fromUtf8("Открыть"), "#29AC39", "#ffffff", 12, wrap);
-            TextButtonWidget *close = new TextButtonWidget(QString::fromUtf8("Закрыть"), "#808080", "#ffffff", 12, wrap);
-            open->setMinimumWidth(90);
-            close->setMinimumWidth(90);
-
-            buttons->addWidget(open);
-            buttons->addWidget(close);
-            vl->addLayout(buttons);
+            // doorselector со встроенными подписями "Закр" / "Откр"
+            doorselector *toggle = new doorselector(wrap);
+            toggle->set(false, false);  // 0 — Закр, 1 — Откр
+            toggle->setMinimumWidth(120);
+            vl->addWidget(toggle, 0, Qt::AlignLeft);
         } else {
             TextButtonWidget *btn = new TextButtonWidget(QString::fromUtf8("Дверь открыта"), "#d0d3d4", "#2c3e50", 12, wrap);
             btn->setMinimumWidth(150);
@@ -202,30 +204,43 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
 QFrame* VacuumPageWidget::createLightingCard(QWidget *parent)
 {
     CardFrame *card = new CardFrame(parent);
+    card->setMinimumSize(220, 260);
+    card->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+
     QVBoxLayout *v = new QVBoxLayout(card);
-    v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(12);
+    v->setContentsMargins(20, 20, 20, 20);
+    v->setSpacing(16);
 
-    v->addWidget(makeLabel(QString::fromUtf8("Освещение в камере"), 13, true), 0, Qt::AlignHCenter);
+    // Заголовок
+    QLabel *title = makeLabel(QString::fromUtf8("Освещение в камере"), 13, true);
+    title->setAlignment(Qt::AlignCenter);
+    v->addWidget(title, 0, Qt::AlignHCenter);
 
-    // Центр с четырьмя круглыми кнопками (используем IconButtonWidget с иконкой "sun", если есть)
-    QHBoxLayout *row = new QHBoxLayout();
-    row->setSpacing(16);
-    row->setAlignment(Qt::AlignCenter);
+    // Центральный блок с кнопками по образцу XYControlWidget (крест)
+    QHBoxLayout *centerRow = new QHBoxLayout();
+    centerRow->setContentsMargins(0, 0, 0, 0);
+    centerRow->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *grid = new QGridLayout();
+    grid->setSpacing(12);
+    grid->setAlignment(Qt::AlignCenter);
 
     auto makeLightButton = [&](const QString &color) -> IconButtonWidget* {
         IconButtonWidget *btn = new IconButtonWidget("sun", card, color);
-        btn->setFixedSize(64, 64);
+        btn->setFixedSize(60, 60);
         return btn;
     };
 
-    row->addWidget(makeLightButton("#f1c40f"));
-    row->addWidget(makeLightButton("#bdc3c7"));
-    row->addWidget(makeLightButton("#f1c40f"));
-    row->addWidget(makeLightButton("#bdc3c7"));
+    // Располагаем 4 "лампы" крестом, аналогично up/left/right/down в XYControlWidget
+    grid->addWidget(makeLightButton("#f1c40f"), 0, 1); // верх
+    grid->addWidget(makeLightButton("#bdc3c7"), 1, 0); // лево
+    grid->addWidget(makeLightButton("#f1c40f"), 1, 2); // право
+    grid->addWidget(makeLightButton("#bdc3c7"), 2, 1); // низ
 
-    v->addLayout(row);
-    v->addStretch();
+    centerRow->addLayout(grid);
+    v->addLayout(centerRow);
+
+    v->addStretch(1);
 
     return card;
 }
