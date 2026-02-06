@@ -6,42 +6,67 @@
 #include <QLabel>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QGraphicsDropShadowEffect>
+
+namespace {
+
+// Утилита для создания заголовков в стиле главной страницы
+QLabel* makeLabel(const QString &text, int ptSize = 20, bool bold = false, const QString &color = "#2c3e50")
+{
+    QLabel *l = new QLabel(text);
+    QString style = QString("QLabel { font-size: %1px; color: %2;").arg(ptSize).arg(color);
+    if (bold)
+        style += " font-weight: bold;";
+    style += " }";
+    l->setStyleSheet(style);
+    return l;
+}
+
+// Карточка в стиле главной страницы (белый фон, скругление, тень)
+class CardFrame : public QFrame
+{
+public:
+    explicit CardFrame(const QString &bgColor = "#ffffff", QWidget *parent = nullptr)
+        : QFrame(parent)
+    {
+        setStyleSheet(QString(
+            "QFrame { background-color: %1; border-radius: 16px; }")
+                          .arg(bgColor));
+
+        QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
+        shadow->setBlurRadius(10);
+        shadow->setXOffset(0);
+        shadow->setYOffset(2);
+        shadow->setColor(QColor(0, 0, 0, 40));
+        setGraphicsEffect(shadow);
+    }
+};
+
+} // namespace
 
 AutodopingPageWidget::AutodopingPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *rootLayout = new QVBoxLayout(this);
     rootLayout->setContentsMargins(20, 20, 20, 20);
-    rootLayout->setSpacing(0);
+    rootLayout->setSpacing(16);
 
+    // Заголовок секции как на главной странице
+    QLabel *pageTitle = makeLabel(QString::fromUtf8("Автолегирование"), 20, true);
+    rootLayout->addWidget(pageTitle, 0, Qt::AlignLeft | Qt::AlignVCenter);
+
+    // Основная карточка с таблицей и нижним параметром
     QFrame *card = createCard(this);
     rootLayout->addWidget(card);
 }
 
 QFrame* AutodopingPageWidget::createCard(QWidget *parent)
 {
-    QFrame *card = new QFrame(parent);
-    card->setStyleSheet(
-        "QFrame {"
-        "  background-color: #ffffff;"
-        "  border-radius: 18px;"
-        "}"
-    );
+    CardFrame *card = new CardFrame("#ffffff", parent);
 
     QVBoxLayout *cardLayout = new QVBoxLayout(card);
     cardLayout->setContentsMargins(20, 20, 20, 20);
     cardLayout->setSpacing(16);
-
-    // Заголовок
-    QLabel *titleLabel = new QLabel(QString::fromUtf8("Автолегирование"), card);
-    titleLabel->setStyleSheet(
-        "QLabel {"
-        "  font-size: 22px;"
-        "  font-weight: bold;"
-        "  color: #2c3e50;"
-        "}"
-    );
-    cardLayout->addWidget(titleLabel, 0, Qt::AlignLeft | Qt::AlignVCenter);
 
     // Таблица 10 строк, 4 столбца (Аргон / Легирующий газ / Впрыск / Время)
     QTableWidget *table = new QTableWidget(10, 4, card);
