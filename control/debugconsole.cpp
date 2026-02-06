@@ -143,6 +143,25 @@ void DebugConsole::printHelp()
     *m_outputStream << "  values.set.vacuum.time <value> - Set Vacuum Pumping Time (sec)\n";
     *m_outputStream << "  values.set.vacuum.gas <value>   - Set Vacuum Gas Pressure (bar)\n";
     *m_outputStream << "\n";
+    *m_outputStream << "Vacuum Control commands:\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
+    *m_outputStream << "  vacuum.pump.on                  - Vacuum Pump On\n";
+    *m_outputStream << "  vacuum.pump.off                  - Vacuum Pump Off\n";
+    *m_outputStream << "  vacuum.valve.on                  - Vacuum Valve On\n";
+    *m_outputStream << "  vacuum.valve.off                 - Vacuum Valve Off\n";
+    *m_outputStream << "  vacuum.autopump.on              - Auto Pump Down On\n";
+    *m_outputStream << "  vacuum.autopump.off              - Auto Pump Down Off\n";
+    *m_outputStream << "  vacuum.upperdoor.open            - Upper Door Open\n";
+    *m_outputStream << "  vacuum.upperdoor.close           - Upper Door Close\n";
+    *m_outputStream << "  vacuum.lowerdoor.open            - Lower Door Open\n";
+    *m_outputStream << "  vacuum.lowerdoor.close           - Lower Door Close\n";
+    *m_outputStream << "  vacuum.maindoor.open             - Main Door Status: Open\n";
+    *m_outputStream << "  vacuum.maindoor.close            - Main Door Status: Close\n";
+    *m_outputStream << "  vacuum.lighting.0 <0|1>         - Lighting Button 0 (top) On/Off\n";
+    *m_outputStream << "  vacuum.lighting.1 <0|1>         - Lighting Button 1 (left) On/Off\n";
+    *m_outputStream << "  vacuum.lighting.2 <0|1>          - Lighting Button 2 (right) On/Off\n";
+    *m_outputStream << "  vacuum.lighting.3 <0|1>          - Lighting Button 3 (bottom) On/Off\n";
+    *m_outputStream << "\n";
     *m_outputStream << "Status commands:\n";
     *m_outputStream << QString::fromUtf8("  [Все страницы]\n");
     *m_outputStream << "  status.connection.connecting   - Set connection status: Connecting\n";
@@ -429,6 +448,95 @@ bool DebugConsole::parseAndExecute(const QString &command)
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::High);
         *m_outputStream << "Set pump pressure: High" << endl;
         return true;
+    }
+    
+    // Vacuum Control commands
+    if (cmd == "vacuum.pump.on") {
+        Values::updateVacuumPumpSelector(true);
+        *m_outputStream << "Vacuum Pump: On" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.pump.off") {
+        Values::updateVacuumPumpSelector(false);
+        *m_outputStream << "Vacuum Pump: Off" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.valve.on") {
+        Values::updateVacuumValveSelector(true);
+        *m_outputStream << "Vacuum Valve: On" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.valve.off") {
+        Values::updateVacuumValveSelector(false);
+        *m_outputStream << "Vacuum Valve: Off" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.autopump.on") {
+        Values::updateAutoPumpDownSelector(true);
+        *m_outputStream << "Auto Pump Down: On" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.autopump.off") {
+        Values::updateAutoPumpDownSelector(false);
+        *m_outputStream << "Auto Pump Down: Off" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.upperdoor.open") {
+        Values::updateUpperDoorSelector(true);
+        *m_outputStream << "Upper Door: Open" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.upperdoor.close") {
+        Values::updateUpperDoorSelector(false);
+        *m_outputStream << "Upper Door: Close" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.lowerdoor.open") {
+        Values::updateLowerDoorSelector(true);
+        *m_outputStream << "Lower Door: Open" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.lowerdoor.close") {
+        Values::updateLowerDoorSelector(false);
+        *m_outputStream << "Lower Door: Close" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.maindoor.open") {
+        Values::updateMainDoorStatus(true);
+        *m_outputStream << "Main Door Status: Open" << endl;
+        return true;
+    }
+    if (cmd == "vacuum.maindoor.close") {
+        Values::updateMainDoorStatus(false);
+        *m_outputStream << "Main Door Status: Close" << endl;
+        return true;
+    }
+    if (cmd.startsWith("vacuum.lighting.")) {
+        QStringList parts = command.split(' ', Qt::SkipEmptyParts);
+        if (parts.size() >= 2) {
+            QStringList cmdParts = parts[0].split('.');
+            if (cmdParts.size() >= 3) {
+                bool ok;
+                int index = cmdParts[2].toInt(&ok);
+                if (ok && index >= 0 && index < 4) {
+                    int state = parts[1].toInt(&ok);
+                    if (ok && (state == 0 || state == 1)) {
+                        Values::updateLightingButton(index, state == 1);
+                        *m_outputStream << "Lighting Button " << index << ": " << (state == 1 ? "On" : "Off") << endl;
+                        return true;
+                    } else {
+                        *m_outputStream << "Error: Invalid state. Use 0 (Off) or 1 (On)" << endl;
+                        return true;
+                    }
+                } else {
+                    *m_outputStream << "Error: Invalid button index. Use 0-3" << endl;
+                    return true;
+                }
+            }
+        } else {
+            *m_outputStream << "Error: State required. Usage: " << cmd << " <0|1>" << endl;
+            return true;
+        }
     }
     
     return false;

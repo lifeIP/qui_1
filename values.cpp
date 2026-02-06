@@ -1,7 +1,12 @@
 #include "values.h"
+#include "widgets/selector.hpp"
+#include "widgets/doorselector.hpp"
+#include "widgets/textbuttonwidget.h"
+#include "widgets/iconbuttonwidget.h"
 
 #include <QDebug>
 #include <QLabel>
+#include <QWidget>
 
 namespace Values {
 
@@ -537,4 +542,177 @@ void updateConnectionStatus(ConnectionStatus status)  // Страница: Вс�
     
     qDebug() << "Values: Connection Status =" << static_cast<int>(status) << text;
 }
+
+// ============================================================================
+// Страница Вакуум (Vacuum Page) - Controls
+// ============================================================================
+
+static selector *vacuumPumpSelector = nullptr;
+static selector *vacuumValveSelector = nullptr;
+static selector *autoPumpDownSelector = nullptr;
+static doorselector *upperDoorSelector = nullptr;
+static doorselector *lowerDoorSelector = nullptr;
+static QWidget *mainDoorStatusWidget = nullptr;  // TextButtonWidget
+static QWidget *lightingButtons[4] = {nullptr, nullptr, nullptr, nullptr};  // IconButtonWidget
+static bool lightingButtonStates[4] = {false, false, false, false};  // Состояния кнопок освещения
+
+// Состояния селекторов и doorselector для синхронизации
+static bool vacuumPumpSelectorState = false;
+static bool vacuumValveSelectorState = false;
+static bool autoPumpDownSelectorState = false;
+static bool upperDoorSelectorState = false;  // true = Откр, false = Закр
+static bool lowerDoorSelectorState = false;  // true = Откр, false = Закр
+static bool mainDoorStatusState = false;  // true = открыта, false = закрыта
+
+void registerVacuumPumpSelector(selector *widget)  // Страница: Вакуум
+{
+    vacuumPumpSelector = widget;
+}
+
+void registerVacuumValveSelector(selector *widget)  // Страница: Вакуум
+{
+    vacuumValveSelector = widget;
+}
+
+void registerAutoPumpDownSelector(selector *widget)  // Страница: Вакуум
+{
+    autoPumpDownSelector = widget;
+}
+
+void registerUpperDoorSelector(doorselector *widget)  // Страница: Вакуум
+{
+    upperDoorSelector = widget;
+}
+
+void registerLowerDoorSelector(doorselector *widget)  // Страница: Вакуум
+{
+    lowerDoorSelector = widget;
+}
+
+void registerMainDoorStatus(QWidget *widget)  // Страница: Вакуум
+{
+    mainDoorStatusWidget = widget;
+}
+
+void registerLightingButton(int index, QWidget *widget)  // Страница: Вакуум
+{
+    if (index >= 0 && index < 4) {
+        lightingButtons[index] = widget;
+    }
+}
+
+void updateVacuumPumpSelector(bool state)  // Страница: Вакуум
+{
+    if (vacuumPumpSelector) {
+        vacuumPumpSelectorState = state;  // Сохраняем состояние
+        vacuumPumpSelector->set(state, true);
+        qDebug() << "Values: Vacuum Pump Selector =" << (state ? "On" : "Off");
+    }
+}
+
+void updateVacuumValveSelector(bool state)  // Страница: Вакуум
+{
+    if (vacuumValveSelector) {
+        vacuumValveSelectorState = state;  // Сохраняем состояние
+        vacuumValveSelector->set(state, true);
+        qDebug() << "Values: Vacuum Valve Selector =" << (state ? "On" : "Off");
+    }
+}
+
+void updateAutoPumpDownSelector(bool state)  // Страница: Вакуум
+{
+    if (autoPumpDownSelector) {
+        autoPumpDownSelectorState = state;  // Сохраняем состояние
+        autoPumpDownSelector->set(state, true);
+        qDebug() << "Values: Auto Pump Down Selector =" << (state ? "On" : "Off");
+    }
+}
+
+void updateUpperDoorSelector(bool state)  // Страница: Вакуум, true = Откр, false = Закр
+{
+    if (upperDoorSelector) {
+        upperDoorSelectorState = state;  // Сохраняем состояние
+        upperDoorSelector->set(state, true);
+        qDebug() << "Values: Upper Door Selector =" << (state ? "Open" : "Closed");
+    }
+}
+
+void updateLowerDoorSelector(bool state)  // Страница: Вакуум, true = Откр, false = Закр
+{
+    if (lowerDoorSelector) {
+        lowerDoorSelectorState = state;  // Сохраняем состояние
+        lowerDoorSelector->set(state, true);
+        qDebug() << "Values: Lower Door Selector =" << (state ? "Open" : "Closed");
+    }
+}
+
+void updateMainDoorStatus(bool isOpen)  // Страница: Вакуум
+{
+    if (mainDoorStatusWidget) {
+        mainDoorStatusState = isOpen;  // Сохраняем состояние
+        TextButtonWidget *btn = qobject_cast<TextButtonWidget*>(mainDoorStatusWidget);
+        if (btn) {
+            if (isOpen) {
+                btn->setText(QString::fromUtf8("Дверь открыта"));
+                btn->setBackgroundColor("#d0d3d4");
+            } else {
+                btn->setText(QString::fromUtf8("Дверь закрыта"));
+                btn->setBackgroundColor("#95a5a6");
+            }
+            qDebug() << "Values: Main Door Status =" << (isOpen ? "Open" : "Closed");
+        }
+    }
+}
+
+void updateLightingButton(int index, bool isOn)  // Страница: Вакуум, 0-3: верх, лево, право, низ
+{
+    if (index >= 0 && index < 4 && lightingButtons[index]) {
+        IconButtonWidget *btn = qobject_cast<IconButtonWidget*>(lightingButtons[index]);
+        if (btn) {
+            lightingButtonStates[index] = isOn;  // Сохраняем состояние в глобальном массиве
+            btn->setIcon("lightbulb");
+            btn->setBackgroundColor(isOn ? "#f1c40f" : "#bdc3c7");
+            qDebug() << "Values: Lighting Button" << index << "=" << (isOn ? "On" : "Off");
+        }
+    }
+}
+
+bool getLightingButtonState(int index)  // Страница: Вакуум
+{
+    if (index >= 0 && index < 4) {
+        return lightingButtonStates[index];
+    }
+    return false;
+}
+
+bool getVacuumPumpSelectorState()  // Страница: Вакуум
+{
+    return vacuumPumpSelectorState;
+}
+
+bool getVacuumValveSelectorState()  // Страница: Вакуум
+{
+    return vacuumValveSelectorState;
+}
+
+bool getAutoPumpDownSelectorState()  // Страница: Вакуум
+{
+    return autoPumpDownSelectorState;
+}
+
+bool getUpperDoorSelectorState()  // Страница: Вакуум
+{
+    return upperDoorSelectorState;
+}
+
+bool getLowerDoorSelectorState()  // Страница: Вакуум
+{
+    return lowerDoorSelectorState;
+}
+
+bool getMainDoorStatusState()  // Страница: Вакуум
+{
+    return mainDoorStatusState;
+}
+
 } // namespace Values

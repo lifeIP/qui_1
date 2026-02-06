@@ -6,6 +6,7 @@
 #include <QEasingCurve>
 #include <QMouseEvent>
 #include <QLabel>
+#include <QTimer>
 
 selector::selector(QWidget *parent)
     : QWidget(parent)
@@ -46,23 +47,39 @@ void selector::set(bool state, bool animated)
         return;
     
     state_ = state;
-    updateKnobColor();
     
     int targetPosition = state ? 47 : 0;  // Справа при включении, слева при выключении (84 - 34 - 3 = 47)
+    int startPosition = knobPosition_;  // Сохраняем начальную позицию для анимации
+    
+    // Меняем цвет (позицию синхронизируем только если не будет анимации)
+    updateKnobColor(!animated);
     
     if (animated)
     {
+        // Если нужна анимация, запускаем её от начальной позиции к целевой
         QPropertyAnimation *animation = new QPropertyAnimation(this, "knobPosition", this);
         animation->setDuration(200);
         animation->setEasingCurve(QEasingCurve::InOutQuad);
-        animation->setStartValue(knobPosition_);
+        animation->setStartValue(startPosition);
         animation->setEndValue(targetPosition);
+        
+        // Подключаемся к сигналу finished, чтобы убедиться, что финальная позиция установлена
+        connect(animation, &QPropertyAnimation::finished, this, [this, targetPosition]() {
+            setKnobPosition(targetPosition);
+        });
+        
         animation->start(QAbstractAnimation::DeleteWhenStopped);
+        
+        // На случай, если анимация не сработает, устанавливаем позицию через небольшую задержку
+        // Это гарантирует, что позиция изменится даже если анимация не работает
+        QTimer::singleShot(250, this, [this, targetPosition]() {
+            // Проверяем, что позиция действительно изменилась
+            if (knobPosition_ != targetPosition) {
+                setKnobPosition(targetPosition);
+            }
+        });
     }
-    else
-    {
-        setKnobPosition(targetPosition);
-    }
+    // Если анимация не нужна, позиция уже установлена в updateKnobColor()
     
     // Вызываем callback с текущим состоянием (0 или 1)
     if (onStateChanged_)
@@ -75,12 +92,21 @@ void selector::setKnobPosition(int pos)
 {
     knobPosition_ = pos;
     knob_->move(3 + pos, 3);  // 3px отступ от краев
+    knob_->update();  // Принудительное обновление виджета
+    update();  // Обновляем родительский виджет тоже
 }
 
-void selector::updateKnobColor()
+void selector::updateKnobColor(bool syncPosition)
 {
     QString color = state_ ? "#29AC39" : "#ff4444";  // Зеленый при включении, красный при выключении
     knob_->setStyleSheet(QString("QWidget { background-color: %1; border-radius: 17px; }").arg(color));
+    
+    // Синхронизируем позицию с состоянием, если требуется
+    if (syncPosition)
+    {
+        int targetPosition = state_ ? 47 : 0;
+        setKnobPosition(targetPosition);  // Всегда устанавливаем позицию, даже если она уже правильная
+    }
 }
 
 void selector::mousePressEvent(QMouseEvent *event)

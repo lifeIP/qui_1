@@ -36,5 +36,5 @@ private:
     void setKnobPosition(int pos);
     
     void mousePressEvent(QMouseEvent *event) override;
-    void updateKnobColor();
+    void updateKnobColor(bool syncPosition = true);
 };

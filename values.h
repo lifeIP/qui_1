@@ -3,6 +3,10 @@
 #include <QLabel>
 #include <QString>
 
+// Forward declarations
+class selector;
+class doorselector;
+
 // Глобальная система управления значениями в интерфейсе
 // Все изменяемые значения обрабатываются через функции этого модуля
 
@@ -123,5 +127,31 @@ void updateVacuumPumpingTime(double value);  // в сек
 void updateVacuumGasPressure(double value);  // в бар
 void updateVacuumSwitch(double value);  // в мбар
 void updateVacuumPumpAlarm(double value);  // в сек
+
+// Vacuum Page Controls
+void registerVacuumPumpSelector(class selector *widget);
+void registerVacuumValveSelector(class selector *widget);
+void registerAutoPumpDownSelector(class selector *widget);
+void registerUpperDoorSelector(class doorselector *widget);
+void registerLowerDoorSelector(class doorselector *widget);
+void registerMainDoorStatus(class QWidget *widget);  // TextButtonWidget для статуса главной двери
+void registerLightingButton(int index, class QWidget *widget);  // IconButtonWidget для освещения
+
+void updateVacuumPumpSelector(bool state);
+void updateVacuumValveSelector(bool state);
+void updateAutoPumpDownSelector(bool state);
+void updateUpperDoorSelector(bool state);  // true = Откр, false = Закр
+void updateLowerDoorSelector(bool state);  // true = Откр, false = Закр
+void updateMainDoorStatus(bool isOpen);  // true = открыта, false = закрыта
+void updateLightingButton(int index, bool isOn);  // 0-3: верх, лево, право, низ
+bool getLightingButtonState(int index);  // Получить текущее состояние кнопки освещения
+
+// Получить текущее состояние селекторов и doorselector
+bool getVacuumPumpSelectorState();
+bool getVacuumValveSelectorState();
+bool getAutoPumpDownSelectorState();
+bool getUpperDoorSelectorState();  // true = Откр, false = Закр
+bool getLowerDoorSelectorState();  // true = Откр, false = Закр
+bool getMainDoorStatusState();  // true = открыта, false = закрыта
 
 } // namespace Values

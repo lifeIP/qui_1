@@ -70,4 +70,12 @@ void handleStatusBarReset();
 // Final Page
 void handleApplyToAutot();
 
+// Vacuum Page
+void handleVacuumPumpStateChanged(int state);  // 0 = Выкл, 1 = Вкл
+void handleVacuumValveStateChanged(int state);  // 0 = Выкл, 1 = Вкл
+void handleAutoPumpDownStateChanged(int state);  // 0 = Выкл, 1 = Вкл
+void handleUpperDoorStateChanged(int state);  // 0 = Закр, 1 = Откр
+void handleLowerDoorStateChanged(int state);  // 0 = Закр, 1 = Откр
+void handleLightingButtonToggled(int buttonIndex, bool isOn);  // 0-3: верх, лево, право, низ
+
 } // namespace Activity

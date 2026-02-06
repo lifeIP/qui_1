@@ -586,7 +586,11 @@ build/obj/main.o: main.cpp widgets/statusbarwidget.h \
 build/obj/activity.o: activity.cpp activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/activity.o activity.cpp
 
-build/obj/values.o: values.cpp values.h
+build/obj/values.o: values.cpp values.h \
+		widgets/selector.hpp \
+		widgets/doorselector.hpp \
+		widgets/textbuttonwidget.h \
+		widgets/iconbuttonwidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/values.o values.cpp
 
 build/obj/controlthread.o: control/controlthread.cpp control/controlthread.h \
@@ -657,7 +661,8 @@ build/obj/vacuumpagewidget.o: pages/vacuumpagewidget.cpp pages/vacuumpagewidget.
 		widgets/selector.hpp \
 		widgets/doorselector.hpp \
 		widgets/parametereditdialog.h \
-		values.h
+		values.h \
+		activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/vacuumpagewidget.o pages/vacuumpagewidget.cpp
 
 build/obj/gaspanelpagewidget.o: pages/gaspanelpagewidget.cpp pages/gaspanelpagewidget.h \

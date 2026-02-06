@@ -6,6 +6,7 @@
 #include "widgets/doorselector.hpp"
 #include "widgets/parametereditdialog.h"
 #include "values.h"
+#include "activity.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -290,7 +291,9 @@ QFrame* VacuumPageWidget::createPumpControlCard(QWidget *parent)
     QHBoxLayout *row = new QHBoxLayout();
     row->setSpacing(24);
 
-    auto makeToggleGroup = [&](const QString &title) -> QWidget* {
+    auto makeToggleGroup = [&](const QString &title, selector **togglePtr, 
+                                void (*activityHandler)(int),
+                                std::function<void(bool)> updateStateFunc) -> QWidget* {
         QWidget *wrap = new QWidget(card);
         QVBoxLayout *vl = new QVBoxLayout(wrap);
         vl->setContentsMargins(0, 0, 0, 0);
@@ -302,14 +305,53 @@ QFrame* VacuumPageWidget::createPumpControlCard(QWidget *parent)
         // Переключатель Вкл/Выкл (selector)
         selector *toggle = new selector(wrap);
         toggle->set(false, false);  // начальное состояние: выкл
+        // Обработчик синхронизирует состояние с Values при изменении пользователем
+        toggle->setOnStateChanged([toggle, activityHandler, updateStateFunc](int state) {
+            bool boolState = (state == 1);
+            // Используем актуальное состояние из виджета для синхронизации
+            bool actualState = toggle->getState();
+            updateStateFunc(actualState);  // Синхронизируем с Values
+            activityHandler(state);  // Вызываем Activity handler
+        });
+        *togglePtr = toggle;
         vl->addWidget(toggle, 0, Qt::AlignLeft);
 
         return wrap;
     };
 
-    row->addWidget(makeToggleGroup(QString::fromUtf8("Вакуумный насос")));
-    row->addWidget(makeToggleGroup(QString::fromUtf8("Вакуумный клапан")));
-    row->addWidget(makeToggleGroup(QString::fromUtf8("Авто откачка")));
+    selector *pumpSelector = nullptr;
+    selector *valveSelector = nullptr;
+    selector *autoPumpSelector = nullptr;
+
+    row->addWidget(makeToggleGroup(QString::fromUtf8("Вакуумный насос"), 
+                                    &pumpSelector, 
+                                    Activity::handleVacuumPumpStateChanged,
+                                    [](bool state) { 
+                                        // Синхронизация состояния через Values
+                                        Values::updateVacuumPumpSelector(state);
+                                    }));
+    row->addWidget(makeToggleGroup(QString::fromUtf8("Вакуумный клапан"), 
+                                    &valveSelector, 
+                                    Activity::handleVacuumValveStateChanged,
+                                    [](bool state) { 
+                                        Values::updateVacuumValveSelector(state);
+                                    }));
+    row->addWidget(makeToggleGroup(QString::fromUtf8("Авто откачка"), 
+                                    &autoPumpSelector, 
+                                    Activity::handleAutoPumpDownStateChanged,
+                                    [](bool state) { 
+                                        Values::updateAutoPumpDownSelector(state);
+                                    }));
+
+    // Регистрируем селекторы в системе Values
+    Values::registerVacuumPumpSelector(pumpSelector);
+    Values::registerVacuumValveSelector(valveSelector);
+    Values::registerAutoPumpDownSelector(autoPumpSelector);
+    
+    // Устанавливаем начальные состояния в Values
+    Values::updateVacuumPumpSelector(false);
+    Values::updateVacuumValveSelector(false);
+    Values::updateAutoPumpDownSelector(false);
 
     v->addLayout(row);
 
@@ -328,7 +370,10 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
     QHBoxLayout *row = new QHBoxLayout();
     row->setSpacing(24);
 
-    auto makeDoorGroup = [&](const QString &title, bool hasTwoButtons) -> QWidget* {
+    auto makeDoorGroup = [&](const QString &title, bool hasTwoButtons, 
+                             doorselector **doorPtr, QWidget **statusPtr,
+                             void (*activityHandler)(int),
+                             std::function<void(bool)> updateStateFunc) -> QWidget* {
         QWidget *wrap = new QWidget(card);
         QVBoxLayout *vl = new QVBoxLayout(wrap);
         vl->setContentsMargins(0, 0, 0, 0);
@@ -342,19 +387,55 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
             doorselector *toggle = new doorselector(wrap);
             toggle->set(false, false);  // 0 — Закр, 1 — Откр
             toggle->setMinimumWidth(120);
+            // Обработчик синхронизирует состояние с Values при изменении пользователем
+            toggle->setOnStateChanged([toggle, activityHandler, updateStateFunc](int state) {
+                // Используем актуальное состояние из виджета для синхронизации
+                bool actualState = toggle->getState();
+                updateStateFunc(actualState);  // Синхронизируем с Values
+                activityHandler(state);  // Вызываем Activity handler
+            });
+            *doorPtr = toggle;
             vl->addWidget(toggle, 0, Qt::AlignLeft);
         } else {
-            TextButtonWidget *btn = new TextButtonWidget(QString::fromUtf8("Дверь открыта"), "#d0d3d4", "#2c3e50", 12, wrap);
+            // Главная дверь - статус (сигнал), а не кнопка
+            TextButtonWidget *btn = new TextButtonWidget(QString::fromUtf8("Дверь закрыта"), "#95a5a6", "#2c3e50", 12, wrap);
             btn->setMinimumWidth(150);
+            btn->setEnabled(false);  // Не кликабельная, только статус
+            *statusPtr = btn;
             vl->addWidget(btn);
         }
 
         return wrap;
     };
 
-    row->addWidget(makeDoorGroup(QString::fromUtf8("Верхняя дверь"), true));
-    row->addWidget(makeDoorGroup(QString::fromUtf8("Главная дверь"), false));
-    row->addWidget(makeDoorGroup(QString::fromUtf8("Нижняя дверь"), true));
+    doorselector *upperDoorSelector = nullptr;
+    doorselector *lowerDoorSelector = nullptr;
+    QWidget *mainDoorStatus = nullptr;
+
+    row->addWidget(makeDoorGroup(QString::fromUtf8("Верхняя дверь"), true, 
+                                  &upperDoorSelector, nullptr,
+                                  Activity::handleUpperDoorStateChanged,
+                                  [](bool state) {
+                                      Values::updateUpperDoorSelector(state);
+                                  }));
+    row->addWidget(makeDoorGroup(QString::fromUtf8("Главная дверь"), false, 
+                                  nullptr, &mainDoorStatus, nullptr, nullptr));
+    row->addWidget(makeDoorGroup(QString::fromUtf8("Нижняя дверь"), true, 
+                                  &lowerDoorSelector, nullptr,
+                                  Activity::handleLowerDoorStateChanged,
+                                  [](bool state) {
+                                      Values::updateLowerDoorSelector(state);
+                                  }));
+
+    // Регистрируем doorselector и статус главной двери в системе Values
+    Values::registerUpperDoorSelector(upperDoorSelector);
+    Values::registerLowerDoorSelector(lowerDoorSelector);
+    Values::registerMainDoorStatus(mainDoorStatus);
+    
+    // Устанавливаем начальные состояния в Values
+    Values::updateUpperDoorSelector(false);  // Закр
+    Values::updateLowerDoorSelector(false);  // Закр
+    Values::updateMainDoorStatus(false);  // Закрыта
 
     v->addLayout(row);
 
@@ -385,33 +466,39 @@ QFrame* VacuumPageWidget::createLightingCard(QWidget *parent)
     grid->setSpacing(12);
     grid->setAlignment(Qt::AlignCenter);
 
-    auto makeLightButton = [&](bool initialState) -> IconButtonWidget* {
-        // Начальное состояние: false = выключено (серый, стрелка вниз), true = включено (желтый, стрелка вверх)
-        // Создаем указатель на bool для хранения состояния каждой кнопки
-        bool *isOn = new bool(initialState);
+    auto makeLightButton = [&](int index, bool initialState) -> IconButtonWidget* {
+        // Начальное состояние: false = выключено (серый), true = включено (желтый)
         IconButtonWidget *btn = new IconButtonWidget(
-            *isOn ? "lightbulb" : "lightbulb", 
+            "lightbulb", 
             card, 
-            *isOn ? "#f1c40f" : "#bdc3c7"
+            initialState ? "#f1c40f" : "#bdc3c7"
         );
         btn->setFixedSize(60, 60);
         
+        // Регистрируем кнопку в системе Values (до создания обработчика)
+        Values::registerLightingButton(index, btn);
+        
+        // Устанавливаем начальное состояние в системе Values
+        Values::updateLightingButton(index, initialState);
+        
         // Обработчик клика для переключения состояния
-        btn->setOnClick([btn, isOn]() {
-            *isOn = !(*isOn);
-            btn->setIcon(*isOn ? "lightbulb" : "lightbulb");
-            btn->setBackgroundColor(*isOn ? "#f1c40f" : "#bdc3c7");
+        // Используем глобальное состояние из Values для синхронизации
+        btn->setOnClick([btn, index]() {
+            bool currentState = Values::getLightingButtonState(index);
+            bool newState = !currentState;
+            Values::updateLightingButton(index, newState);
+            Activity::handleLightingButtonToggled(index, newState);
         });
         
         return btn;
     };
 
     // Располагаем 4 "лампы" крестом, аналогично up/left/right/down в XYControlWidget
-    // true = включено (желтый, стрелка вверх), false = выключено (серый, стрелка вниз)
-    grid->addWidget(makeLightButton(true), 0, 1);  // верх - включено
-    grid->addWidget(makeLightButton(false), 1, 0);  // лево - выключено
-    grid->addWidget(makeLightButton(true), 1, 2);  // право - включено
-    grid->addWidget(makeLightButton(false), 2, 1); // низ - выключено
+    // Индексы: 0 = верх, 1 = лево, 2 = право, 3 = низ
+    grid->addWidget(makeLightButton(0, true), 0, 1);   // верх - включено
+    grid->addWidget(makeLightButton(1, false), 1, 0);  // лево - выключено
+    grid->addWidget(makeLightButton(2, true), 1, 2);    // право - включено
+    grid->addWidget(makeLightButton(3, false), 2, 1);   // низ - выключено
 
     centerRow->addLayout(grid);
     v->addLayout(centerRow);

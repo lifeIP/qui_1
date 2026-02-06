@@ -311,4 +311,69 @@ void handleApplyToAutot()  // Страница: Финальные
     // TODO: реализовать применение финальных параметров к автотяге
 }
 
+// ============================================================================
+// Страница Вакуум (Vacuum Page)
+// ============================================================================
+
+void handleVacuumPumpStateChanged(int state)  // Страница: Вакуум
+{
+    if (state == 0) {
+        qDebug() << "Activity: Vacuum Pump Off";
+        // TODO: реализовать выключение вакуумного насоса
+    } else {
+        qDebug() << "Activity: Vacuum Pump On";
+        // TODO: реализовать включение вакуумного насоса
+    }
+}
+
+void handleVacuumValveStateChanged(int state)  // Страница: Вакуум
+{
+    if (state == 0) {
+        qDebug() << "Activity: Vacuum Valve Off";
+        // TODO: реализовать закрытие вакуумного клапана
+    } else {
+        qDebug() << "Activity: Vacuum Valve On";
+        // TODO: реализовать открытие вакуумного клапана
+    }
+}
+
+void handleAutoPumpDownStateChanged(int state)  // Страница: Вакуум
+{
+    if (state == 0) {
+        qDebug() << "Activity: Auto Pump Down Off";
+        // TODO: реализовать выключение авто откачки
+    } else {
+        qDebug() << "Activity: Auto Pump Down On";
+        // TODO: реализовать включение авто откачки
+    }
+}
+
+void handleUpperDoorStateChanged(int state)  // Страница: Вакуум
+{
+    if (state == 0) {
+        qDebug() << "Activity: Upper Door Closed";
+        // TODO: реализовать закрытие верхней двери
+    } else {
+        qDebug() << "Activity: Upper Door Open";
+        // TODO: реализовать открытие верхней двери
+    }
+}
+
+void handleLowerDoorStateChanged(int state)  // Страница: Вакуум
+{
+    if (state == 0) {
+        qDebug() << "Activity: Lower Door Closed";
+        // TODO: реализовать закрытие нижней двери
+    } else {
+        qDebug() << "Activity: Lower Door Open";
+        // TODO: реализовать открытие нижней двери
+    }
+}
+
+void handleLightingButtonToggled(int buttonIndex, bool isOn)  // Страница: Вакуум
+{
+    qDebug() << "Activity: Lighting Button" << buttonIndex << (isOn ? "On" : "Off");
+    // TODO: реализовать переключение освещения в камере
+}
+
 } // namespace Activity
