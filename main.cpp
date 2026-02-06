@@ -18,6 +18,7 @@
 #include "pages/vacuumpagewidget.h"
 #include "pages/gaspanelpagewidget.h"
 #include "pages/settingspagewidget.h"
+#include "control/controlthread.h"
 
 class MainWindow : public QMainWindow
 {
@@ -162,8 +163,21 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // Запуск управляющего потока
+    ControlThread *controlThread = new ControlThread();
+    controlThread->start();
+
     MainWindow window;
     window.show();
 
-    return app.exec();
+    int result = app.exec();
+
+    // Остановка управляющего потока
+    if (controlThread) {
+        controlThread->stop();
+        controlThread->wait();
+        delete controlThread;
+    }
+
+    return result;
 }

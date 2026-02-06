@@ -18,6 +18,8 @@ CONFIG += console
 SOURCES += main.cpp \
            activity.cpp \
            values.cpp \
+           control/controlthread.cpp \
+           control/debugconsole.cpp \
            widgets/statusbarwidget.cpp \
            widgets/bottomnavigationbar.cpp \
            widgets/iconbuttonwidget.cpp \
@@ -36,6 +38,8 @@ SOURCES += main.cpp \
 
 HEADERS += activity.h \
            values.h \
+           control/controlthread.h \
+           control/debugconsole.h \
            widgets/statusbarwidget.h \
            widgets/bottomnavigationbar.h \
            widgets/iconbuttonwidget.h \
