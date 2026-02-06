@@ -686,8 +686,12 @@ build/obj/gaspanelpagewidget.o: pages/gaspanelpagewidget.cpp pages/gaspanelpagew
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/gaspanelpagewidget.o pages/gaspanelpagewidget.cpp
 
 build/obj/settingspagewidget.o: pages/settingspagewidget.cpp pages/settingspagewidget.h \
+		widgets/iconbuttonwidget.h \
 		widgets/textbuttonwidget.h \
-		widgets/parametereditdialog.h
+		widgets/selector.hpp \
+		widgets/parametereditdialog.h \
+		activity.h \
+		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/settingspagewidget.o pages/settingspagewidget.cpp
 
 build/obj/moc_controlthread.o: build/moc/moc_controlthread.cpp 

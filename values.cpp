@@ -19,24 +19,51 @@ namespace Values {
 static QLabel *xyOffsetXLabel = nullptr;
 static QLabel *xyOffsetYLabel = nullptr;
 
+// Settings Page: XY
+static QLabel *settingsXYOffsetXLabel = nullptr;
+static QLabel *settingsXYOffsetYLabel = nullptr;
+
 static QLabel *coilOffsetLabel = nullptr;
 static QLabel *coilOscillationsLabel = nullptr;
+
+// Settings Page: Coil
+static QLabel *settingsCoilOffsetLabel = nullptr;
+static QLabel *settingsCoilOscillationsLabel = nullptr;
 
 static QLabel *upperSpindleXOffsetLabel = nullptr;
 static QLabel *upperSpindleSpeedLabel = nullptr;
 static QLabel *upperSpindlePositionLabel = nullptr;
 
+// Settings Page: Upper Spindle
+static QLabel *settingsUpperSpindleXOffsetLabel = nullptr;
+static QLabel *settingsUpperSpindleSpeedLabel = nullptr;
+static QLabel *settingsUpperSpindlePositionLabel = nullptr;
+
 static QLabel *lowerSpindleXOffsetLabel = nullptr;
 static QLabel *lowerSpindleSpeedLabel = nullptr;
 static QLabel *lowerSpindlePositionLabel = nullptr;
+
+// Settings Page: Lower Spindle
+static QLabel *settingsLowerSpindleXOffsetLabel = nullptr;
+static QLabel *settingsLowerSpindleSpeedLabel = nullptr;
+static QLabel *settingsLowerSpindlePositionLabel = nullptr;
 
 static QLabel *gridAmpLabel = nullptr;
 static QLabel *pValueLabel = nullptr;
 static QLabel *iValueLabel = nullptr;
 static QLabel *uValueLabel = nullptr;
 
+// Settings Page: Heating / Grid / PID
+static QLabel *settingsGridAmpLabel = nullptr;
+static QLabel *settingsPValueLabel = nullptr;
+static QLabel *settingsIValueLabel = nullptr;
+static QLabel *settingsUValueLabel = nullptr;
+
 static QLabel *generatorPercentLabel = nullptr;
 static QLabel *stopwatchPercentLabel = nullptr;
+
+// Settings Page: Generator
+static QLabel *settingsGeneratorPercentLabel = nullptr;
 
 // ============================================================================
 // Страница Финальные (Final Page)
@@ -90,24 +117,46 @@ static QLabel *statusBarText = nullptr;
 void registerXYOffsetX(QLabel *label) { xyOffsetXLabel = label; }  // Страница: Главная
 void registerXYOffsetY(QLabel *label) { xyOffsetYLabel = label; }  // Страница: Главная
 
+// Страница Настройки
+void registerSettingsXYOffsetX(QLabel *label) { settingsXYOffsetXLabel = label; }  // Страница: Настройки
+void registerSettingsXYOffsetY(QLabel *label) { settingsXYOffsetYLabel = label; }  // Страница: Настройки
+
 void registerCoilOffset(QLabel *label) { coilOffsetLabel = label; }  // Страница: Главная
 void registerCoilOscillations(QLabel *label) { coilOscillationsLabel = label; }  // Страница: Главная
+
+void registerSettingsCoilOffset(QLabel *label) { settingsCoilOffsetLabel = label; }  // Страница: Настройки
+void registerSettingsCoilOscillations(QLabel *label) { settingsCoilOscillationsLabel = label; }  // Страница: Настройки
 
 void registerUpperSpindleXOffset(QLabel *label) { upperSpindleXOffsetLabel = label; }  // Страница: Главная
 void registerUpperSpindleSpeed(QLabel *label) { upperSpindleSpeedLabel = label; }  // Страница: Главная
 void registerUpperSpindlePosition(QLabel *label) { upperSpindlePositionLabel = label; }  // Страница: Главная
 
+void registerSettingsUpperSpindleXOffset(QLabel *label) { settingsUpperSpindleXOffsetLabel = label; }  // Страница: Настройки
+void registerSettingsUpperSpindleSpeed(QLabel *label) { settingsUpperSpindleSpeedLabel = label; }  // Страница: Настройки
+void registerSettingsUpperSpindlePosition(QLabel *label) { settingsUpperSpindlePositionLabel = label; }  // Страница: Настройки
+
 void registerLowerSpindleXOffset(QLabel *label) { lowerSpindleXOffsetLabel = label; }  // Страница: Главная
 void registerLowerSpindleSpeed(QLabel *label) { lowerSpindleSpeedLabel = label; }  // Страница: Главная
 void registerLowerSpindlePosition(QLabel *label) { lowerSpindlePositionLabel = label; }  // Страница: Главная
+
+void registerSettingsLowerSpindleXOffset(QLabel *label) { settingsLowerSpindleXOffsetLabel = label; }  // Страница: Настройки
+void registerSettingsLowerSpindleSpeed(QLabel *label) { settingsLowerSpindleSpeedLabel = label; }  // Страница: Настройки
+void registerSettingsLowerSpindlePosition(QLabel *label) { settingsLowerSpindlePositionLabel = label; }  // Страница: Настройки
 
 void registerGridAmp(QLabel *label) { gridAmpLabel = label; }  // Страница: Главная
 void registerPValue(QLabel *label) { pValueLabel = label; }  // Страница: Главная
 void registerIValue(QLabel *label) { iValueLabel = label; }  // Страница: Главная
 void registerUValue(QLabel *label) { uValueLabel = label; }  // Страница: Главная
 
+void registerSettingsGridAmp(QLabel *label) { settingsGridAmpLabel = label; }  // Страница: Настройки
+void registerSettingsPValue(QLabel *label) { settingsPValueLabel = label; }  // Страница: Настройки
+void registerSettingsIValue(QLabel *label) { settingsIValueLabel = label; }  // Страница: Настройки
+void registerSettingsUValue(QLabel *label) { settingsUValueLabel = label; }  // Страница: Настройки
+
 void registerGeneratorPercent(QLabel *label) { generatorPercentLabel = label; }  // Страница: Главная
 void registerStopwatchPercent(QLabel *label) { stopwatchPercentLabel = label; }  // Страница: Главная
+
+void registerSettingsGeneratorPercent(QLabel *label) { settingsGeneratorPercentLabel = label; }  // Страница: Настройки
 
 // Страница Легирования
 void registerDopingArgon(QLabel *label) { dopingArgonLabel = label; }  // Страница: Легирование
@@ -186,6 +235,22 @@ void updateXYOffsetY(double value)  // Страница: Главная
     }
 }
 
+void updateSettingsXYOffsetX(double value)  // Страница: Настройки
+{
+    if (settingsXYOffsetXLabel) {
+        settingsXYOffsetXLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings XY Offset X =" << value;
+    }
+}
+
+void updateSettingsXYOffsetY(double value)  // Страница: Настройки
+{
+    if (settingsXYOffsetYLabel) {
+        settingsXYOffsetYLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings XY Offset Y =" << value;
+    }
+}
+
 void updateCoilOffset(double value)  // Страница: Главная
 {
     if (coilOffsetLabel) {
@@ -199,6 +264,22 @@ void updateCoilOscillations(double value)  // Страница: Главная
     if (coilOscillationsLabel) {
         coilOscillationsLabel->setText(formatValue(value, "MM/мин"));
         qDebug() << "Values: Coil Oscillations =" << value;
+    }
+}
+
+void updateSettingsCoilOffset(double value)  // Страница: Настройки
+{
+    if (settingsCoilOffsetLabel) {
+        settingsCoilOffsetLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Coil Offset =" << value;
+    }
+}
+
+void updateSettingsCoilOscillations(double value)  // Страница: Настройки
+{
+    if (settingsCoilOscillationsLabel) {
+        settingsCoilOscillationsLabel->setText(formatValue(value, "MM/мин"));
+        qDebug() << "Values: Settings Coil Oscillations =" << value;
     }
 }
 
@@ -226,6 +307,30 @@ void updateUpperSpindlePosition(double value)  // Страница: Главна
     }
 }
 
+void updateSettingsUpperSpindleXOffset(double value)  // Страница: Настройки
+{
+    if (settingsUpperSpindleXOffsetLabel) {
+        settingsUpperSpindleXOffsetLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Upper Spindle X Offset =" << value;
+    }
+}
+
+void updateSettingsUpperSpindleSpeed(double value)  // Страница: Настройки
+{
+    if (settingsUpperSpindleSpeedLabel) {
+        settingsUpperSpindleSpeedLabel->setText(formatValue(value, "MM/мин"));
+        qDebug() << "Values: Settings Upper Spindle Speed =" << value;
+    }
+}
+
+void updateSettingsUpperSpindlePosition(double value)  // Страница: Настройки
+{
+    if (settingsUpperSpindlePositionLabel) {
+        settingsUpperSpindlePositionLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Upper Spindle Position =" << value;
+    }
+}
+
 void updateLowerSpindleXOffset(double value)  // Страница: Главная
 {
     if (lowerSpindleXOffsetLabel) {
@@ -247,6 +352,30 @@ void updateLowerSpindlePosition(double value)  // Страница: Главна
     if (lowerSpindlePositionLabel) {
         lowerSpindlePositionLabel->setText(formatValue(value, "MM"));
         qDebug() << "Values: Lower Spindle Position =" << value;
+    }
+}
+
+void updateSettingsLowerSpindleXOffset(double value)  // Страница: Настройки
+{
+    if (settingsLowerSpindleXOffsetLabel) {
+        settingsLowerSpindleXOffsetLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Lower Spindle X Offset =" << value;
+    }
+}
+
+void updateSettingsLowerSpindleSpeed(double value)  // Страница: Настройки
+{
+    if (settingsLowerSpindleSpeedLabel) {
+        settingsLowerSpindleSpeedLabel->setText(formatValue(value, "MM/мин"));
+        qDebug() << "Values: Settings Lower Spindle Speed =" << value;
+    }
+}
+
+void updateSettingsLowerSpindlePosition(double value)  // Страница: Настройки
+{
+    if (settingsLowerSpindlePositionLabel) {
+        settingsLowerSpindlePositionLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Lower Spindle Position =" << value;
     }
 }
 
@@ -282,6 +411,38 @@ void updateUValue(double value)  // Страница: Главная
     }
 }
 
+void updateSettingsGridAmp(double value)  // Страница: Настройки
+{
+    if (settingsGridAmpLabel) {
+        settingsGridAmpLabel->setText(formatValue2(value, "AMP"));
+        qDebug() << "Values: Settings Grid AMP =" << value;
+    }
+}
+
+void updateSettingsPValue(double value)  // Страница: Настройки
+{
+    if (settingsPValueLabel) {
+        settingsPValueLabel->setText(formatValue(value, "%"));
+        qDebug() << "Values: Settings P Value =" << value;
+    }
+}
+
+void updateSettingsIValue(double value)  // Страница: Настройки
+{
+    if (settingsIValueLabel) {
+        settingsIValueLabel->setText(formatValue(value, "%"));
+        qDebug() << "Values: Settings I Value =" << value;
+    }
+}
+
+void updateSettingsUValue(double value)  // Страница: Настройки
+{
+    if (settingsUValueLabel) {
+        settingsUValueLabel->setText(formatValue(value, "%"));
+        qDebug() << "Values: Settings U Value =" << value;
+    }
+}
+
 void updateGeneratorPercent(double value)  // Страница: Главная
 {
     if (generatorPercentLabel) {
@@ -295,6 +456,14 @@ void updateStopwatchPercent(double value)  // Страница: Главная
     if (stopwatchPercentLabel) {
         stopwatchPercentLabel->setText(formatValue(value, "%"));
         qDebug() << "Values: Stopwatch Percent =" << value;
+    }
+}
+
+void updateSettingsGeneratorPercent(double value)  // Страница: Настройки
+{
+    if (settingsGeneratorPercentLabel) {
+        settingsGeneratorPercentLabel->setText(formatValue(value, "%"));
+        qDebug() << "Values: Settings Generator Percent =" << value;
     }
 }
 
@@ -554,11 +723,23 @@ static selector *generatorSelector = nullptr;
 static bool heatingSelectorState = false;
 static bool generatorSelectorState = false;
 
+// Settings Page Selectors
+static selector *settingsHeatingSelector = nullptr;
+static selector *settingsGeneratorSelector = nullptr;
+static bool settingsHeatingSelectorState = false;
+static bool settingsGeneratorSelectorState = false;
+
 // Main Page Start/Stop Buttons (СТАРТ/СТОП)
 static QWidget *upperSpindleStartStopButton = nullptr;  // TextButtonWidget (Upper Spindle)
 static QWidget *lowerSpindleStartStopButton = nullptr;  // TextButtonWidget (Lower Spindle)
 static bool upperSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
 static bool lowerSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
+
+// Settings Page Start/Stop Buttons (СТАРТ/СТОП)
+static QWidget *settingsUpperSpindleStartStopButton = nullptr;  // TextButtonWidget (Upper Spindle, Settings)
+static QWidget *settingsLowerSpindleStartStopButton = nullptr;  // TextButtonWidget (Lower Spindle, Settings)
+static bool settingsUpperSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
+static bool settingsLowerSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
 
 // Vacuum Page Selectors
 static selector *vacuumPumpSelector = nullptr;
@@ -589,6 +770,17 @@ void registerGeneratorSelector(selector *widget)  // Страница: Глав�
     generatorSelector = widget;
 }
 
+// Settings Page Selectors
+void registerSettingsHeatingSelector(selector *widget)  // Страница: Настройки
+{
+    settingsHeatingSelector = widget;
+}
+
+void registerSettingsGeneratorSelector(selector *widget)  // Страница: Настройки
+{
+    settingsGeneratorSelector = widget;
+}
+
 void updateHeatingSelector(bool state)  // Страница: Главная
 {
     if (heatingSelector) {
@@ -611,6 +803,28 @@ void updateGeneratorSelector(bool state)  // Страница: Главная
     }
 }
 
+void updateSettingsHeatingSelector(bool state)  // Страница: Настройки
+{
+    if (settingsHeatingSelector) {
+        if (settingsHeatingSelectorState != state) {
+            settingsHeatingSelectorState = state;
+            settingsHeatingSelector->set(state, true);
+            qDebug() << "Values: Settings Heating Selector =" << (state ? "On" : "Off");
+        }
+    }
+}
+
+void updateSettingsGeneratorSelector(bool state)  // Страница: Настройки
+{
+    if (settingsGeneratorSelector) {
+        if (settingsGeneratorSelectorState != state) {
+            settingsGeneratorSelectorState = state;
+            settingsGeneratorSelector->set(state, true);
+            qDebug() << "Values: Settings Generator Selector =" << (state ? "On" : "Off");
+        }
+    }
+}
+
 bool getHeatingSelectorState()  // Страница: Главная
 {
     return heatingSelectorState;
@@ -619,6 +833,16 @@ bool getHeatingSelectorState()  // Страница: Главная
 bool getGeneratorSelectorState()  // Страница: Главная
 {
     return generatorSelectorState;
+}
+
+bool getSettingsHeatingSelectorState()  // Страница: Настройки
+{
+    return settingsHeatingSelectorState;
+}
+
+bool getSettingsGeneratorSelectorState()  // Страница: Настройки
+{
+    return settingsGeneratorSelectorState;
 }
 
 // Регистрация и обновление кнопок СТАРТ/СТОП (Главная страница)
@@ -631,6 +855,17 @@ void registerUpperSpindleStartStopButton(QWidget *widget)  // Страница: 
 void registerLowerSpindleStartStopButton(QWidget *widget)  // Страница: Главная
 {
     lowerSpindleStartStopButton = widget;
+}
+
+// Регистрация и обновление кнопок СТАРТ/СТОП (Страница настроек)
+void registerSettingsUpperSpindleStartStopButton(QWidget *widget)  // Страница: Настройки
+{
+    settingsUpperSpindleStartStopButton = widget;
+}
+
+void registerSettingsLowerSpindleStartStopButton(QWidget *widget)  // Страница: Настройки
+{
+    settingsLowerSpindleStartStopButton = widget;
 }
 
 void updateUpperSpindleStartStop(bool isStart)  // Страница: Главная
@@ -661,6 +896,34 @@ void updateLowerSpindleStartStop(bool isStart)  // Страница: Главн�
     }
 }
 
+void updateSettingsUpperSpindleStartStop(bool isStart)  // Страница: Настройки
+{
+    if (settingsUpperSpindleStartStopButton) {
+        if (settingsUpperSpindleStartStopState != isStart) {
+            settingsUpperSpindleStartStopState = isStart;
+            auto *btn = qobject_cast<TextButtonWidget*>(settingsUpperSpindleStartStopButton);
+            if (btn) {
+                btn->setStartState(isStart);
+                qDebug() << "Values: Settings Upper Spindle Start/Stop =" << (isStart ? "START" : "STOP");
+            }
+        }
+    }
+}
+
+void updateSettingsLowerSpindleStartStop(bool isStart)  // Страница: Настройки
+{
+    if (settingsLowerSpindleStartStopButton) {
+        if (settingsLowerSpindleStartStopState != isStart) {
+            settingsLowerSpindleStartStopState = isStart;
+            auto *btn = qobject_cast<TextButtonWidget*>(settingsLowerSpindleStartStopButton);
+            if (btn) {
+                btn->setStartState(isStart);
+                qDebug() << "Values: Settings Lower Spindle Start/Stop =" << (isStart ? "START" : "STOP");
+            }
+        }
+    }
+}
+
 bool getUpperSpindleStartStopState()  // Страница: Главная
 {
     return upperSpindleStartStopState;
@@ -669,6 +932,16 @@ bool getUpperSpindleStartStopState()  // Страница: Главная
 bool getLowerSpindleStartStopState()  // Страница: Главная
 {
     return lowerSpindleStartStopState;
+}
+
+bool getSettingsUpperSpindleStartStopState()  // Страница: Настройки
+{
+    return settingsUpperSpindleStartStopState;
+}
+
+bool getSettingsLowerSpindleStartStopState()  // Страница: Настройки
+{
+    return settingsLowerSpindleStartStopState;
 }
 
 void registerVacuumPumpSelector(selector *widget)  // Страница: Вакуум

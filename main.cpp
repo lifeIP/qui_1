@@ -62,14 +62,15 @@ public:
         // Страница "Автотяга"
         stackedWidget->addWidget(new AutotPageWidget(this));
 
-        // Страница "Автолегирование" (настройка автолегирования)
-        autodopingPage = new AutodopingPageWidget(this);
-        stackedWidget->addWidget(autodopingPage);
-
-        // Остальные страницы
+        // Остальные основные страницы (индексы должны совпадать с нижней навигацией)
         stackedWidget->addWidget(new VacuumPageWidget(this));
         stackedWidget->addWidget(new GasPanelPageWidget(this));
         stackedWidget->addWidget(new SettingsPageWidget(this));
+
+        // Дополнительная страница "Автолегирование" (настройка автолегирования)
+        // Располагается после основных страниц, чтобы не сдвигать индексы навигации
+        autodopingPage = new AutodopingPageWidget(this);
+        stackedWidget->addWidget(autodopingPage);
 
         // Нижняя навигация
         bottomNav = new BottomNavigationBar(this);
