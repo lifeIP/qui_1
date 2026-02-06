@@ -59,6 +59,17 @@ void TextButtonWidget::toggleStartStop()
     updateStartStopStyle();
 }
 
+void TextButtonWidget::setStartState(bool isStart)
+{
+    if (!isStartStopMode_)
+        return;
+    
+    if (isStartState_ != isStart) {
+        isStartState_ = isStart;
+        updateStartStopStyle();
+    }
+}
+
 void TextButtonWidget::updateStartStopStyle()
 {
     if (!isStartStopMode_)

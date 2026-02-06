@@ -131,12 +131,18 @@ void updateVacuumPumpAlarm(double value);  // в сек
 // Main Page Controls
 void registerHeatingSelector(class selector *widget);
 void registerGeneratorSelector(class selector *widget);
+void registerUpperSpindleStartStopButton(class QWidget *widget);  // TextButtonWidget для СТАРТ/СТОП верхнего шпинделя
+void registerLowerSpindleStartStopButton(class QWidget *widget);  // TextButtonWidget для СТАРТ/СТОП нижнего шпинделя
 
 void updateHeatingSelector(bool state);  // true = Вкл, false = Выкл
 void updateGeneratorSelector(bool state);  // true = Вкл, false = Выкл
+void updateUpperSpindleStartStop(bool isStart);  // true = СТАРТ, false = СТОП
+void updateLowerSpindleStartStop(bool isStart);  // true = СТАРТ, false = СТОП
 
 bool getHeatingSelectorState();  // Получить текущее состояние селектора нагрева
 bool getGeneratorSelectorState();  // Получить текущее состояние селектора генератора
+bool getUpperSpindleStartStopState();  // Получить текущее состояние кнопки СТАРТ/СТОП верхнего шпинделя
+bool getLowerSpindleStartStopState();  // Получить текущее состояние кнопки СТАРТ/СТОП нижнего шпинделя
 
 // Vacuum Page Controls
 void registerVacuumPumpSelector(class selector *widget);

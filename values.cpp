@@ -2,6 +2,7 @@
 #include "widgets/selector.hpp"
 #include "widgets/doorselector.hpp"
 #include "widgets/textbuttonwidget.h"
+#include "widgets/textbuttonwidget.h"
 #include "widgets/iconbuttonwidget.h"
 
 #include <QDebug>
@@ -553,6 +554,12 @@ static selector *generatorSelector = nullptr;
 static bool heatingSelectorState = false;
 static bool generatorSelectorState = false;
 
+// Main Page Start/Stop Buttons (СТАРТ/СТОП)
+static QWidget *upperSpindleStartStopButton = nullptr;  // TextButtonWidget (Upper Spindle)
+static QWidget *lowerSpindleStartStopButton = nullptr;  // TextButtonWidget (Lower Spindle)
+static bool upperSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
+static bool lowerSpindleStartStopState = true;  // true = СТАРТ, false = СТОП
+
 // Vacuum Page Selectors
 static selector *vacuumPumpSelector = nullptr;
 static selector *vacuumValveSelector = nullptr;
@@ -612,6 +619,56 @@ bool getHeatingSelectorState()  // Страница: Главная
 bool getGeneratorSelectorState()  // Страница: Главная
 {
     return generatorSelectorState;
+}
+
+// Регистрация и обновление кнопок СТАРТ/СТОП (Главная страница)
+
+void registerUpperSpindleStartStopButton(QWidget *widget)  // Страница: Главная
+{
+    upperSpindleStartStopButton = widget;
+}
+
+void registerLowerSpindleStartStopButton(QWidget *widget)  // Страница: Главная
+{
+    lowerSpindleStartStopButton = widget;
+}
+
+void updateUpperSpindleStartStop(bool isStart)  // Страница: Главная
+{
+    if (upperSpindleStartStopButton) {
+        if (upperSpindleStartStopState != isStart) {
+            upperSpindleStartStopState = isStart;
+            auto *btn = qobject_cast<TextButtonWidget*>(upperSpindleStartStopButton);
+            if (btn) {
+                btn->setStartState(isStart);
+                qDebug() << "Values: Upper Spindle Start/Stop =" << (isStart ? "START" : "STOP");
+            }
+        }
+    }
+}
+
+void updateLowerSpindleStartStop(bool isStart)  // Страница: Главная
+{
+    if (lowerSpindleStartStopButton) {
+        if (lowerSpindleStartStopState != isStart) {
+            lowerSpindleStartStopState = isStart;
+            auto *btn = qobject_cast<TextButtonWidget*>(lowerSpindleStartStopButton);
+            if (btn) {
+                btn->setStartState(isStart);
+                qDebug() << "Values: Lower Spindle Start/Stop =" << (isStart ? "START" : "STOP");
+            }
+        }
+    }
+}
+
+bool getUpperSpindleStartStopState()  // Страница: Главная
+{
+    return upperSpindleStartStopState;
+}
+
+bool getLowerSpindleStartStopState()  // Страница: Главная
+{
+    return lowerSpindleStartStopState;
 }
 
 void registerVacuumPumpSelector(selector *widget)  // Страница: Вакуум

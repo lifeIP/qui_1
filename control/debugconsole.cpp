@@ -143,12 +143,19 @@ void DebugConsole::printHelp()
     *m_outputStream << "  values.set.vacuum.time <value> - Set Vacuum Pumping Time (sec)\n";
     *m_outputStream << "  values.set.vacuum.gas <value>   - Set Vacuum Gas Pressure (bar)\n";
     *m_outputStream << "\n";
+    *m_outputStream << "Main Page Control commands:\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Главная]\n");
+    *m_outputStream << "  main.heating.on                 - Heating Selector On\n";
+    *m_outputStream << "  main.heating.off                - Heating Selector Off\n";
+    *m_outputStream << "  main.generator.on               - Generator Selector On\n";
+    *m_outputStream << "  main.generator.off              - Generator Selector Off\n";
+    *m_outputStream << "  main.upper.start               - Upper Spindle Start\n";
+    *m_outputStream << "  main.upper.stop                - Upper Spindle Stop\n";
+    *m_outputStream << "  main.lower.start               - Lower Spindle Start\n";
+    *m_outputStream << "  main.lower.stop                - Lower Spindle Stop\n";
+    *m_outputStream << "\n";
     *m_outputStream << "Vacuum Control commands:\n";
     *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
-    *m_outputStream << "  main.heating.on                 - Main Page: Heating Selector On\n";
-    *m_outputStream << "  main.heating.off                - Main Page: Heating Selector Off\n";
-    *m_outputStream << "  main.generator.on               - Main Page: Generator Selector On\n";
-    *m_outputStream << "  main.generator.off              - Main Page: Generator Selector Off\n";
     *m_outputStream << "  vacuum.pump.on                  - Vacuum Pump On\n";
     *m_outputStream << "  vacuum.pump.off                  - Vacuum Pump Off\n";
     *m_outputStream << "  vacuum.valve.on                  - Vacuum Valve On\n";
@@ -237,21 +244,25 @@ bool DebugConsole::parseAndExecute(const QString &command)
     }
     if (cmd == "activity.upper.start") {
         Activity::handleUpperSpindleStartStop(true);
+        Values::updateUpperSpindleStartStop(true);
         *m_outputStream << "Executed: Upper Spindle Start" << endl;
         return true;
     }
     if (cmd == "activity.upper.stop") {
         Activity::handleUpperSpindleStartStop(false);
+        Values::updateUpperSpindleStartStop(false);
         *m_outputStream << "Executed: Upper Spindle Stop" << endl;
         return true;
     }
     if (cmd == "activity.lower.start") {
         Activity::handleLowerSpindleStartStop(true);
+        Values::updateLowerSpindleStartStop(true);
         *m_outputStream << "Executed: Lower Spindle Start" << endl;
         return true;
     }
     if (cmd == "activity.lower.stop") {
         Activity::handleLowerSpindleStartStop(false);
+        Values::updateLowerSpindleStartStop(false);
         *m_outputStream << "Executed: Lower Spindle Stop" << endl;
         return true;
     }
@@ -477,6 +488,30 @@ bool DebugConsole::parseAndExecute(const QString &command)
     if (cmd == "main.generator.off") {
         Values::updateGeneratorSelector(false);
         *m_outputStream << "Main Page: Generator Selector: Off" << endl;
+        return true;
+    }
+    if (cmd == "main.upper.start") {
+        Values::updateUpperSpindleStartStop(true);
+        Activity::handleUpperSpindleStartStop(true);
+        *m_outputStream << "Main Page: Upper Spindle: Start" << endl;
+        return true;
+    }
+    if (cmd == "main.upper.stop") {
+        Values::updateUpperSpindleStartStop(false);
+        Activity::handleUpperSpindleStartStop(false);
+        *m_outputStream << "Main Page: Upper Spindle: Stop" << endl;
+        return true;
+    }
+    if (cmd == "main.lower.start") {
+        Values::updateLowerSpindleStartStop(true);
+        Activity::handleLowerSpindleStartStop(true);
+        *m_outputStream << "Main Page: Lower Spindle: Start" << endl;
+        return true;
+    }
+    if (cmd == "main.lower.stop") {
+        Values::updateLowerSpindleStartStop(false);
+        Activity::handleLowerSpindleStartStop(false);
+        *m_outputStream << "Main Page: Lower Spindle: Stop" << endl;
         return true;
     }
     

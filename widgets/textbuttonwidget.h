@@ -23,6 +23,7 @@ public:
     // Методы для работы с состояниями СТАРТ/СТОП
     void setStartStopMode(bool enabled = true);
     void toggleStartStop();
+    void setStartState(bool isStart);  // Установить состояние напрямую (true = СТАРТ, false = СТОП)
     bool isStartState() const { return isStartState_; }
 
 private:

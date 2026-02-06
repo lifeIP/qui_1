@@ -470,8 +470,10 @@ public:
         TextButtonWidget *start_stop_btn = new TextButtonWidget("СТАРТ", "#29AC39", "#ffffff", 12, this);
         start_stop_btn->setMinimumHeight(38);
         start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
+        Values::registerUpperSpindleStartStopButton(start_stop_btn);
         start_stop_btn->setOnClick([start_stop_btn]() {
             bool isStart = start_stop_btn->isStartState();
+            Values::updateUpperSpindleStartStop(isStart);  // Синхронизируем с Values
             Activity::handleUpperSpindleStartStop(isStart);
         });
 
@@ -659,8 +661,10 @@ public:
         TextButtonWidget *start_stop_btn = new TextButtonWidget("СТАРТ", "#29AC39", "#ffffff", 12, this);
         start_stop_btn->setMinimumHeight(38);
         start_stop_btn->setStartStopMode(true);  // Включаем режим СТАРТ/СТОП
+        Values::registerLowerSpindleStartStopButton(start_stop_btn);
         start_stop_btn->setOnClick([start_stop_btn]() {
             bool isStart = start_stop_btn->isStartState();
+            Values::updateLowerSpindleStartStop(isStart);  // Синхронизируем с Values
             Activity::handleLowerSpindleStartStop(isStart);
         });
 
