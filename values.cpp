@@ -51,6 +51,14 @@ static QLabel *statusBarText = nullptr;
 // Vacuum Pump Status
 static QLabel *pumpPressureStatusLabel = nullptr;
 
+// Vacuum Page Parameters
+static QLabel *vacuumPumpPressureLabel = nullptr;
+static QLabel *vacuumChamberPressureLabel = nullptr;
+static QLabel *vacuumPumpingTimeLabel = nullptr;
+static QLabel *vacuumGasPressureLabel = nullptr;
+static QLabel *vacuumSwitchLabel = nullptr;
+static QLabel *vacuumPumpAlarmLabel = nullptr;
+
 // Регистрация виджетов
 void registerXYOffsetX(QLabel *label) { xyOffsetXLabel = label; }
 void registerXYOffsetY(QLabel *label) { xyOffsetYLabel = label; }
@@ -89,6 +97,14 @@ void registerFinalDiameter(QLabel *label) { finalDiameterLabel = label; }
 void registerFinalLowSpeed(QLabel *label) { finalLowSpeedLabel = label; }
 void registerFinalPolysiliconDiameter(QLabel *label) { finalPolysiliconDiameterLabel = label; }
 void registerFinalHighSpeed(QLabel *label) { finalHighSpeedLabel = label; }
+
+// Vacuum Page
+void registerVacuumPumpPressure(QLabel *label) { vacuumPumpPressureLabel = label; }
+void registerVacuumChamberPressure(QLabel *label) { vacuumChamberPressureLabel = label; }
+void registerVacuumPumpingTime(QLabel *label) { vacuumPumpingTimeLabel = label; }
+void registerVacuumGasPressure(QLabel *label) { vacuumGasPressureLabel = label; }
+void registerVacuumSwitch(QLabel *label) { vacuumSwitchLabel = label; }
+void registerVacuumPumpAlarm(QLabel *label) { vacuumPumpAlarmLabel = label; }
 
 // Status Bar
 void registerStatusBar(QLabel *statusDot, QLabel *statusText)
@@ -450,6 +466,55 @@ void updatePumpPressureStatus(PumpPressureStatus status)
     }
     
     qDebug() << "Values: Pump Pressure Status =" << static_cast<int>(status) << text;
+}
+
+// Vacuum Page
+void updateVacuumPumpPressure(double value)
+{
+    if (vacuumPumpPressureLabel) {
+        vacuumPumpPressureLabel->setText(formatValue2(value, "мбар"));
+        qDebug() << "Values: Vacuum Pump Pressure =" << value << "мбар";
+    }
+}
+
+void updateVacuumChamberPressure(double value)
+{
+    if (vacuumChamberPressureLabel) {
+        vacuumChamberPressureLabel->setText(formatValue2(value, "мбар"));
+        qDebug() << "Values: Vacuum Chamber Pressure =" << value << "мбар";
+    }
+}
+
+void updateVacuumPumpingTime(double value)
+{
+    if (vacuumPumpingTimeLabel) {
+        vacuumPumpingTimeLabel->setText(formatValue2(value, "сек"));
+        qDebug() << "Values: Vacuum Pumping Time =" << value << "сек";
+    }
+}
+
+void updateVacuumGasPressure(double value)
+{
+    if (vacuumGasPressureLabel) {
+        vacuumGasPressureLabel->setText(formatValue2(value, "бар"));
+        qDebug() << "Values: Vacuum Gas Pressure =" << value << "бар";
+    }
+}
+
+void updateVacuumSwitch(double value)
+{
+    if (vacuumSwitchLabel) {
+        vacuumSwitchLabel->setText(formatValue2(value, "мбар"));
+        qDebug() << "Values: Vacuum Switch =" << value << "мбар";
+    }
+}
+
+void updateVacuumPumpAlarm(double value)
+{
+    if (vacuumPumpAlarmLabel) {
+        vacuumPumpAlarmLabel->setText(formatValue2(value, "сек"));
+        qDebug() << "Values: Vacuum Pump Alarm =" << value << "сек";
+    }
 }
 
 } // namespace Values

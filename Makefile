@@ -622,7 +622,9 @@ build/obj/vacuumpagewidget.o: pages/vacuumpagewidget.cpp pages/vacuumpagewidget.
 		widgets/textbuttonwidget.h \
 		widgets/iconbuttonwidget.h \
 		widgets/selector.hpp \
-		widgets/doorselector.hpp
+		widgets/doorselector.hpp \
+		widgets/parametereditdialog.h \
+		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/vacuumpagewidget.o pages/vacuumpagewidget.cpp
 
 build/obj/gaspanelpagewidget.o: pages/gaspanelpagewidget.cpp pages/gaspanelpagewidget.h \

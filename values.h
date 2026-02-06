@@ -48,6 +48,14 @@ void registerFinalLowSpeed(QLabel *label);
 void registerFinalPolysiliconDiameter(QLabel *label);
 void registerFinalHighSpeed(QLabel *label);
 
+// Vacuum Page
+void registerVacuumPumpPressure(QLabel *label);
+void registerVacuumChamberPressure(QLabel *label);
+void registerVacuumPumpingTime(QLabel *label);
+void registerVacuumGasPressure(QLabel *label);
+void registerVacuumSwitch(QLabel *label);
+void registerVacuumPumpAlarm(QLabel *label);
+
 // Status Bar
 enum class ConnectionStatus {
     Connecting,    // идет подключение
@@ -107,5 +115,13 @@ void updateFinalDiameter(double value);  // в мм
 void updateFinalLowSpeed(double value);  // в мм
 void updateFinalPolysiliconDiameter(double value);  // в мм
 void updateFinalHighSpeed(double value);  // в мм
+
+// Vacuum Page
+void updateVacuumPumpPressure(double value);  // в мбар
+void updateVacuumChamberPressure(double value);  // в мбар
+void updateVacuumPumpingTime(double value);  // в сек
+void updateVacuumGasPressure(double value);  // в бар
+void updateVacuumSwitch(double value);  // в мбар
+void updateVacuumPumpAlarm(double value);  // в сек
 
 } // namespace Values

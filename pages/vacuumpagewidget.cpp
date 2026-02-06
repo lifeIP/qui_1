@@ -4,6 +4,7 @@
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/selector.hpp"
 #include "widgets/doorselector.hpp"
+#include "widgets/parametereditdialog.h"
 #include "values.h"
 
 #include <QVBoxLayout>
@@ -12,6 +13,9 @@
 #include <QFrame>
 #include <QLabel>
 #include <QGraphicsDropShadowEffect>
+#include <QMouseEvent>
+#include <QWidget>
+#include <functional>
 
 namespace {
 
@@ -24,6 +28,100 @@ QLabel* makeLabel(const QString &text, int ptSize = 12, bool bold = false, const
     style += " }";
     l->setStyleSheet(style);
     return l;
+}
+
+// Обработчик клика по числовым параметрам (аналогично главной странице)
+class ParameterClickHandler : public QObject
+{
+public:
+    ParameterClickHandler(QWidget *container,
+                          QLabel *valueLabel,
+                          const QString &title,
+                          const QString &description,
+                          const QString &suffix,
+                          std::function<void(double)> onChanged)
+        : QObject(container)
+        , container_(container)
+        , valueLabel_(valueLabel)
+        , title_(title)
+        , description_(description)
+        , suffix_(suffix)
+        , onChanged_(std::move(onChanged))
+    {
+        if (!container_ || !valueLabel_)
+            return;
+
+        container_->setCursor(Qt::PointingHandCursor);
+        container_->installEventFilter(this);
+
+        const auto children = container_->findChildren<QWidget*>();
+        for (QWidget *w : children) {
+            w->setCursor(Qt::PointingHandCursor);
+            w->installEventFilter(this);
+        }
+    }
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override
+    {
+        if (event->type() == QEvent::MouseButtonPress &&
+            (obj == container_ || obj->parent() == container_))
+        {
+            auto *me = static_cast<QMouseEvent*>(event);
+            if (me->button() == Qt::LeftButton && valueLabel_) {
+                QString text = valueLabel_->text();
+                QString numPart = text.section(' ', 0, 0);
+                bool ok = false;
+                double current = numPart.replace(',', '.').toDouble(&ok);
+                if (!ok)
+                    current = 0.0;
+
+                QWidget *root = valueLabel_->window();
+                QWidget *overlay = new QWidget(root);
+                overlay->setStyleSheet("QWidget { background-color: rgba(0, 0, 0, 150); }");
+                overlay->setGeometry(root->geometry());
+                overlay->show();
+                overlay->raise();
+
+                ParameterEditDialog dialog(title_, description_, current, overlay);
+                dialog.raise();
+                bool accepted = (dialog.exec() == QDialog::Accepted);
+
+                if (accepted) {
+                    double newValue = dialog.getValue();
+                    valueLabel_->setText(QString::number(newValue, 'f', 3) + suffix_);
+                    if (onChanged_)
+                        onChanged_(newValue);
+                }
+
+                overlay->deleteLater();
+                return true;
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+
+private:
+    QWidget *container_;
+    QLabel *valueLabel_;
+    QString title_;
+    QString description_;
+    QString suffix_;
+    std::function<void(double)> onChanged_;
+};
+
+static void makeEditableParameter(QWidget *container,
+                                  QLabel *valueLabel,
+                                  const QString &title,
+                                  const QString &description,
+                                  const QString &suffix,
+                                  std::function<void(double)> onChanged)
+{
+    if (!container || !valueLabel)
+        return;
+    new ParameterClickHandler(container, valueLabel,
+                              title, description, suffix,
+                              std::move(onChanged));
 }
 
 class CardFrame : public QFrame
@@ -95,30 +193,85 @@ QFrame* VacuumPageWidget::createStatusCard(QWidget *parent)
     grid->setHorizontalSpacing(24);
     grid->setVerticalSpacing(10);
 
-    auto addValue = [&](int row, int col, const QString &value, const QString &label) {
-        QVBoxLayout *colLayout = new QVBoxLayout();
-        QLabel *val = makeLabel(value, 22, true);
-        val->setAlignment(Qt::AlignCenter);
-        QLabel *lbl = makeLabel(label, 11, false, "#7f8c8d");
-        lbl->setAlignment(Qt::AlignCenter);
-        colLayout->addWidget(val);
-        colLayout->addWidget(lbl);
+    auto addEditableValue = [&card, &grid](int row, int col, 
+                                 const QString &initialValue,
+                                 const QString &description,
+                                 const QString &title,
+                                 const QString &suffix,
+                                 QLabel *&valueLabelRef,
+                                 std::function<void(double)> onChanged) {
+        // Создаем контейнер для параметра
+        QWidget *paramWidget = new QWidget(card);
+        paramWidget->setMinimumHeight(60);
+        QVBoxLayout *paramLayout = new QVBoxLayout(paramWidget);
+        paramLayout->setSpacing(4);
+        paramLayout->setAlignment(Qt::AlignCenter);
+        
+        // Значение
+        QLabel *valueLabel = makeLabel(initialValue, 18, true);
+        valueLabel->setAlignment(Qt::AlignCenter);
+        valueLabelRef = valueLabel;
+        paramLayout->addWidget(valueLabel);
 
-        QWidget *wrapper = new QWidget();
-        QVBoxLayout *w = new QVBoxLayout(wrapper);
-        w->setContentsMargins(0, 0, 0, 0);
-        w->addLayout(colLayout);
+        // Разделительная линия
+        QFrame *separator = new QFrame(paramWidget);
+        separator->setFrameShape(QFrame::HLine);
+        separator->setFrameShadow(QFrame::Sunken);
+        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setFixedHeight(2);
+        separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        paramLayout->addWidget(separator);
 
-        grid->addWidget(wrapper, row, col);
+        // Описание
+        QLabel *descLabel = makeLabel(description, 12);
+        descLabel->setAlignment(Qt::AlignCenter);
+        paramLayout->addWidget(descLabel);
+
+        // Делаем параметр редактируемым
+        makeEditableParameter(paramWidget, valueLabel, title, 
+                              QString::fromUtf8("Задайте значение"), suffix, onChanged);
+
+        grid->addWidget(paramWidget, row, col);
     };
 
-    addValue(0, 0, "0.000", QString::fromUtf8("Давление насоса, мбар"));
-    addValue(0, 1, "0.000", QString::fromUtf8("Давление в камере, мбар"));
-    addValue(0, 2, "0.000", QString::fromUtf8("Время закачки, сек"));
+    QLabel *pumpPressureLabel, *chamberPressureLabel, *pumpingTimeLabel;
+    QLabel *gasPressureLabel, *switchLabel, *alarmLabel;
 
-    addValue(1, 0, "0.000", QString::fromUtf8("Давление газа, бар"));
-    addValue(1, 1, "0.000", QString::fromUtf8("Вакуумный переключатель, мбар"));
-    addValue(1, 2, "0.000", QString::fromUtf8("Сигнализация насоса, сек"));
+    addEditableValue(0, 0, "0.000", QString::fromUtf8("Давление насоса, мбар"),
+                     QString::fromUtf8("Давление насоса:"), " мбар",
+                     pumpPressureLabel,
+                     [](double v) { Values::updateVacuumPumpPressure(v); });
+    Values::registerVacuumPumpPressure(pumpPressureLabel);
+
+    addEditableValue(0, 1, "0.000", QString::fromUtf8("Давление в камере, мбар"),
+                     QString::fromUtf8("Давление в камере:"), " мбар",
+                     chamberPressureLabel,
+                     [](double v) { Values::updateVacuumChamberPressure(v); });
+    Values::registerVacuumChamberPressure(chamberPressureLabel);
+
+    addEditableValue(0, 2, "0.000", QString::fromUtf8("Время закачки, сек"),
+                     QString::fromUtf8("Время закачки:"), " сек",
+                     pumpingTimeLabel,
+                     [](double v) { Values::updateVacuumPumpingTime(v); });
+    Values::registerVacuumPumpingTime(pumpingTimeLabel);
+
+    addEditableValue(1, 0, "0.000", QString::fromUtf8("Давление газа, бар"),
+                     QString::fromUtf8("Давление газа:"), " бар",
+                     gasPressureLabel,
+                     [](double v) { Values::updateVacuumGasPressure(v); });
+    Values::registerVacuumGasPressure(gasPressureLabel);
+
+    addEditableValue(1, 1, "0.000", QString::fromUtf8("Вакуумный переключатель, мбар"),
+                     QString::fromUtf8("Вакуумный переключатель:"), " мбар",
+                     switchLabel,
+                     [](double v) { Values::updateVacuumSwitch(v); });
+    Values::registerVacuumSwitch(switchLabel);
+
+    addEditableValue(1, 2, "0.000", QString::fromUtf8("Сигнализация насоса, сек"),
+                     QString::fromUtf8("Сигнализация насоса:"), " сек",
+                     alarmLabel,
+                     [](double v) { Values::updateVacuumPumpAlarm(v); });
+    Values::registerVacuumPumpAlarm(alarmLabel);
 
     v->addLayout(grid);
 
