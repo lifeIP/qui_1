@@ -4,94 +4,98 @@
 
 namespace Activity {
 
+// ============================================================================
+// Главная страница (Main Page)
+// ============================================================================
+
 // XY Control
-void handleXYUp()
+void handleXYUp()  // Страница: Главная
 {
     qDebug() << "Activity: XY Up";
     // TODO: реализовать обработку движения XY вверх
 }
 
-void handleXYDown()
+void handleXYDown()  // Страница: Главная
 {
     qDebug() << "Activity: XY Down";
     // TODO: реализовать обработку движения XY вниз
 }
 
-void handleXYLeft()
+void handleXYLeft()  // Страница: Главная
 {
     qDebug() << "Activity: XY Left";
     // TODO: реализовать обработку движения XY влево
 }
 
-void handleXYRight()
+void handleXYRight()  // Страница: Главная
 {
     qDebug() << "Activity: XY Right";
     // TODO: реализовать обработку движения XY вправо
 }
 
 // Coil Control
-void handleCoilUp()
+void handleCoilUp()  // Страница: Главная
 {
     qDebug() << "Activity: Coil Up";
     // TODO: реализовать обработку движения катушки вверх
 }
 
-void handleCoilDown()
+void handleCoilDown()  // Страница: Главная
 {
     qDebug() << "Activity: Coil Down";
     // TODO: реализовать обработку движения катушки вниз
 }
 
-void handleStartOscillations()
+void handleStartOscillations()  // Страница: Главная
 {
     qDebug() << "Activity: Start Oscillations";
     // TODO: реализовать запуск колебаний
 }
 
 // Upper Spindle Control
-void handleUpperSpindleLeft()
+void handleUpperSpindleLeft()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle Left";
     // TODO: реализовать обработку движения верхнего шпинделя влево
 }
 
-void handleUpperSpindleRight()
+void handleUpperSpindleRight()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle Right";
     // TODO: реализовать обработку движения верхнего шпинделя вправо
 }
 
-void handleUpperSpindleSpeed()
+void handleUpperSpindleSpeed()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle Speed";
     // TODO: реализовать обработку изменения скорости верхнего шпинделя
 }
 
-void handleUpperSpindleUp()
+void handleUpperSpindleUp()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle Up";
     // TODO: реализовать обработку движения верхнего шпинделя вверх
 }
 
-void handleUpperSpindleDown()
+void handleUpperSpindleDown()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle Down";
     // TODO: реализовать обработку движения верхнего шпинделя вниз
 }
 
-void handleUpperSpindleUpUp()
+void handleUpperSpindleUpUp()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle UpUp";
     // TODO: реализовать обработку быстрого движения верхнего шпинделя вверх
 }
 
-void handleUpperSpindleDownDown()
+void handleUpperSpindleDownDown()  // Страница: Главная
 {
     qDebug() << "Activity: Upper Spindle DownDown";
     // TODO: реализовать обработку быстрого движения верхнего шпинделя вниз
 }
 
-void handleUpperSpindleStartStop(bool isStart)
+void handleUpperSpindleStartStop(bool isStart)  // Страница: Главная
 {
     if (isStart) {
         qDebug() << "Activity: Upper Spindle Start";
@@ -103,49 +107,49 @@ void handleUpperSpindleStartStop(bool isStart)
 }
 
 // Lower Spindle Control
-void handleLowerSpindleLeft()
+void handleLowerSpindleLeft()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Left";
     // TODO: реализовать обработку движения нижнего шпинделя влево
 }
 
-void handleLowerSpindleRight()
+void handleLowerSpindleRight()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Right";
     // TODO: реализовать обработку движения нижнего шпинделя вправо
 }
 
-void handleLowerSpindleSpeed()
+void handleLowerSpindleSpeed()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Speed";
     // TODO: реализовать обработку изменения скорости нижнего шпинделя
 }
 
-void handleLowerSpindleUp()
+void handleLowerSpindleUp()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Up";
     // TODO: реализовать обработку движения нижнего шпинделя вверх
 }
 
-void handleLowerSpindleDown()
+void handleLowerSpindleDown()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Down";
     // TODO: реализовать обработку движения нижнего шпинделя вниз
 }
 
-void handleLowerSpindleUpUp()
+void handleLowerSpindleUpUp()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle UpUp";
     // TODO: реализовать обработку быстрого движения нижнего шпинделя вверх
 }
 
-void handleLowerSpindleDownDown()
+void handleLowerSpindleDownDown()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle DownDown";
     // TODO: реализовать обработку быстрого движения нижнего шпинделя вниз
 }
 
-void handleLowerSpindleStartStop(bool isStart)
+void handleLowerSpindleStartStop(bool isStart)  // Страница: Главная
 {
     if (isStart) {
         qDebug() << "Activity: Lower Spindle Start";
@@ -156,26 +160,26 @@ void handleLowerSpindleStartStop(bool isStart)
     }
 }
 
-void handleLowerSpindleHold()
+void handleLowerSpindleHold()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Hold";
     // TODO: реализовать обработку удерживания нижнего шпинделя
 }
 
-void handleLowerSpindleOscillate()
+void handleLowerSpindleOscillate()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Oscillate";
     // TODO: реализовать обработку осцилляции нижнего шпинделя
 }
 
-void handleLowerSpindleAutot()
+void handleLowerSpindleAutot()  // Страница: Главная
 {
     qDebug() << "Activity: Lower Spindle Autot";
     // TODO: реализовать обработку автотяги нижнего шпинделя
 }
 
 // Heating
-void handleHeatingStateChanged(int state)
+void handleHeatingStateChanged(int state)  // Страница: Главная
 {
     if (state == 0) {
         qDebug() << "Activity: Heating Off";
@@ -187,13 +191,13 @@ void handleHeatingStateChanged(int state)
 }
 
 // Generator
-void handleGeneratorReset()
+void handleGeneratorReset()  // Страница: Главная
 {
     qDebug() << "Activity: Generator Reset";
     // TODO: реализовать сброс генератора
 }
 
-void handleGeneratorStateChanged(int state)
+void handleGeneratorStateChanged(int state)  // Страница: Главная
 {
     if (state == 0) {
         qDebug() << "Activity: Generator Off";
@@ -205,20 +209,20 @@ void handleGeneratorStateChanged(int state)
 }
 
 // Reflector
-void handleReflectorUp()
+void handleReflectorUp()  // Страница: Главная
 {
     qDebug() << "Activity: Reflector Up";
     // TODO: реализовать обработку движения рефлектора вверх
 }
 
-void handleReflectorDown()
+void handleReflectorDown()  // Страница: Главная
 {
     qDebug() << "Activity: Reflector Down";
     // TODO: реализовать обработку движения рефлектора вниз
 }
 
 // Lighting
-void handleLightingMode(int mode)
+void handleLightingMode(int mode)  // Страница: Главная
 {
     if (mode == 0) {
         qDebug() << "Activity: Lighting Mode - All";
@@ -230,68 +234,78 @@ void handleLightingMode(int mode)
 }
 
 // Bottom Controls
-void handleNitrogenValveOpen()
+void handleNitrogenValveOpen()  // Страница: Главная
 {
     qDebug() << "Activity: Nitrogen Valve Open";
     // TODO: реализовать открытие азотного крана
 }
 
-void handleAutodope()
+void handleAutodope()  // Страница: Главная
 {
     qDebug() << "Activity: Autodope";
     // TODO: реализовать автолегирование
 }
 
-void handleAutodopeSettings()
-{
-    qDebug() << "Activity: Autodope Settings";
-    // TODO: открыть страницу настроек автолегирования на контроллере/ПЛК
-}
 
-// Doping Page
-void handleArgonStartStop(bool isStart)
+// ============================================================================
+// Страница Легирования (Doping Page)
+// ============================================================================
+
+void handleArgonStartStop(bool isStart)  // Страница: Легирование
 {
     if (isStart) {
         qDebug() << "Activity: Argon Start";
         // TODO: реализовать запуск подачи аргона
     } else {
-        qDebug() << "Activity: Argon Stop";
+    qDebug() << "Activity: Argon Stop";
         // TODO: реализовать остановку подачи аргона
     }
 }
 
-void handleInjectionStartStop(bool isStart)
+void handleInjectionStartStop(bool isStart)  // Страница: Легирование
 {
     if (isStart) {
-        qDebug() << "Activity: Injection Start";
-        // TODO: реализовать запуск впрыска
+    qDebug() << "Activity: Injection Start";
+    // TODO: реализовать запуск впрыска
     } else {
         qDebug() << "Activity: Injection Stop";
         // TODO: реализовать остановку впрыска
     }
 }
 
-void handlePhosphorusSelect()
+void handlePhosphorusSelect()  // Страница: Легирование
 {
     qDebug() << "Activity: Phosphorus Select";
     // TODO: реализовать выбор фосфора
 }
 
-void handleDiboraneSelect()
+void handleDiboraneSelect()  // Страница: Легирование
 {
     qDebug() << "Activity: Diborane Select";
     // TODO: реализовать выбор диборана
 }
 
-// Status Bar
-void handleStatusBarReset()
+void handleAutodopeSettings()  // Страница: Легирование
+{
+    qDebug() << "Activity: Autodope Settings";
+    // TODO: открыть страницу настроек автолегирования на контроллере/ПЛК
+}
+
+// ============================================================================
+// Общие функции (все страницы)
+// ============================================================================
+
+void handleStatusBarReset()  // Страница: Все
 {
     qDebug() << "Activity: Status Bar Reset";
     // TODO: реализовать сброс статус-бара
 }
 
-// Final Page
-void handleApplyToAutot()
+// ============================================================================
+// Страница Финальные (Final Page)
+// ============================================================================
+
+void handleApplyToAutot()  // Страница: Финальные
 {
     qDebug() << "Activity: Apply to Autot";
     // TODO: реализовать применение финальных параметров к автотяге
