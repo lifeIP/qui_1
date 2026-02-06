@@ -154,8 +154,9 @@ DopingPageWidget::DopingPageWidget(QWidget *parent)
                              
     autoSettingsBtn->setMinimumHeight(50);
     autoSettingsBtn->setFixedWidth(280);
-    autoSettingsBtn->setOnClick([]() {
-        Activity::handleAutodopeSettings();
+    autoSettingsBtn->setOnClick([this]() {
+        Activity::handleAutodopeSettings();      // Вызов логики контроллера/ПЛК
+        emit openAutodopingRequested();          // Переход на страницу автолегирования в UI
     });
     autoColumn->addWidget(autoSettingsBtn, 0);
     autoColumn->setAlignment(Qt::AlignHCenter);

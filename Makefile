@@ -69,6 +69,7 @@ SOURCES       = main.cpp \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
 		pages/autotpagewidget.cpp \
+		pages/autodopingpagewidget.cpp \
 		pages/vacuumpagewidget.cpp \
 		pages/gaspanelpagewidget.cpp \
 		pages/settingspagewidget.cpp build/moc/moc_controlthread.cpp \
@@ -84,6 +85,7 @@ SOURCES       = main.cpp \
 		build/moc/moc_mainpagewidget.cpp \
 		build/moc/moc_finalpagewidget.cpp \
 		build/moc/moc_autotpagewidget.cpp \
+		build/moc/moc_autodopingpagewidget.cpp \
 		build/moc/moc_vacuumpagewidget.cpp \
 		build/moc/moc_gaspanelpagewidget.cpp \
 		build/moc/moc_settingspagewidget.cpp
@@ -104,6 +106,7 @@ OBJECTS       = build/obj/main.o \
 		build/obj/mainpagewidget.o \
 		build/obj/finalpagewidget.o \
 		build/obj/autotpagewidget.o \
+		build/obj/autodopingpagewidget.o \
 		build/obj/vacuumpagewidget.o \
 		build/obj/gaspanelpagewidget.o \
 		build/obj/settingspagewidget.o \
@@ -120,6 +123,7 @@ OBJECTS       = build/obj/main.o \
 		build/obj/moc_mainpagewidget.o \
 		build/obj/moc_finalpagewidget.o \
 		build/obj/moc_autotpagewidget.o \
+		build/obj/moc_autodopingpagewidget.o \
 		build/obj/moc_vacuumpagewidget.o \
 		build/obj/moc_gaspanelpagewidget.o \
 		build/obj/moc_settingspagewidget.o
@@ -216,6 +220,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
 		pages/autotpagewidget.h \
+		pages/autodopingpagewidget.h \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
 		pages/settingspagewidget.h main.cpp \
@@ -235,6 +240,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/mainpagewidget.cpp \
 		pages/finalpagewidget.cpp \
 		pages/autotpagewidget.cpp \
+		pages/autodopingpagewidget.cpp \
 		pages/vacuumpagewidget.cpp \
 		pages/gaspanelpagewidget.cpp \
 		pages/settingspagewidget.cpp
@@ -422,8 +428,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents activity.h values.h control/controlthread.h control/debugconsole.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp widgets/parametereditdialog.h pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/vacuumpagewidget.h pages/gaspanelpagewidget.h pages/settingspagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp control/controlthread.cpp control/debugconsole.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp widgets/parametereditdialog.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/vacuumpagewidget.cpp pages/gaspanelpagewidget.cpp pages/settingspagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents activity.h values.h control/controlthread.h control/debugconsole.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp widgets/parametereditdialog.h pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/autodopingpagewidget.h pages/vacuumpagewidget.h pages/gaspanelpagewidget.h pages/settingspagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp control/controlthread.cpp control/debugconsole.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp widgets/parametereditdialog.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/autodopingpagewidget.cpp pages/vacuumpagewidget.cpp pages/gaspanelpagewidget.cpp pages/settingspagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -455,9 +461,9 @@ compiler_moc_predefs_clean:
 build/moc/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o build/moc/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
+compiler_moc_header_make_all: build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
+	-$(DEL_FILE) build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
 build/moc/moc_controlthread.cpp: control/controlthread.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -523,6 +529,11 @@ build/moc/moc_autotpagewidget.cpp: pages/autotpagewidget.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/autotpagewidget.h -o build/moc/moc_autotpagewidget.cpp
 
+build/moc/moc_autodopingpagewidget.cpp: pages/autodopingpagewidget.h \
+		build/moc/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/autodopingpagewidget.h -o build/moc/moc_autodopingpagewidget.cpp
+
 build/moc/moc_vacuumpagewidget.cpp: pages/vacuumpagewidget.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -550,6 +561,7 @@ build/moc/main.moc: main.cpp \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
 		pages/autotpagewidget.h \
+		pages/autodopingpagewidget.h \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
 		pages/settingspagewidget.h \
@@ -576,6 +588,7 @@ build/obj/main.o: main.cpp widgets/statusbarwidget.h \
 		pages/mainpagewidget.h \
 		pages/finalpagewidget.h \
 		pages/autotpagewidget.h \
+		pages/autodopingpagewidget.h \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
 		pages/settingspagewidget.h \
@@ -655,6 +668,9 @@ build/obj/finalpagewidget.o: pages/finalpagewidget.cpp pages/finalpagewidget.h \
 build/obj/autotpagewidget.o: pages/autotpagewidget.cpp pages/autotpagewidget.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/autotpagewidget.o pages/autotpagewidget.cpp
 
+build/obj/autodopingpagewidget.o: pages/autodopingpagewidget.cpp pages/autodopingpagewidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/autodopingpagewidget.o pages/autodopingpagewidget.cpp
+
 build/obj/vacuumpagewidget.o: pages/vacuumpagewidget.cpp pages/vacuumpagewidget.h \
 		widgets/textbuttonwidget.h \
 		widgets/iconbuttonwidget.h \
@@ -712,6 +728,9 @@ build/obj/moc_finalpagewidget.o: build/moc/moc_finalpagewidget.cpp
 
 build/obj/moc_autotpagewidget.o: build/moc/moc_autotpagewidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_autotpagewidget.o build/moc/moc_autotpagewidget.cpp
+
+build/obj/moc_autodopingpagewidget.o: build/moc/moc_autodopingpagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_autodopingpagewidget.o build/moc/moc_autodopingpagewidget.cpp
 
 build/obj/moc_vacuumpagewidget.o: build/moc/moc_vacuumpagewidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_vacuumpagewidget.o build/moc/moc_vacuumpagewidget.cpp

@@ -13,6 +13,10 @@ class DopingPageWidget : public QWidget
 public:
     explicit DopingPageWidget(QWidget *parent = nullptr);
 
+signals:
+    // Открыть страницу настройки автолегирования
+    void openAutodopingRequested();
+
 private:
     TextButtonWidget *argonStopButton;
     TextButtonWidget *injectionStartButton;

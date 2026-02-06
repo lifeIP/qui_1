@@ -15,6 +15,7 @@
 #include "pages/mainpagewidget.h"
 #include "pages/finalpagewidget.h"
 #include "pages/autotpagewidget.h"
+#include "pages/autodopingpagewidget.h"
 #include "pages/vacuumpagewidget.h"
 #include "pages/gaspanelpagewidget.h"
 #include "pages/settingspagewidget.h"
@@ -52,13 +53,18 @@ public:
         stackedWidget->addWidget(new MainPageWidget(this));
 
         // Страница "Легирование" с текущим интерфейсом
-        stackedWidget->addWidget(new DopingPageWidget(this));
+        DopingPageWidget *dopingPage = new DopingPageWidget(this);
+        stackedWidget->addWidget(dopingPage);
 
         // Страница "Финальные"
         stackedWidget->addWidget(new FinalPageWidget(this));
 
         // Страница "Автотяга"
         stackedWidget->addWidget(new AutotPageWidget(this));
+
+        // Страница "Автолегирование" (настройка автолегирования)
+        autodopingPage = new AutodopingPageWidget(this);
+        stackedWidget->addWidget(autodopingPage);
 
         // Остальные страницы
         stackedWidget->addWidget(new VacuumPageWidget(this));
@@ -71,6 +77,10 @@ public:
 
         connect(bottomNav, &BottomNavigationBar::pageSelected,
                 this, &MainWindow::setActivePage);
+
+        // Переход на страницу автолегирования из страницы легирования
+        connect(dopingPage, &DopingPageWidget::openAutodopingRequested,
+                this, &MainWindow::openAutodopingPage);
 
         // Активная страница по умолчанию — "Легирование"
         setActivePage(0);
@@ -113,6 +123,7 @@ private:
     BottomNavigationBar *bottomNav;
 
     QStackedWidget *stackedWidget;
+    QWidget *autodopingPage = nullptr;
 
     QWidget* createSimplePage(const QString &title)
     {
@@ -136,6 +147,15 @@ private:
         stackedWidget->setCurrentIndex(pageIndex);
         if (bottomNav)
             bottomNav->setActivePage(pageIndex);
+    }
+
+    // Открыть страницу "Автолегирование" без изменения активной вкладки навигации
+    void openAutodopingPage()
+    {
+        if (!stackedWidget || !autodopingPage)
+            return;
+        stackedWidget->setCurrentWidget(autodopingPage);
+        // Нижняя навигация остаётся на странице "Легирование"
     }
 
 protected:
