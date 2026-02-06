@@ -114,6 +114,29 @@ void DebugConsole::printHelp()
     *m_outputStream << "  activity.generator.on         - Generator On\n";
     *m_outputStream << "  activity.generator.off         - Generator Off\n";
     *m_outputStream << "  activity.generator.reset      - Generator Reset\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
+    *m_outputStream << "  activity.settings.xy.up                - Settings XY Up\n";
+    *m_outputStream << "  activity.settings.xy.down              - Settings XY Down\n";
+    *m_outputStream << "  activity.settings.xy.left              - Settings XY Left\n";
+    *m_outputStream << "  activity.settings.xy.right             - Settings XY Right\n";
+    *m_outputStream << "  activity.settings.coil.up              - Settings Coil Up\n";
+    *m_outputStream << "  activity.settings.coil.down            - Settings Coil Down\n";
+    *m_outputStream << "  activity.settings.coil.start           - Settings Start Oscillations\n";
+    *m_outputStream << "  activity.settings.upper.start          - Settings Upper Spindle Start\n";
+    *m_outputStream << "  activity.settings.upper.stop           - Settings Upper Spindle Stop\n";
+    *m_outputStream << "  activity.settings.lower.start          - Settings Lower Spindle Start\n";
+    *m_outputStream << "  activity.settings.lower.stop           - Settings Lower Spindle Stop\n";
+    *m_outputStream << "  activity.settings.heating.on           - Settings Heating On\n";
+    *m_outputStream << "  activity.settings.heating.off          - Settings Heating Off\n";
+    *m_outputStream << "  activity.settings.generator.on         - Settings Generator On\n";
+    *m_outputStream << "  activity.settings.generator.off        - Settings Generator Off\n";
+    *m_outputStream << "  activity.settings.generator.reset      - Settings Generator Reset\n";
+    *m_outputStream << "  activity.settings.reflector.up         - Settings Reflector Up\n";
+    *m_outputStream << "  activity.settings.reflector.down       - Settings Reflector Down\n";
+    *m_outputStream << "  activity.settings.lighting.all         - Settings Lighting All\n";
+    *m_outputStream << "  activity.settings.lighting.half        - Settings Lighting 50%\n";
+    *m_outputStream << "  activity.settings.nitrogen.open        - Settings Nitrogen Valve Open\n";
+    *m_outputStream << "  activity.settings.autodope             - Settings Autodope\n";
     *m_outputStream << QString::fromUtf8("  [Страница Легирования]\n");
     *m_outputStream << "  activity.argon.start          - Argon Start\n";
     *m_outputStream << "  activity.argon.stop            - Argon Stop\n";
@@ -137,6 +160,22 @@ void DebugConsole::printHelp()
     *m_outputStream << "  values.set.i <value>           - Set I Value (%)\n";
     *m_outputStream << "  values.set.u <value>           - Set U Value (%)\n";
     *m_outputStream << "  values.set.generator <value>    - Set Generator Percent (%)\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
+    *m_outputStream << "  values.set.settings.xy.x <value>        - Set Settings XY Offset X (MM)\n";
+    *m_outputStream << "  values.set.settings.xy.y <value>        - Set Settings XY Offset Y (MM)\n";
+    *m_outputStream << "  values.set.settings.coil.offset <value> - Set Settings Coil Offset (MM)\n";
+    *m_outputStream << "  values.set.settings.coil.osc <value>    - Set Settings Coil Oscillations (MM/min)\n";
+    *m_outputStream << "  values.set.settings.upper.x <value>     - Set Settings Upper Spindle X Offset (MM)\n";
+    *m_outputStream << "  values.set.settings.upper.speed <value> - Set Settings Upper Spindle Speed (MM/min)\n";
+    *m_outputStream << "  values.set.settings.upper.pos <value>   - Set Settings Upper Spindle Position (MM)\n";
+    *m_outputStream << "  values.set.settings.lower.x <value>     - Set Settings Lower Spindle X Offset (MM)\n";
+    *m_outputStream << "  values.set.settings.lower.speed <value> - Set Settings Lower Spindle Speed (MM/min)\n";
+    *m_outputStream << "  values.set.settings.lower.pos <value>   - Set Settings Lower Spindle Position (MM)\n";
+    *m_outputStream << "  values.set.settings.grid.amp <value>    - Set Settings Grid AMP\n";
+    *m_outputStream << "  values.set.settings.p <value>           - Set Settings P Value (%)\n";
+    *m_outputStream << "  values.set.settings.i <value>           - Set Settings I Value (%)\n";
+    *m_outputStream << "  values.set.settings.u <value>           - Set Settings U Value (%)\n";
+    *m_outputStream << "  values.set.settings.generator <value>   - Set Settings Generator Percent (%)\n";
     *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
     *m_outputStream << "  values.set.vacuum.pump <value>  - Set Vacuum Pump Pressure (mbar)\n";
     *m_outputStream << "  values.set.vacuum.chamber <value> - Set Vacuum Chamber Pressure (mbar)\n";
@@ -153,6 +192,17 @@ void DebugConsole::printHelp()
     *m_outputStream << "  main.upper.stop                - Upper Spindle Stop\n";
     *m_outputStream << "  main.lower.start               - Lower Spindle Start\n";
     *m_outputStream << "  main.lower.stop                - Lower Spindle Stop\n";
+    *m_outputStream << "\n";
+    *m_outputStream << "Settings Page Control commands:\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
+    *m_outputStream << "  settings.heating.on                 - Settings Heating Selector On\n";
+    *m_outputStream << "  settings.heating.off                - Settings Heating Selector Off\n";
+    *m_outputStream << "  settings.generator.on               - Settings Generator Selector On\n";
+    *m_outputStream << "  settings.generator.off              - Settings Generator Selector Off\n";
+    *m_outputStream << "  settings.upper.start                - Settings Upper Spindle Start\n";
+    *m_outputStream << "  settings.upper.stop                 - Settings Upper Spindle Stop\n";
+    *m_outputStream << "  settings.lower.start                - Settings Lower Spindle Start\n";
+    *m_outputStream << "  settings.lower.stop                 - Settings Lower Spindle Stop\n";
     *m_outputStream << "\n";
     *m_outputStream << "Vacuum Control commands:\n";
     *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
@@ -295,6 +345,125 @@ bool DebugConsole::parseAndExecute(const QString &command)
         *m_outputStream << "Executed: Generator Reset" << endl;
         return true;
     }
+    // Activity commands - Settings Page
+    if (cmd == "activity.settings.xy.up") {
+        Activity::handleSettingsXYUp();
+        *m_outputStream << "Executed: Settings XY Up" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.xy.down") {
+        Activity::handleSettingsXYDown();
+        *m_outputStream << "Executed: Settings XY Down" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.xy.left") {
+        Activity::handleSettingsXYLeft();
+        *m_outputStream << "Executed: Settings XY Left" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.xy.right") {
+        Activity::handleSettingsXYRight();
+        *m_outputStream << "Executed: Settings XY Right" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.coil.up") {
+        Activity::handleSettingsCoilUp();
+        *m_outputStream << "Executed: Settings Coil Up" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.coil.down") {
+        Activity::handleSettingsCoilDown();
+        *m_outputStream << "Executed: Settings Coil Down" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.coil.start") {
+        Activity::handleSettingsStartOscillations();
+        *m_outputStream << "Executed: Settings Start Oscillations" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.upper.start") {
+        Activity::handleSettingsUpperSpindleStartStop(true);
+        Values::updateSettingsUpperSpindleStartStop(true);
+        *m_outputStream << "Executed: Settings Upper Spindle Start" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.upper.stop") {
+        Activity::handleSettingsUpperSpindleStartStop(false);
+        Values::updateSettingsUpperSpindleStartStop(false);
+        *m_outputStream << "Executed: Settings Upper Spindle Stop" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.lower.start") {
+        Activity::handleSettingsLowerSpindleStartStop(true);
+        Values::updateSettingsLowerSpindleStartStop(true);
+        *m_outputStream << "Executed: Settings Lower Spindle Start" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.lower.stop") {
+        Activity::handleSettingsLowerSpindleStartStop(false);
+        Values::updateSettingsLowerSpindleStartStop(false);
+        *m_outputStream << "Executed: Settings Lower Spindle Stop" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.heating.on") {
+        Activity::handleSettingsHeatingStateChanged(1);
+        Values::updateSettingsHeatingSelector(true);
+        *m_outputStream << "Executed: Settings Heating On" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.heating.off") {
+        Activity::handleSettingsHeatingStateChanged(0);
+        Values::updateSettingsHeatingSelector(false);
+        *m_outputStream << "Executed: Settings Heating Off" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.generator.on") {
+        Activity::handleSettingsGeneratorStateChanged(1);
+        Values::updateSettingsGeneratorSelector(true);
+        *m_outputStream << "Executed: Settings Generator On" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.generator.off") {
+        Activity::handleSettingsGeneratorStateChanged(0);
+        Values::updateSettingsGeneratorSelector(false);
+        *m_outputStream << "Executed: Settings Generator Off" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.generator.reset") {
+        Activity::handleSettingsGeneratorReset();
+        *m_outputStream << "Executed: Settings Generator Reset" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.reflector.up") {
+        Activity::handleSettingsReflectorUp();
+        *m_outputStream << "Executed: Settings Reflector Up" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.reflector.down") {
+        Activity::handleSettingsReflectorDown();
+        *m_outputStream << "Executed: Settings Reflector Down" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.lighting.all") {
+        Activity::handleSettingsLightingMode(0);
+        *m_outputStream << "Executed: Settings Lighting Mode - All" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.lighting.half") {
+        Activity::handleSettingsLightingMode(1);
+        *m_outputStream << "Executed: Settings Lighting Mode - 50%" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.nitrogen.open") {
+        Activity::handleSettingsNitrogenValveOpen();
+        *m_outputStream << "Executed: Settings Nitrogen Valve Open" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.autodope") {
+        Activity::handleSettingsAutodope();
+        *m_outputStream << "Executed: Settings Autodope" << endl;
+        return true;
+    }
     if (cmd == "activity.argon.start") {
         Activity::handleArgonStartStop(true);
         *m_outputStream << "Executed: Argon Start" << endl;
@@ -405,6 +574,82 @@ bool DebugConsole::parseAndExecute(const QString &command)
             *m_outputStream << "Set Generator Percent = " << value << " %" << endl;
             return true;
         }
+        // Settings Page values
+        if (cmd == "values.set.settings.xy.x") {
+            Values::updateSettingsXYOffsetX(value);
+            *m_outputStream << "Set Settings XY Offset X = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.xy.y") {
+            Values::updateSettingsXYOffsetY(value);
+            *m_outputStream << "Set Settings XY Offset Y = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.coil.offset") {
+            Values::updateSettingsCoilOffset(value);
+            *m_outputStream << "Set Settings Coil Offset = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.coil.osc") {
+            Values::updateSettingsCoilOscillations(value);
+            *m_outputStream << "Set Settings Coil Oscillations = " << value << " MM/min" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.upper.x") {
+            Values::updateSettingsUpperSpindleXOffset(value);
+            *m_outputStream << "Set Settings Upper Spindle X Offset = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.upper.speed") {
+            Values::updateSettingsUpperSpindleSpeed(value);
+            *m_outputStream << "Set Settings Upper Spindle Speed = " << value << " MM/min" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.upper.pos") {
+            Values::updateSettingsUpperSpindlePosition(value);
+            *m_outputStream << "Set Settings Upper Spindle Position = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.lower.x") {
+            Values::updateSettingsLowerSpindleXOffset(value);
+            *m_outputStream << "Set Settings Lower Spindle X Offset = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.lower.speed") {
+            Values::updateSettingsLowerSpindleSpeed(value);
+            *m_outputStream << "Set Settings Lower Spindle Speed = " << value << " MM/min" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.lower.pos") {
+            Values::updateSettingsLowerSpindlePosition(value);
+            *m_outputStream << "Set Settings Lower Spindle Position = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.grid.amp") {
+            Values::updateSettingsGridAmp(value);
+            *m_outputStream << "Set Settings Grid AMP = " << value << " AMP" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.p") {
+            Values::updateSettingsPValue(value);
+            *m_outputStream << "Set Settings P Value = " << value << " %" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.i") {
+            Values::updateSettingsIValue(value);
+            *m_outputStream << "Set Settings I Value = " << value << " %" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.u") {
+            Values::updateSettingsUValue(value);
+            *m_outputStream << "Set Settings U Value = " << value << " %" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.generator") {
+            Values::updateSettingsGeneratorPercent(value);
+            *m_outputStream << "Set Settings Generator Percent = " << value << " %" << endl;
+            return true;
+        }
         if (cmd == "values.set.vacuum.pump") {
             Values::updateVacuumPumpPressure(value);
             *m_outputStream << "Set Vacuum Pump Pressure = " << value << " mbar" << endl;
@@ -512,6 +757,51 @@ bool DebugConsole::parseAndExecute(const QString &command)
         Values::updateLowerSpindleStartStop(false);
         Activity::handleLowerSpindleStartStop(false);
         *m_outputStream << "Main Page: Lower Spindle: Stop" << endl;
+        return true;
+    }
+    // Settings Page Control commands
+    if (cmd == "settings.heating.on") {
+        Values::updateSettingsHeatingSelector(true);
+        *m_outputStream << "Settings Page: Heating Selector: On" << endl;
+        return true;
+    }
+    if (cmd == "settings.heating.off") {
+        Values::updateSettingsHeatingSelector(false);
+        *m_outputStream << "Settings Page: Heating Selector: Off" << endl;
+        return true;
+    }
+    if (cmd == "settings.generator.on") {
+        Values::updateSettingsGeneratorSelector(true);
+        *m_outputStream << "Settings Page: Generator Selector: On" << endl;
+        return true;
+    }
+    if (cmd == "settings.generator.off") {
+        Values::updateSettingsGeneratorSelector(false);
+        *m_outputStream << "Settings Page: Generator Selector: Off" << endl;
+        return true;
+    }
+    if (cmd == "settings.upper.start") {
+        Values::updateSettingsUpperSpindleStartStop(true);
+        Activity::handleSettingsUpperSpindleStartStop(true);
+        *m_outputStream << "Settings Page: Upper Spindle: Start" << endl;
+        return true;
+    }
+    if (cmd == "settings.upper.stop") {
+        Values::updateSettingsUpperSpindleStartStop(false);
+        Activity::handleSettingsUpperSpindleStartStop(false);
+        *m_outputStream << "Settings Page: Upper Spindle: Stop" << endl;
+        return true;
+    }
+    if (cmd == "settings.lower.start") {
+        Values::updateSettingsLowerSpindleStartStop(true);
+        Activity::handleSettingsLowerSpindleStartStop(true);
+        *m_outputStream << "Settings Page: Lower Spindle: Start" << endl;
+        return true;
+    }
+    if (cmd == "settings.lower.stop") {
+        Values::updateSettingsLowerSpindleStartStop(false);
+        Activity::handleSettingsLowerSpindleStartStop(false);
+        *m_outputStream << "Settings Page: Lower Spindle: Stop" << endl;
         return true;
     }
     
