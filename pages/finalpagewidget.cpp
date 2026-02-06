@@ -151,14 +151,19 @@ FinalPageWidget::FinalPageWidget(QWidget *parent)
     card5->setCursor(Qt::PointingHandCursor);
     gridLayout->addWidget(card5, 2, 0);
 
+
     // Кнопка "Применить к автотяге"
+    QVBoxLayout *v_box_applyButton = new QVBoxLayout();
     TextButtonWidget *applyButton = new TextButtonWidget("Применить к автотяге", "#27ae60", "#ffffff", 16, this);
     applyButton->setMinimumHeight(60);
     applyButton->setMinimumWidth(200);
     applyButton->setOnClick([]() {
         Activity::handleApplyToAutot();
     });
-    gridLayout->addWidget(applyButton, 2, 1);
+    v_box_applyButton->addWidget(applyButton);
+    v_box_applyButton->addStretch();
+    gridLayout->addLayout(v_box_applyButton, 2, 1);
+
 
     rootLayout->addLayout(gridLayout);
     rootLayout->addStretch();
