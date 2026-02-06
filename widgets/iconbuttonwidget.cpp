@@ -161,6 +161,11 @@ QStringList IconButtonWidget::getAvailableIcons()
         << "right_arrow"
         << "up_arrow"
         << "down_arrow"
+        << "upleft_arrow"
+        << "upright_arrow"
+        << "upup_arrow"
+        << "downdown_arrow"
+        << "lightbulb"
         << "stop"
         << "start"
         << "reset";
@@ -190,7 +195,8 @@ QString IconButtonWidget::getIconPath(const QString &iconName) const
         
         {"upright_arrow", "icons/RoundedButton/upright.png"},
         {"upleft_arrow", "icons/RoundedButton/upleft.png"},
-        
+
+        {"lightbulb", "icons/RoundedButton/lightbulb.png"},
 
         // Другие действия
         {"stop", "icons/main.png"},

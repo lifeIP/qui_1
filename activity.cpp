@@ -242,17 +242,33 @@ void handleAutodope()
     // TODO: реализовать автолегирование
 }
 
-// Doping Page
-void handleArgonStop()
+void handleAutodopeSettings()
 {
-    qDebug() << "Activity: Argon Stop";
-    // TODO: реализовать остановку аргона
+    qDebug() << "Activity: Autodope Settings";
+    // TODO: открыть страницу настроек автолегирования на контроллере/ПЛК
 }
 
-void handleInjectionStart()
+// Doping Page
+void handleArgonStartStop(bool isStart)
 {
-    qDebug() << "Activity: Injection Start";
-    // TODO: реализовать запуск впрыска
+    if (isStart) {
+        qDebug() << "Activity: Argon Start";
+        // TODO: реализовать запуск подачи аргона
+    } else {
+        qDebug() << "Activity: Argon Stop";
+        // TODO: реализовать остановку подачи аргона
+    }
+}
+
+void handleInjectionStartStop(bool isStart)
+{
+    if (isStart) {
+        qDebug() << "Activity: Injection Start";
+        // TODO: реализовать запуск впрыска
+    } else {
+        qDebug() << "Activity: Injection Stop";
+        // TODO: реализовать остановку впрыска
+    }
 }
 
 void handlePhosphorusSelect()

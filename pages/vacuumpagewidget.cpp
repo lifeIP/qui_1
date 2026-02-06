@@ -225,17 +225,33 @@ QFrame* VacuumPageWidget::createLightingCard(QWidget *parent)
     grid->setSpacing(12);
     grid->setAlignment(Qt::AlignCenter);
 
-    auto makeLightButton = [&](const QString &color) -> IconButtonWidget* {
-        IconButtonWidget *btn = new IconButtonWidget("sun", card, color);
+    auto makeLightButton = [&](bool initialState) -> IconButtonWidget* {
+        // Начальное состояние: false = выключено (серый, стрелка вниз), true = включено (желтый, стрелка вверх)
+        // Создаем указатель на bool для хранения состояния каждой кнопки
+        bool *isOn = new bool(initialState);
+        IconButtonWidget *btn = new IconButtonWidget(
+            *isOn ? "lightbulb" : "lightbulb", 
+            card, 
+            *isOn ? "#f1c40f" : "#bdc3c7"
+        );
         btn->setFixedSize(60, 60);
+        
+        // Обработчик клика для переключения состояния
+        btn->setOnClick([btn, isOn]() {
+            *isOn = !(*isOn);
+            btn->setIcon(*isOn ? "lightbulb" : "lightbulb");
+            btn->setBackgroundColor(*isOn ? "#f1c40f" : "#bdc3c7");
+        });
+        
         return btn;
     };
 
     // Располагаем 4 "лампы" крестом, аналогично up/left/right/down в XYControlWidget
-    grid->addWidget(makeLightButton("#f1c40f"), 0, 1); // верх
-    grid->addWidget(makeLightButton("#bdc3c7"), 1, 0); // лево
-    grid->addWidget(makeLightButton("#f1c40f"), 1, 2); // право
-    grid->addWidget(makeLightButton("#bdc3c7"), 2, 1); // низ
+    // true = включено (желтый, стрелка вверх), false = выключено (серый, стрелка вниз)
+    grid->addWidget(makeLightButton(true), 0, 1);  // верх - включено
+    grid->addWidget(makeLightButton(false), 1, 0);  // лево - выключено
+    grid->addWidget(makeLightButton(true), 1, 2);  // право - включено
+    grid->addWidget(makeLightButton(false), 2, 1); // низ - выключено
 
     centerRow->addLayout(grid);
     v->addLayout(centerRow);

@@ -2,9 +2,9 @@
 
 #include <QWidget>
 
-class QPushButton;
 class QVBoxLayout;
 class QFrame;
+class TextButtonWidget;
 
 class DopingPageWidget : public QWidget
 {
@@ -14,10 +14,10 @@ public:
     explicit DopingPageWidget(QWidget *parent = nullptr);
 
 private:
-    QPushButton *argonStopButton;
-    QPushButton *injectionStartButton;
-    QPushButton *phosphorusButton;
-    QPushButton *diboraneButton;
+    TextButtonWidget *argonStopButton;
+    TextButtonWidget *injectionStartButton;
+    TextButtonWidget *phosphorusButton;
+    TextButtonWidget *diboraneButton;
 
     QFrame* createCard(const QString &title, const QString &value, QWidget *parent = nullptr);
     void createDopingSection(QVBoxLayout *mainLayout);

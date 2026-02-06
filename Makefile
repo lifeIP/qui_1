@@ -591,7 +591,10 @@ build/obj/parametereditdialog.o: widgets/parametereditdialog.cpp widgets/paramet
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/parametereditdialog.o widgets/parametereditdialog.cpp
 
 build/obj/dopingpagewidget.o: pages/dopingpagewidget.cpp pages/dopingpagewidget.h \
-		activity.h
+		activity.h \
+		widgets/textbuttonwidget.h \
+		widgets/parametereditdialog.h \
+		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/dopingpagewidget.o pages/dopingpagewidget.cpp
 
 build/obj/mainpagewidget.o: pages/mainpagewidget.cpp pages/mainpagewidget.h \

@@ -58,10 +58,11 @@ void handleNitrogenValveOpen();
 void handleAutodope();
 
 // Doping Page
-void handleArgonStop();
-void handleInjectionStart();
+void handleArgonStartStop(bool isStart);
+void handleInjectionStartStop(bool isStart);
 void handlePhosphorusSelect();
 void handleDiboraneSelect();
+void handleAutodopeSettings();
 
 // Status Bar
 void handleStatusBarReset();
