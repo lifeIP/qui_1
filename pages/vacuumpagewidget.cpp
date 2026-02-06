@@ -4,6 +4,7 @@
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/selector.hpp"
 #include "widgets/doorselector.hpp"
+#include "values.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -82,6 +83,12 @@ QFrame* VacuumPageWidget::createStatusCard(QWidget *parent)
     stateLayout->addWidget(stateLevel);
     stateLayout->addStretch();
     v->addLayout(stateLayout);
+    
+    // Регистрируем label состояния насоса в системе Values
+    Values::registerPumpPressureStatus(stateLevel);
+    
+    // Устанавливаем начальное состояние: высокое (красный)
+    Values::updatePumpPressureStatus(Values::PumpPressureStatus::High);
 
     // Показания (2 строки по 3 значения)
     QGridLayout *grid = new QGridLayout();

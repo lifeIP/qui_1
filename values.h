@@ -57,6 +57,17 @@ enum class ConnectionStatus {
 void registerStatusBar(QLabel *statusDot, QLabel *statusText);
 void updateConnectionStatus(ConnectionStatus status);
 
+// Vacuum Pump Status
+enum class PumpPressureStatus {
+    Low,              // низкое - синий
+    LowMedium,        // низкое-среднее - бирюзовый
+    Medium,           // среднее - желтый
+    MediumHigh,       // среднее-высокое - оранжевый
+    High              // высокое - красный
+};
+void registerPumpPressureStatus(QLabel *statusLabel);
+void updatePumpPressureStatus(PumpPressureStatus status);
+
 // Функции обновления значений
 void updateXYOffsetX(double value);  // в MM
 void updateXYOffsetY(double value);  // в MM

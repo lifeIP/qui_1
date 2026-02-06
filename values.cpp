@@ -48,6 +48,9 @@ static QLabel *finalHighSpeedLabel = nullptr;
 static QLabel *statusBarDot = nullptr;
 static QLabel *statusBarText = nullptr;
 
+// Vacuum Pump Status
+static QLabel *pumpPressureStatusLabel = nullptr;
+
 // Регистрация виджетов
 void registerXYOffsetX(QLabel *label) { xyOffsetXLabel = label; }
 void registerXYOffsetY(QLabel *label) { xyOffsetYLabel = label; }
@@ -397,6 +400,56 @@ void updateConnectionStatus(ConnectionStatus status)
     }
     
     qDebug() << "Values: Connection Status =" << static_cast<int>(status) << text;
+}
+
+// Vacuum Pump Status
+void registerPumpPressureStatus(QLabel *statusLabel)
+{
+    pumpPressureStatusLabel = statusLabel;
+}
+
+void updatePumpPressureStatus(PumpPressureStatus status)
+{
+    QString text;
+    QString color;
+    
+    switch (status) {
+        case PumpPressureStatus::Low:
+            text = QString::fromUtf8("Низкое");
+            color = "#3498db"; // синий
+            break;
+        case PumpPressureStatus::LowMedium:
+            text = QString::fromUtf8("Низкое-среднее");
+            color = "#1abc9c"; // бирюзовый
+            break;
+        case PumpPressureStatus::Medium:
+            text = QString::fromUtf8("Среднее");
+            color = "#f1c40f"; // желтый
+            break;
+        case PumpPressureStatus::MediumHigh:
+            text = QString::fromUtf8("Среднее-высокое");
+            color = "#e67e22"; // оранжевый
+            break;
+        case PumpPressureStatus::High:
+            text = QString::fromUtf8("Высокое");
+            color = "#e74c3c"; // красный
+            break;
+    }
+    
+    if (pumpPressureStatusLabel) {
+        pumpPressureStatusLabel->setText(text);
+        pumpPressureStatusLabel->setStyleSheet(
+            QString("QLabel {"
+                    "  font-size: 13px;"
+                    "  font-weight: bold;"
+                    "  color: %1;"
+                    "  background: transparent;"
+                    "  padding: 0px;"
+                    "}").arg(color)
+        );
+    }
+    
+    qDebug() << "Values: Pump Pressure Status =" << static_cast<int>(status) << text;
 }
 
 } // namespace Values
