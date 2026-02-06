@@ -1,6 +1,8 @@
 #include "pages/gaspanelpagewidget.h"
 
 #include "widgets/textbuttonwidget.h"
+#include "widgets/parametereditdialog.h"
+#include "values.h"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -8,6 +10,8 @@
 #include <QFrame>
 #include <QLabel>
 #include <QGraphicsDropShadowEffect>
+#include <QMouseEvent>
+#include <functional>
 
 namespace {
 
@@ -22,6 +26,99 @@ QLabel* makeLabel(const QString &text, int ptSize = 12, bool bold = false, const
     return l;
 }
 
+// Обработчик клика по числовым параметрам на странице газовой панели.
+class ParameterClickHandler : public QObject
+{
+public:
+    ParameterClickHandler(QWidget *container,
+                          QLabel *valueLabel,
+                          const QString &title,
+                          const QString &description,
+                          const QString &suffix,
+                          std::function<void(double)> onChanged)
+        : QObject(container)
+        , container_(container)
+        , valueLabel_(valueLabel)
+        , title_(title)
+        , description_(description)
+        , suffix_(suffix)
+        , onChanged_(std::move(onChanged))
+    {
+        if (!container_ || !valueLabel_)
+            return;
+
+        container_->setCursor(Qt::PointingHandCursor);
+        container_->installEventFilter(this);
+
+        const auto children = container_->findChildren<QWidget*>();
+        for (QWidget *w : children) {
+            w->setCursor(Qt::PointingHandCursor);
+            w->installEventFilter(this);
+        }
+    }
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override
+    {
+        if (event->type() == QEvent::MouseButtonPress &&
+            (obj == container_ || obj->parent() == container_)) {
+            auto *me = static_cast<QMouseEvent*>(event);
+            if (me->button() == Qt::LeftButton && valueLabel_) {
+                QString text = valueLabel_->text();
+                QString numPart = text.section(' ', 0, 0);
+                bool ok = false;
+                double current = numPart.replace(',', '.').toDouble(&ok);
+                if (!ok)
+                    current = 0.0;
+
+                QWidget *root = container_->window();
+                QWidget *overlay = new QWidget(root);
+                overlay->setStyleSheet("QWidget { background-color: rgba(0, 0, 0, 150); }");
+                overlay->setGeometry(root->geometry());
+                overlay->show();
+                overlay->raise();
+
+                ParameterEditDialog dialog(title_, description_, current, overlay);
+                dialog.raise();
+                bool accepted = (dialog.exec() == QDialog::Accepted);
+
+                if (accepted) {
+                    double newValue = dialog.getValue();
+                    valueLabel_->setText(QString::number(newValue, 'f', 1) + suffix_);
+                    if (onChanged_)
+                        onChanged_(newValue);
+                }
+
+                overlay->deleteLater();
+                return true;
+            }
+        }
+        return QObject::eventFilter(obj, event);
+    }
+
+private:
+    QWidget *container_;
+    QLabel *valueLabel_;
+    QString title_;
+    QString description_;
+    QString suffix_;
+    std::function<void(double)> onChanged_;
+};
+
+static void makeEditableParameter(QWidget *container,
+                                  QLabel *valueLabel,
+                                  const QString &title,
+                                  const QString &description,
+                                  const QString &suffix,
+                                  std::function<void(double)> onChanged)
+{
+    if (!container || !valueLabel)
+        return;
+    new ParameterClickHandler(container, valueLabel,
+                              title, description, suffix,
+                              std::move(onChanged));
+}
+
 class CardFrame : public QFrame
 {
 public:
@@ -29,6 +126,9 @@ public:
         : QFrame(parent)
     {
         setStyleSheet("QFrame { background-color: #ffffff; border-radius: 16px; }");
+
+        // Карточки должны иметь одинаковую ширину и не растягиваться по высоте
+        setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Maximum);
 
         QGraphicsDropShadowEffect *shadow = new QGraphicsDropShadowEffect(this);
         shadow->setBlurRadius(10);
@@ -56,12 +156,17 @@ GasPanelPageWidget::GasPanelPageWidget(QWidget *parent)
     QGridLayout *grid = new QGridLayout();
     grid->setSpacing(16);
 
+    // Все 4 карточки одинаковой ширины
+    grid->setColumnStretch(0, 1);
+    grid->setColumnStretch(1, 1);
+
     grid->addWidget(createArgonCard(this), 0, 0);
     grid->addWidget(createExhaustCard(this), 0, 1);
     grid->addWidget(createNitrogenCard(this), 1, 0);
     grid->addWidget(createGasPressureCard(this), 1, 1);
 
-    root->addLayout(grid, 1);
+    root->addLayout(grid);
+    root->addStretch();
 }
 
 QFrame* GasPanelPageWidget::createArgonCard(QWidget *parent)
@@ -71,21 +176,38 @@ QFrame* GasPanelPageWidget::createArgonCard(QWidget *parent)
     v->setContentsMargins(16, 16, 16, 16);
     v->setSpacing(10);
 
-    // Верхнее значение
+    // Верхний параметр: уставка аргона
+    QWidget *setpointWidget = new QWidget(card);
+    QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
+    setpointLayout->setContentsMargins(0, 0, 0, 0);
+    setpointLayout->setSpacing(4);
+
     QLabel *value = makeLabel("0.5", 22, true);
     value->setAlignment(Qt::AlignCenter);
-    v->addWidget(value);
+    setpointLayout->addWidget(value);
+
+    Values::registerGasPanelArgonSetpoint(value);
 
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
     separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
-    v->addWidget(separatorTop);
+    setpointLayout->addWidget(separatorTop);
 
     QLabel *title = makeLabel(QString::fromUtf8("Аргон, л/мин"), 11, false, "#7f8c8d");
     title->setAlignment(Qt::AlignCenter);
-    v->addWidget(title);
+    setpointLayout->addWidget(title);
+
+    makeEditableParameter(
+        setpointWidget,
+        value,
+        QString::fromUtf8("Аргон, л/мин:"),
+        QString::fromUtf8("Задайте расход аргона, л/мин"),
+        QString(),
+        [](double val) { Values::updateGasPanelArgonSetpoint(val); });
+
+    v->addWidget(setpointWidget);
 
     // Режимы: нормальный / быстрый
     QHBoxLayout *modes = new QHBoxLayout();
@@ -116,6 +238,15 @@ QFrame* GasPanelPageWidget::createArgonCard(QWidget *parent)
 
     v->addWidget(bottom);
 
+    Values::registerGasPanelArgonFlow(flowLabel);
+    makeEditableParameter(
+        bottom,
+        flowLabel,
+        QString::fromUtf8("Расход аргона:"),
+        QString::fromUtf8("Задайте текущий расход аргона, л/мин"),
+        QString::fromUtf8(" л/мин"),
+        [](double val) { Values::updateGasPanelArgonFlow(val); });
+
     return card;
 }
 
@@ -126,20 +257,37 @@ QFrame* GasPanelPageWidget::createExhaustCard(QWidget *parent)
     v->setContentsMargins(16, 16, 16, 16);
     v->setSpacing(10);
 
+    QWidget *setpointWidget = new QWidget(card);
+    QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
+    setpointLayout->setContentsMargins(0, 0, 0, 0);
+    setpointLayout->setSpacing(4);
+
     QLabel *value = makeLabel("0.0", 22, true);
     value->setAlignment(Qt::AlignCenter);
-    v->addWidget(value);
+    setpointLayout->addWidget(value);
+
+    Values::registerGasPanelExhaustSetpoint(value);
 
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
     separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
-    v->addWidget(separatorTop);
+    setpointLayout->addWidget(separatorTop);
 
     QLabel *title = makeLabel(QString::fromUtf8("Верхний выпуск, л/мин"), 11, false, "#7f8c8d");
     title->setAlignment(Qt::AlignCenter);
-    v->addWidget(title);
+    setpointLayout->addWidget(title);
+
+    makeEditableParameter(
+        setpointWidget,
+        value,
+        QString::fromUtf8("Верхний выпуск, л/мин:"),
+        QString::fromUtf8("Задайте расход через верхний выпуск, л/мин"),
+        QString(),
+        [](double val) { Values::updateGasPanelExhaustSetpoint(val); });
+
+    v->addWidget(setpointWidget);
 
     QLabel *modeLabel = makeLabel(QString::fromUtf8("Общий отвод"), 11, false, "#2c3e50");
     modeLabel->setAlignment(Qt::AlignLeft);
@@ -165,6 +313,15 @@ QFrame* GasPanelPageWidget::createExhaustCard(QWidget *parent)
 
     v->addWidget(bottom);
 
+    Values::registerGasPanelExhaustFlow(flowLabel);
+    makeEditableParameter(
+        bottom,
+        flowLabel,
+        QString::fromUtf8("Расход через верхний выпуск:"),
+        QString::fromUtf8("Задайте текущий расход через верхний выпуск, л/мин"),
+        QString::fromUtf8(" л/мин"),
+        [](double val) { Values::updateGasPanelExhaustFlow(val); });
+
     return card;
 }
 
@@ -175,20 +332,36 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     v->setContentsMargins(16, 16, 16, 16);
     v->setSpacing(10);
 
+    QWidget *setpointWidget = new QWidget(card);
+    QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
+    setpointLayout->setContentsMargins(0, 0, 0, 0);
+    setpointLayout->setSpacing(4);
+
     QLabel *value = makeLabel("0.0", 22, true);
     value->setAlignment(Qt::AlignCenter);
-    v->addWidget(value);
+    setpointLayout->addWidget(value);
+
+    Values::registerGasPanelNitrogenSetpoint(value);
 
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
     separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
-    v->addWidget(separatorTop);
+    setpointLayout->addWidget(separatorTop);
 
     QLabel *title = makeLabel(QString::fromUtf8("Азот, мл/мин"), 11, false, "#7f8c8d");
     title->setAlignment(Qt::AlignCenter);
-    v->addWidget(title);
+    setpointLayout->addWidget(title);
+
+    makeEditableParameter(
+        setpointWidget,
+        value,
+        QString::fromUtf8("Азот, мл/мин:"),
+        QString::fromUtf8("Задайте расход азота, мл/мин"),
+        QString(),
+        [](double val) { Values::updateGasPanelNitrogenSetpoint(val); });
+    v->addWidget(setpointWidget);
 
     TextButtonWidget *normalBtn = new TextButtonWidget(QString::fromUtf8("Нормальный"), "#29AC39", "#ffffff", 11, card);
     normalBtn->setMinimumHeight(36);
@@ -205,10 +378,22 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     val1->setAlignment(Qt::AlignCenter);
     val2->setAlignment(Qt::AlignCenter);
 
+    QWidget *val1Container = new QWidget(bottom);
+    QVBoxLayout *val1Layout = new QVBoxLayout(val1Container);
+    val1Layout->setContentsMargins(0, 0, 0, 0);
+    val1Layout->setSpacing(0);
+    val1Layout->addWidget(val1);
+
+    QWidget *val2Container = new QWidget(bottom);
+    QVBoxLayout *val2Layout = new QVBoxLayout(val2Container);
+    val2Layout->setContentsMargins(0, 0, 0, 0);
+    val2Layout->setSpacing(0);
+    val2Layout->addWidget(val2);
+
     QHBoxLayout *valuesRow = new QHBoxLayout();
     valuesRow->setSpacing(12);
-    valuesRow->addWidget(val1);
-    valuesRow->addWidget(val2);
+    valuesRow->addWidget(val1Container);
+    valuesRow->addWidget(val2Container);
     bottomLayout->addLayout(valuesRow);
 
     QLabel *labels = makeLabel(QString::fromUtf8("величина        концентрация"), 10, false, "#7f8c8d");
@@ -216,6 +401,24 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     bottomLayout->addWidget(labels);
 
     v->addWidget(bottom);
+
+    Values::registerGasPanelNitrogenValue(val1);
+    makeEditableParameter(
+        val1Container,
+        val1,
+        QString::fromUtf8("Азот — величина:"),
+        QString::fromUtf8("Задайте величину подачи азота, мл/мин"),
+        QString::fromUtf8(""),
+        [](double val) { Values::updateGasPanelNitrogenValue(val); });
+
+    Values::registerGasPanelNitrogenConcentration(val2);
+    makeEditableParameter(
+        val2Container,
+        val2,
+        QString::fromUtf8("Азот — концентрация:"),
+        QString::fromUtf8("Задайте концентрацию азота, %"),
+        QString::fromUtf8(""),
+        [](double val) { Values::updateGasPanelNitrogenConcentration(val); });
 
     return card;
 }
@@ -227,20 +430,36 @@ QFrame* GasPanelPageWidget::createGasPressureCard(QWidget *parent)
     v->setContentsMargins(16, 16, 16, 16);
     v->setSpacing(10);
 
+    QWidget *setpointWidget = new QWidget(card);
+    QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
+    setpointLayout->setContentsMargins(0, 0, 0, 0);
+    setpointLayout->setSpacing(4);
+
     QLabel *value = makeLabel("0.0", 22, true);
     value->setAlignment(Qt::AlignCenter);
-    v->addWidget(value);
+    setpointLayout->addWidget(value);
+
+    Values::registerGasPanelGasPressureSetpoint(value);
 
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
     separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
-    v->addWidget(separatorTop);
+    setpointLayout->addWidget(separatorTop);
 
     QLabel *title = makeLabel(QString::fromUtf8("Давление газа, бар"), 11, false, "#7f8c8d");
     title->setAlignment(Qt::AlignCenter);
-    v->addWidget(title);
+    setpointLayout->addWidget(title);
+
+    makeEditableParameter(
+        setpointWidget,
+        value,
+        QString::fromUtf8("Давление газа, бар:"),
+        QString::fromUtf8("Задайте уставку давления газа, бар"),
+        QString(),
+        [](double val) { Values::updateGasPanelGasPressureSetpoint(val); });
+    v->addWidget(setpointWidget);
 
     // Строка "Нормальное давление" + зелёная "галочка"
     QHBoxLayout *stateRow = new QHBoxLayout();
@@ -269,6 +488,15 @@ QFrame* GasPanelPageWidget::createGasPressureCard(QWidget *parent)
     bottomLayout->addWidget(regLabel);
 
     v->addWidget(bottom);
+
+    Values::registerGasPanelGasPressure(flowLabel);
+    makeEditableParameter(
+        bottom,
+        flowLabel,
+        QString::fromUtf8("Давление газа:"),
+        QString::fromUtf8("Задайте текущее давление газа, бар"),
+        QString::fromUtf8(" бар"),
+        [](double val) { Values::updateGasPanelGasPressure(val); });
 
     return card;
 }

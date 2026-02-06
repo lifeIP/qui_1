@@ -67,6 +67,17 @@ void registerFlowDopingGas(QLabel *label);
 void registerFlowInjection(QLabel *label);
 void registerFlowPurge(QLabel *label);
 
+// Gas Panel Page
+void registerGasPanelArgonSetpoint(QLabel *label);
+void registerGasPanelArgonFlow(QLabel *label);
+void registerGasPanelExhaustSetpoint(QLabel *label);
+void registerGasPanelExhaustFlow(QLabel *label);
+void registerGasPanelNitrogenSetpoint(QLabel *label);
+void registerGasPanelNitrogenValue(QLabel *label);
+void registerGasPanelNitrogenConcentration(QLabel *label);
+void registerGasPanelGasPressureSetpoint(QLabel *label);
+void registerGasPanelGasPressure(QLabel *label);
+
 // Final Page
 void registerFinalGrowthRate(QLabel *label);
 void registerFinalDiameter(QLabel *label);
@@ -156,6 +167,17 @@ void updateFlowArgon(double value, const QString &unit = "л/мин");
 void updateFlowDopingGas(double value, const QString &unit = "мл/мин");
 void updateFlowInjection(double value, const QString &unit = "мл/мин");
 void updateFlowPurge(double value, const QString &unit = "бар");
+
+// Gas Panel Page
+void updateGasPanelArgonSetpoint(double value);
+void updateGasPanelArgonFlow(double value);
+void updateGasPanelExhaustSetpoint(double value);
+void updateGasPanelExhaustFlow(double value);
+void updateGasPanelNitrogenSetpoint(double value);
+void updateGasPanelNitrogenValue(double value);
+void updateGasPanelNitrogenConcentration(double value);
+void updateGasPanelGasPressureSetpoint(double value);
+void updateGasPanelGasPressure(double value);
 
 // Final Page
 void updateFinalGrowthRate(double value);  // в мм

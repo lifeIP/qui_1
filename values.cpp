@@ -90,6 +90,20 @@ static QLabel *flowInjectionLabel = nullptr;
 static QLabel *flowPurgeLabel = nullptr;
 
 // ============================================================================
+// Газовая панель (Gas Panel Page)
+// ============================================================================
+
+static QLabel *gasPanelArgonSetpointLabel = nullptr;
+static QLabel *gasPanelArgonFlowLabel = nullptr;
+static QLabel *gasPanelExhaustSetpointLabel = nullptr;
+static QLabel *gasPanelExhaustFlowLabel = nullptr;
+static QLabel *gasPanelNitrogenSetpointLabel = nullptr;
+static QLabel *gasPanelNitrogenValueLabel = nullptr;
+static QLabel *gasPanelNitrogenConcentrationLabel = nullptr;
+static QLabel *gasPanelGasPressureSetpointLabel = nullptr;
+static QLabel *gasPanelGasPressureLabel = nullptr;
+
+// ============================================================================
 // Страница Вакуум (Vacuum Page)
 // ============================================================================
 
@@ -168,6 +182,17 @@ void registerFlowArgon(QLabel *label) { flowArgonLabel = label; }  // Стран
 void registerFlowDopingGas(QLabel *label) { flowDopingGasLabel = label; }  // Страница: Легирование
 void registerFlowInjection(QLabel *label) { flowInjectionLabel = label; }  // Страница: Легирование
 void registerFlowPurge(QLabel *label) { flowPurgeLabel = label; }  // Страница: Легирование
+
+// Газовая панель
+void registerGasPanelArgonSetpoint(QLabel *label) { gasPanelArgonSetpointLabel = label; }  // Страница: Газовая панель
+void registerGasPanelArgonFlow(QLabel *label) { gasPanelArgonFlowLabel = label; }          // Страница: Газовая панель
+void registerGasPanelExhaustSetpoint(QLabel *label) { gasPanelExhaustSetpointLabel = label; }  // Страница: Газовая панель
+void registerGasPanelExhaustFlow(QLabel *label) { gasPanelExhaustFlowLabel = label; }          // Страница: Газовая панель
+void registerGasPanelNitrogenSetpoint(QLabel *label) { gasPanelNitrogenSetpointLabel = label; }  // Страница: Газовая панель
+void registerGasPanelNitrogenValue(QLabel *label) { gasPanelNitrogenValueLabel = label; }        // Страница: Газовая панель
+void registerGasPanelNitrogenConcentration(QLabel *label) { gasPanelNitrogenConcentrationLabel = label; }  // Страница: Газовая панель
+void registerGasPanelGasPressureSetpoint(QLabel *label) { gasPanelGasPressureSetpointLabel = label; }  // Страница: Газовая панель
+void registerGasPanelGasPressure(QLabel *label) { gasPanelGasPressureLabel = label; }                  // Страница: Газовая панель
 
 // Страница Финальные
 void registerFinalGrowthRate(QLabel *label) { finalGrowthRateLabel = label; }  // Страница: Финальные
@@ -529,6 +554,79 @@ void updateFlowPurge(double value, const QString &unit)  // Страница: Л
     if (flowPurgeLabel) {
         flowPurgeLabel->setText(formatValue(value, unit));
         qDebug() << "Values: Flow Purge =" << value << unit;
+    }
+}
+
+// Газовая панель
+void updateGasPanelArgonSetpoint(double value)  // Страница: Газовая панель
+{
+    if (gasPanelArgonSetpointLabel) {
+        gasPanelArgonSetpointLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Argon Setpoint =" << value;
+    }
+}
+
+void updateGasPanelArgonFlow(double value)  // Страница: Газовая панель
+{
+    if (gasPanelArgonFlowLabel) {
+        gasPanelArgonFlowLabel->setText(formatValue(value, QString::fromUtf8("л/мин")));
+        qDebug() << "Values: GasPanel Argon Flow =" << value;
+    }
+}
+
+void updateGasPanelExhaustSetpoint(double value)  // Страница: Газовая панель
+{
+    if (gasPanelExhaustSetpointLabel) {
+        gasPanelExhaustSetpointLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Exhaust Setpoint =" << value;
+    }
+}
+
+void updateGasPanelExhaustFlow(double value)  // Страница: Газовая панель
+{
+    if (gasPanelExhaustFlowLabel) {
+        gasPanelExhaustFlowLabel->setText(formatValue(value, QString::fromUtf8("л/мин")));
+        qDebug() << "Values: GasPanel Exhaust Flow =" << value;
+    }
+}
+
+void updateGasPanelNitrogenSetpoint(double value)  // Страница: Газовая панель
+{
+    if (gasPanelNitrogenSetpointLabel) {
+        gasPanelNitrogenSetpointLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Nitrogen Setpoint =" << value;
+    }
+}
+
+void updateGasPanelNitrogenValue(double value)  // Страница: Газовая панель
+{
+    if (gasPanelNitrogenValueLabel) {
+        gasPanelNitrogenValueLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Nitrogen Value =" << value;
+    }
+}
+
+void updateGasPanelNitrogenConcentration(double value)  // Страница: Газовая панель
+{
+    if (gasPanelNitrogenConcentrationLabel) {
+        gasPanelNitrogenConcentrationLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Nitrogen Concentration =" << value;
+    }
+}
+
+void updateGasPanelGasPressureSetpoint(double value)  // Страница: Газовая панель
+{
+    if (gasPanelGasPressureSetpointLabel) {
+        gasPanelGasPressureSetpointLabel->setText(formatValue(value));
+        qDebug() << "Values: GasPanel Gas Pressure Setpoint =" << value;
+    }
+}
+
+void updateGasPanelGasPressure(double value)  // Страница: Газовая панель
+{
+    if (gasPanelGasPressureLabel) {
+        gasPanelGasPressureLabel->setText(formatValue2(value, QString::fromUtf8("бар")));
+        qDebug() << "Values: GasPanel Gas Pressure =" << value;
     }
 }
 
