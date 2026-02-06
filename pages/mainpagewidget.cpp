@@ -831,7 +831,10 @@ public:
 
             selector *toggle = new selector(this);
             toggle->set(false, false);  // Начальное состояние: выключено
+            Values::registerHeatingSelector(toggle);
             toggle->setOnStateChanged([](int state) {
+                bool boolState = (state == 1);
+                Values::updateHeatingSelector(boolState);  // Синхронизируем с Values
                 Activity::handleHeatingStateChanged(state);
             });
             v->addWidget(toggle, 0, Qt::AlignHCenter);
@@ -976,7 +979,10 @@ public:
             selectorLayout->setContentsMargins(0, 0, 0, 0);
             selector *toggle = new selector(generator);
             toggle->set(false, false);  // Начальное состояние: выключено
+            Values::registerGeneratorSelector(toggle);
             toggle->setOnStateChanged([](int state) {
+                bool boolState = (state == 1);
+                Values::updateGeneratorSelector(boolState);  // Синхронизируем с Values
                 Activity::handleGeneratorStateChanged(state);
             });
             selectorLayout->addWidget(toggle, 0, Qt::AlignLeft);

@@ -547,6 +547,13 @@ void updateConnectionStatus(ConnectionStatus status)  // Страница: Вс�
 // Страница Вакуум (Vacuum Page) - Controls
 // ============================================================================
 
+// Main Page Selectors
+static selector *heatingSelector = nullptr;
+static selector *generatorSelector = nullptr;
+static bool heatingSelectorState = false;
+static bool generatorSelectorState = false;
+
+// Vacuum Page Selectors
 static selector *vacuumPumpSelector = nullptr;
 static selector *vacuumValveSelector = nullptr;
 static selector *autoPumpDownSelector = nullptr;
@@ -563,6 +570,49 @@ static bool autoPumpDownSelectorState = false;
 static bool upperDoorSelectorState = false;  // true = Откр, false = Закр
 static bool lowerDoorSelectorState = false;  // true = Откр, false = Закр
 static bool mainDoorStatusState = false;  // true = открыта, false = закрыта
+
+// Main Page Selectors
+void registerHeatingSelector(selector *widget)  // Страница: Главная
+{
+    heatingSelector = widget;
+}
+
+void registerGeneratorSelector(selector *widget)  // Страница: Главная
+{
+    generatorSelector = widget;
+}
+
+void updateHeatingSelector(bool state)  // Страница: Главная
+{
+    if (heatingSelector) {
+        if (heatingSelectorState != state) {
+            heatingSelectorState = state;  // Сохраняем состояние
+            heatingSelector->set(state, true);  // animated=true
+            qDebug() << "Values: Heating Selector =" << (state ? "On" : "Off");
+        }
+    }
+}
+
+void updateGeneratorSelector(bool state)  // Страница: Главная
+{
+    if (generatorSelector) {
+        if (generatorSelectorState != state) {
+            generatorSelectorState = state;  // Сохраняем состояние
+            generatorSelector->set(state, true);  // animated=true
+            qDebug() << "Values: Generator Selector =" << (state ? "On" : "Off");
+        }
+    }
+}
+
+bool getHeatingSelectorState()  // Страница: Главная
+{
+    return heatingSelectorState;
+}
+
+bool getGeneratorSelectorState()  // Страница: Главная
+{
+    return generatorSelectorState;
+}
 
 void registerVacuumPumpSelector(selector *widget)  // Страница: Вакуум
 {

@@ -145,6 +145,10 @@ void DebugConsole::printHelp()
     *m_outputStream << "\n";
     *m_outputStream << "Vacuum Control commands:\n";
     *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
+    *m_outputStream << "  main.heating.on                 - Main Page: Heating Selector On\n";
+    *m_outputStream << "  main.heating.off                - Main Page: Heating Selector Off\n";
+    *m_outputStream << "  main.generator.on               - Main Page: Generator Selector On\n";
+    *m_outputStream << "  main.generator.off              - Main Page: Generator Selector Off\n";
     *m_outputStream << "  vacuum.pump.on                  - Vacuum Pump On\n";
     *m_outputStream << "  vacuum.pump.off                  - Vacuum Pump Off\n";
     *m_outputStream << "  vacuum.valve.on                  - Vacuum Valve On\n";
@@ -253,21 +257,25 @@ bool DebugConsole::parseAndExecute(const QString &command)
     }
     if (cmd == "activity.heating.on") {
         Activity::handleHeatingStateChanged(1);
+        Values::updateHeatingSelector(true);
         *m_outputStream << "Executed: Heating On" << endl;
         return true;
     }
     if (cmd == "activity.heating.off") {
         Activity::handleHeatingStateChanged(0);
+        Values::updateHeatingSelector(false);
         *m_outputStream << "Executed: Heating Off" << endl;
         return true;
     }
     if (cmd == "activity.generator.on") {
         Activity::handleGeneratorStateChanged(1);
+        Values::updateGeneratorSelector(true);
         *m_outputStream << "Executed: Generator On" << endl;
         return true;
     }
     if (cmd == "activity.generator.off") {
         Activity::handleGeneratorStateChanged(0);
+        Values::updateGeneratorSelector(false);
         *m_outputStream << "Executed: Generator Off" << endl;
         return true;
     }
@@ -447,6 +455,28 @@ bool DebugConsole::parseAndExecute(const QString &command)
     if (cmd == "status.pump.high") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::High);
         *m_outputStream << "Set pump pressure: High" << endl;
+        return true;
+    }
+    
+    // Main Page Control commands
+    if (cmd == "main.heating.on") {
+        Values::updateHeatingSelector(true);
+        *m_outputStream << "Main Page: Heating Selector: On" << endl;
+        return true;
+    }
+    if (cmd == "main.heating.off") {
+        Values::updateHeatingSelector(false);
+        *m_outputStream << "Main Page: Heating Selector: Off" << endl;
+        return true;
+    }
+    if (cmd == "main.generator.on") {
+        Values::updateGeneratorSelector(true);
+        *m_outputStream << "Main Page: Generator Selector: On" << endl;
+        return true;
+    }
+    if (cmd == "main.generator.off") {
+        Values::updateGeneratorSelector(false);
+        *m_outputStream << "Main Page: Generator Selector: Off" << endl;
         return true;
     }
     

@@ -128,6 +128,16 @@ void updateVacuumGasPressure(double value);  // в бар
 void updateVacuumSwitch(double value);  // в мбар
 void updateVacuumPumpAlarm(double value);  // в сек
 
+// Main Page Controls
+void registerHeatingSelector(class selector *widget);
+void registerGeneratorSelector(class selector *widget);
+
+void updateHeatingSelector(bool state);  // true = Вкл, false = Выкл
+void updateGeneratorSelector(bool state);  // true = Вкл, false = Выкл
+
+bool getHeatingSelectorState();  // Получить текущее состояние селектора нагрева
+bool getGeneratorSelectorState();  // Получить текущее состояние селектора генератора
+
 // Vacuum Page Controls
 void registerVacuumPumpSelector(class selector *widget);
 void registerVacuumValveSelector(class selector *widget);
