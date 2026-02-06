@@ -18,5 +18,7 @@ public slots:
 
 private:
     QLabel *timeLabel;
+    QLabel *statusDot;
+    QLabel *statusText;
 };
 

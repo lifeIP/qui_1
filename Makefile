@@ -566,7 +566,8 @@ build/obj/values.o: values.cpp values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/values.o values.cpp
 
 build/obj/statusbarwidget.o: widgets/statusbarwidget.cpp widgets/statusbarwidget.h \
-		activity.h
+		activity.h \
+		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/statusbarwidget.o widgets/statusbarwidget.cpp
 
 build/obj/bottomnavigationbar.o: widgets/bottomnavigationbar.cpp widgets/bottomnavigationbar.h

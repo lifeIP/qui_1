@@ -44,6 +44,10 @@ static QLabel *finalLowSpeedLabel = nullptr;
 static QLabel *finalPolysiliconDiameterLabel = nullptr;
 static QLabel *finalHighSpeedLabel = nullptr;
 
+// Status Bar
+static QLabel *statusBarDot = nullptr;
+static QLabel *statusBarText = nullptr;
+
 // Регистрация виджетов
 void registerXYOffsetX(QLabel *label) { xyOffsetXLabel = label; }
 void registerXYOffsetY(QLabel *label) { xyOffsetYLabel = label; }
@@ -82,6 +86,13 @@ void registerFinalDiameter(QLabel *label) { finalDiameterLabel = label; }
 void registerFinalLowSpeed(QLabel *label) { finalLowSpeedLabel = label; }
 void registerFinalPolysiliconDiameter(QLabel *label) { finalPolysiliconDiameterLabel = label; }
 void registerFinalHighSpeed(QLabel *label) { finalHighSpeedLabel = label; }
+
+// Status Bar
+void registerStatusBar(QLabel *statusDot, QLabel *statusText)
+{
+    statusBarDot = statusDot;
+    statusBarText = statusText;
+}
 
 // Вспомогательная функция для форматирования значения
 static QString formatValue(double value, const QString &unit = "")
@@ -339,6 +350,53 @@ void updateFinalHighSpeed(double value)
         finalHighSpeedLabel->setText(formatValue(value));
         qDebug() << "Values: Final High Speed =" << value;
     }
+}
+
+// Status Bar
+void updateConnectionStatus(ConnectionStatus status)
+{
+    QString text;
+    QString color;
+    
+    switch (status) {
+        case ConnectionStatus::Connecting:
+            text = QString::fromUtf8("Идет подключение");
+            color = "#f1c40f"; // желтый
+            break;
+        case ConnectionStatus::Disconnected:
+            text = QString::fromUtf8("Нет связи с контроллером");
+            color = "#e74c3c"; // красный
+            break;
+        case ConnectionStatus::Connected:
+            text = QString::fromUtf8("Контроллер подключен");
+            color = "#27ae60"; // зеленый
+            break;
+    }
+    
+    if (statusBarDot) {
+        statusBarDot->setStyleSheet(
+            QString("QLabel {"
+                    "  color: %1;"
+                    "  font-size: 18px;"
+                    "  background: transparent;"
+                    "  padding: 0px;"
+                    "}").arg(color)
+        );
+    }
+    
+    if (statusBarText) {
+        statusBarText->setText(text);
+        statusBarText->setStyleSheet(
+            QString("QLabel {"
+                    "  font-size: 15px;"
+                    "  color: %1;"
+                    "  background: transparent;"
+                    "  padding: 0px;"
+                    "}").arg(color)
+        );
+    }
+    
+    qDebug() << "Values: Connection Status =" << static_cast<int>(status) << text;
 }
 
 } // namespace Values

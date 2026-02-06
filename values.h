@@ -48,6 +48,15 @@ void registerFinalLowSpeed(QLabel *label);
 void registerFinalPolysiliconDiameter(QLabel *label);
 void registerFinalHighSpeed(QLabel *label);
 
+// Status Bar
+enum class ConnectionStatus {
+    Connecting,    // идет подключение
+    Disconnected, // нет связи с контроллером
+    Connected      // контроллер подключен
+};
+void registerStatusBar(QLabel *statusDot, QLabel *statusText);
+void updateConnectionStatus(ConnectionStatus status);
+
 // Функции обновления значений
 void updateXYOffsetX(double value);  // в MM
 void updateXYOffsetY(double value);  // в MM

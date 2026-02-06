@@ -1,5 +1,6 @@
 #include "widgets/statusbarwidget.h"
 #include "activity.h"
+#include "values.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -28,8 +29,8 @@ StatusBarWidget::StatusBarWidget(QWidget *parent)
 
     statusLayout->addStretch();
 
-    // Красная точка и статус
-    QLabel *statusDot = new QLabel("●", this);
+    // Точка и статус (регистрируются в системе Values)
+    statusDot = new QLabel("●", this);
     statusDot->setStyleSheet(
         "QLabel {"
         "  color: #e74c3c;"
@@ -39,7 +40,7 @@ StatusBarWidget::StatusBarWidget(QWidget *parent)
         "}");
     statusLayout->addWidget(statusDot);
 
-    QLabel *statusText = new QLabel("Нет связи с контроллером", this);
+    statusText = new QLabel("Нет связи с контроллером", this);
     statusText->setStyleSheet(
         "QLabel {"
         "  font-size: 15px;"
@@ -48,6 +49,12 @@ StatusBarWidget::StatusBarWidget(QWidget *parent)
         "  padding: 0px;"
         "}");
     statusLayout->addWidget(statusText);
+    
+    // Регистрируем виджеты в системе Values
+    Values::registerStatusBar(statusDot, statusText);
+    
+    // Устанавливаем начальный статус: нет связи
+    Values::updateConnectionStatus(Values::ConnectionStatus::Disconnected);
 
     statusLayout->addStretch();
 
