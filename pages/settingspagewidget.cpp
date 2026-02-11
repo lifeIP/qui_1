@@ -8,7 +8,6 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGridLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
@@ -157,10 +156,6 @@ public:
         QHBoxLayout *h = new QHBoxLayout();
         h->setSpacing(15);
 
-        QGridLayout *buttonsGrid = new QGridLayout();
-        buttonsGrid->setSpacing(8);
-        buttonsGrid->setAlignment(Qt::AlignCenter);
-
         IconButtonWidget *up    = new IconButtonWidget("up_arrow", this, "#505050");
         IconButtonWidget *down  = new IconButtonWidget("down_arrow", this, "#505050");
         IconButtonWidget *left  = new IconButtonWidget("left_arrow", this, "#505050");
@@ -171,19 +166,31 @@ public:
         left->setOnClick([]() { Activity::handleSettingsXYLeft(); });
         right->setOnClick([]() { Activity::handleSettingsXYRight(); });
 
-        buttonsGrid->addWidget(up,    0, 1);
-        buttonsGrid->addWidget(left,  1, 0);
-
-        QLabel *xyLabel = makeLabel("XY", 16, true);
+        QLabel *xyLabel = makeLabel("XY", 18, true);
         xyLabel->setAlignment(Qt::AlignCenter);
-        buttonsGrid->addWidget(xyLabel, 1, 1);
-
-        buttonsGrid->addWidget(right, 1, 2);
-        buttonsGrid->addWidget(down,  2, 1);
 
         QVBoxLayout *buttonsLayout = new QVBoxLayout();
-        buttonsLayout->addLayout(buttonsGrid);
+        buttonsLayout->setSpacing(4);
         buttonsLayout->setAlignment(Qt::AlignCenter);
+
+        QHBoxLayout *topRow = new QHBoxLayout();
+        topRow->addStretch();
+        topRow->addWidget(up);
+        topRow->addStretch();
+        buttonsLayout->addLayout(topRow);
+
+        QHBoxLayout *middleRow = new QHBoxLayout();
+        middleRow->setSpacing(4);
+        middleRow->addWidget(left);
+        middleRow->addWidget(xyLabel);
+        middleRow->addWidget(right);
+        buttonsLayout->addLayout(middleRow);
+
+        QHBoxLayout *bottomRow = new QHBoxLayout();
+        bottomRow->addStretch();
+        bottomRow->addWidget(down);
+        bottomRow->addStretch();
+        buttonsLayout->addLayout(bottomRow);
 
         h->addLayout(buttonsLayout);
 
@@ -219,6 +226,18 @@ public:
             QString::fromUtf8(" MM"),
             [](double v) { Values::updateSettingsXYOffsetX(v); });
 
+        TextButtonWidget *neutralXBtn = new TextButtonWidget(
+            QString::fromUtf8("Нейтральное X"), 
+            "#808080", 
+            "#ffffff", 
+            9, 
+            param1Widget
+        );
+        neutralXBtn->setBorderRadius(14);
+        neutralXBtn->setMinimumHeight(28);
+        neutralXBtn->setOnClick([]() { Values::updateSettingsXYOffsetX(0); });
+        param1Layout->addWidget(neutralXBtn);
+
         infoLayout->addWidget(param1Widget);
 
         QWidget *param2Widget = new QWidget(this);
@@ -248,6 +267,18 @@ public:
             QString::fromUtf8("Диапазон: от -10 до 10 мм"),
             QString::fromUtf8(" MM"),
             [](double v) { Values::updateSettingsXYOffsetY(v); });
+
+        TextButtonWidget *neutralYBtn = new TextButtonWidget(
+            QString::fromUtf8("Нейтральное Y"), 
+            "#808080", 
+            "#ffffff", 
+            9, 
+            param2Widget
+        );
+        neutralYBtn->setBorderRadius(14);
+        neutralYBtn->setMinimumHeight(28);
+        neutralYBtn->setOnClick([]() { Values::updateSettingsXYOffsetY(0); });
+        param2Layout->addWidget(neutralYBtn);
 
         infoLayout->addWidget(param2Widget);
 
@@ -356,10 +387,43 @@ public:
 
         v->addLayout(h);
 
-        TextButtonWidget *start = new TextButtonWidget("Запуск колебаний", "#2d3436", "#ffffff", 12, this);
-        start->setMinimumHeight(38);
-        start->setOnClick([]() { Activity::handleSettingsStartOscillations(); });
-        v->addWidget(start);
+        QHBoxLayout *modeRow = new QHBoxLayout();
+        modeRow->setSpacing(8);
+
+        TextButtonWidget *neutralBtn = new TextButtonWidget(
+            QString::fromUtf8("Нейтральное"), 
+            "#2d3436", 
+            "#ffffff", 
+            10, 
+            this
+        );
+        neutralBtn->setMinimumHeight(38);
+        neutralBtn->setOnClick([]() { Activity::handleSettingsCoilNeutral(); });
+        modeRow->addWidget(neutralBtn, 2);
+
+        TextButtonWidget *accelBtn = new TextButtonWidget(
+            QString::fromUtf8("Ускорение"), 
+            "#29AC39", 
+            "#ffffff", 
+            10, 
+            this
+        );
+        accelBtn->setMinimumHeight(38);
+        accelBtn->setOnClick([]() { Activity::handleSettingsCoilAcceleration(); });
+        modeRow->addWidget(accelBtn, 1);
+
+        TextButtonWidget *serviceBtn = new TextButtonWidget(
+            QString::fromUtf8("Сервис"), 
+            "#f5cd5b", 
+            "#2c3e50", 
+            10, 
+            this
+        );
+        serviceBtn->setMinimumHeight(38);
+        serviceBtn->setOnClick([]() { Activity::handleSettingsCoilService(); });
+        modeRow->addWidget(serviceBtn, 1);
+
+        v->addLayout(modeRow);
     }
 };
 

@@ -26,6 +26,9 @@ void handleStartOscillations();
 void handleSettingsCoilUp();
 void handleSettingsCoilDown();
 void handleSettingsStartOscillations();
+void handleSettingsCoilNeutral();
+void handleSettingsCoilAcceleration();
+void handleSettingsCoilService();
 
 // Upper Spindle Control
 void handleUpperSpindleLeft();

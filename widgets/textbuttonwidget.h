@@ -20,6 +20,9 @@ public:
     // Метод для изменения цвета фона
     void setBackgroundColor(const QString &backgroundColor);
     
+    // Метод для задания радиуса скругления углов (в пикселях)
+    void setBorderRadius(int radius);
+    
     // Методы для работы с состояниями СТАРТ/СТОП
     void setStartStopMode(bool enabled = true);
     void toggleStartStop();
@@ -36,6 +39,8 @@ private:
     QString stopBgColor_;
     QString textColor_;
     int fontSize_;
+    int borderRadius_;
+    QString currentBackgroundColor_;
     
     void updateStyle(const QString &backgroundColor, const QString &textColor, int fontSize);
     void updateStartStopStyle();

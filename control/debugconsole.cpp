@@ -121,7 +121,9 @@ void DebugConsole::printHelp()
     *m_outputStream << "  activity.settings.xy.right             - Settings XY Right\n";
     *m_outputStream << "  activity.settings.coil.up              - Settings Coil Up\n";
     *m_outputStream << "  activity.settings.coil.down            - Settings Coil Down\n";
-    *m_outputStream << "  activity.settings.coil.start           - Settings Start Oscillations\n";
+    *m_outputStream << "  activity.settings.coil.neutral          - Settings Coil Neutral\n";
+    *m_outputStream << "  activity.settings.coil.acceleration    - Settings Coil Acceleration\n";
+    *m_outputStream << "  activity.settings.coil.service         - Settings Coil Service\n";
     *m_outputStream << "  activity.settings.upper.start          - Settings Upper Spindle Start\n";
     *m_outputStream << "  activity.settings.upper.stop           - Settings Upper Spindle Stop\n";
     *m_outputStream << "  activity.settings.lower.start          - Settings Lower Spindle Start\n";
@@ -376,9 +378,19 @@ bool DebugConsole::parseAndExecute(const QString &command)
         *m_outputStream << "Executed: Settings Coil Down" << endl;
         return true;
     }
-    if (cmd == "activity.settings.coil.start") {
-        Activity::handleSettingsStartOscillations();
-        *m_outputStream << "Executed: Settings Start Oscillations" << endl;
+    if (cmd == "activity.settings.coil.neutral") {
+        Activity::handleSettingsCoilNeutral();
+        *m_outputStream << "Executed: Settings Coil Neutral" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.coil.acceleration") {
+        Activity::handleSettingsCoilAcceleration();
+        *m_outputStream << "Executed: Settings Coil Acceleration" << endl;
+        return true;
+    }
+    if (cmd == "activity.settings.coil.service") {
+        Activity::handleSettingsCoilService();
+        *m_outputStream << "Executed: Settings Coil Service" << endl;
         return true;
     }
     if (cmd == "activity.settings.upper.start") {

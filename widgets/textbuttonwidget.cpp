@@ -14,6 +14,7 @@ TextButtonWidget::TextButtonWidget(const QString &text,
     , stopBgColor_("#e74c3c")
     , textColor_(textColor)
     , fontSize_(fontSize)
+    , borderRadius_(18)
 {
     updateStyle(backgroundColor, textColor, fontSize);
     
@@ -35,6 +36,12 @@ void TextButtonWidget::setOnClick(std::function<void()> callback)
 void TextButtonWidget::setBackgroundColor(const QString &backgroundColor)
 {
     updateStyle(backgroundColor, textColor_, fontSize_);
+}
+
+void TextButtonWidget::setBorderRadius(int radius)
+{
+    borderRadius_ = radius;
+    updateStyle(currentBackgroundColor_, textColor_, fontSize_);
 }
 
 void TextButtonWidget::setStartStopMode(bool enabled)
@@ -86,6 +93,7 @@ void TextButtonWidget::updateStyle(const QString &backgroundColor,
                                    const QString &textColor, 
                                    int fontSize)
 {
+    currentBackgroundColor_ = backgroundColor;
     // Вычисляем более светлый цвет для hover
     QString hoverColor = backgroundColor;
     if (hoverColor == "#2d3436") {
@@ -119,7 +127,7 @@ void TextButtonWidget::updateStyle(const QString &backgroundColor,
         "  background-color: %1;"
         "  color: %2;"
         "  border: none;"
-        "  border-radius: 18px;"
+        "  border-radius: %6px;"
         "  font-size: %3px;"
         "  padding: 10px 18px;"
         "}"
@@ -129,7 +137,7 @@ void TextButtonWidget::updateStyle(const QString &backgroundColor,
         "QPushButton:pressed {"
         "  background-color: %5;"
         "}"
-    ).arg(backgroundColor, textColor, QString::number(fontSize), hoverColor, pressedColor);
+    ).arg(backgroundColor, textColor, QString::number(fontSize), hoverColor, pressedColor, QString::number(borderRadius_));
     
     setStyleSheet(style);
 }

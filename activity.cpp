@@ -96,6 +96,24 @@ void handleSettingsStartOscillations()  // Страница: Настройки
     // TODO: реализовать запуск колебаний на странице настроек
 }
 
+void handleSettingsCoilNeutral()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Coil Neutral";
+    // TODO: режим нейтральное
+}
+
+void handleSettingsCoilAcceleration()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Coil Acceleration";
+    // TODO: режим ускорение
+}
+
+void handleSettingsCoilService()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Coil Service";
+    // TODO: режим сервис
+}
+
 // Upper Spindle Control
 void handleUpperSpindleLeft()  // Страница: Главная
 {
