@@ -98,6 +98,7 @@ void registerGasPanelNitrogenValue(QLabel *label);
 void registerGasPanelNitrogenConcentration(QLabel *label);
 void registerGasPanelGasPressureSetpoint(QLabel *label);
 void registerGasPanelGasPressure(QLabel *label);
+void registerGasPanelGasPressureStatus(QLabel *statusLabel, QLabel *iconLabel);
 
 // Final Page
 void registerFinalGrowthRate(QLabel *label);
@@ -211,6 +212,7 @@ void updateGasPanelNitrogenValue(double value);
 void updateGasPanelNitrogenConcentration(double value);
 void updateGasPanelGasPressureSetpoint(double value);
 void updateGasPanelGasPressure(double value);
+void updateGasPanelGasPressureStatus(int status);  // 0=Нормальное, 1=Низкое, 2=Высокое
 
 // Final Page
 void updateFinalGrowthRate(double value);  // в мм

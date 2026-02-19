@@ -1,5 +1,10 @@
 #include "widgets/textbuttonwidget.h"
 
+#include <QPropertyAnimation>
+#include <QAbstractAnimation>
+#include <QEasingCurve>
+#include <QMouseEvent>
+
 TextButtonWidget::TextButtonWidget(const QString &text,
                                    const QString &backgroundColor,
                                    const QString &textColor,
@@ -17,6 +22,14 @@ TextButtonWidget::TextButtonWidget(const QString &text,
     , borderRadius_(18)
 {
     updateStyle(backgroundColor, textColor, fontSize);
+
+    pressAnimation = new QPropertyAnimation(this, "geometry", this);
+    pressAnimation->setDuration(80);
+    pressAnimation->setEasingCurve(QEasingCurve::OutQuad);
+
+    releaseAnimation = new QPropertyAnimation(this, "geometry", this);
+    releaseAnimation->setDuration(120);
+    releaseAnimation->setEasingCurve(QEasingCurve::OutQuad);
     
     connect(this, &QPushButton::clicked, this, [this]() {
         if (isStartStopMode_) {
@@ -140,4 +153,38 @@ void TextButtonWidget::updateStyle(const QString &backgroundColor,
     ).arg(backgroundColor, textColor, QString::number(fontSize), hoverColor, pressedColor, QString::number(borderRadius_));
     
     setStyleSheet(style);
+}
+
+void TextButtonWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (pressAnimation && releaseAnimation && event->button() == Qt::LeftButton) {
+        bool wasAtRest = (pressAnimation->state() != QAbstractAnimation::Running &&
+                         releaseAnimation->state() != QAbstractAnimation::Running);
+        pressAnimation->stop();
+        releaseAnimation->stop();
+        if (wasAtRest) {
+            normalGeometry_ = geometry();
+        }
+        QRect g = normalGeometry_.isValid() ? normalGeometry_ : geometry();
+        int dx = qMax(2, g.width() / 20);
+        int dy = qMax(2, g.height() / 20);
+        QRect smaller(g.x() + dx / 2, g.y() + dy / 2, g.width() - dx, g.height() - dy);
+        pressAnimation->setStartValue(g);
+        pressAnimation->setEndValue(smaller);
+        pressAnimation->start();
+    }
+    QPushButton::mousePressEvent(event);
+}
+
+void TextButtonWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (pressAnimation && releaseAnimation && event->button() == Qt::LeftButton &&
+        normalGeometry_.isValid()) {
+        pressAnimation->stop();
+        releaseAnimation->stop();
+        releaseAnimation->setStartValue(geometry());
+        releaseAnimation->setEndValue(normalGeometry_);
+        releaseAnimation->start();
+    }
+    QPushButton::mouseReleaseEvent(event);
 }

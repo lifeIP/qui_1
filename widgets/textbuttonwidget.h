@@ -2,7 +2,10 @@
 
 #include <QPushButton>
 #include <QString>
+#include <QRect>
 #include <functional>
+
+class QPropertyAnimation;
 
 class TextButtonWidget : public QPushButton
 {
@@ -29,7 +32,14 @@ public:
     void setStartState(bool isStart);  // Установить состояние напрямую (true = СТАРТ, false = СТОП)
     bool isStartState() const { return isStartState_; }
 
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
 private:
+    QPropertyAnimation *pressAnimation = nullptr;
+    QPropertyAnimation *releaseAnimation = nullptr;
+    QRect normalGeometry_;
     std::function<void()> onClickCallback;
     bool isStartStopMode_;
     bool isStartState_;

@@ -115,6 +115,8 @@ static QLabel *gasPanelNitrogenValueLabel = nullptr;
 static QLabel *gasPanelNitrogenConcentrationLabel = nullptr;
 static QLabel *gasPanelGasPressureSetpointLabel = nullptr;
 static QLabel *gasPanelGasPressureLabel = nullptr;
+static QLabel *gasPanelGasPressureStatusLabel = nullptr;
+static QLabel *gasPanelGasPressureStatusIcon = nullptr;
 
 // ============================================================================
 // Страница Вакуум (Vacuum Page)
@@ -223,6 +225,10 @@ void registerGasPanelNitrogenValue(QLabel *label) { gasPanelNitrogenValueLabel =
 void registerGasPanelNitrogenConcentration(QLabel *label) { gasPanelNitrogenConcentrationLabel = label; }  // Страница: Газовая панель
 void registerGasPanelGasPressureSetpoint(QLabel *label) { gasPanelGasPressureSetpointLabel = label; }  // Страница: Газовая панель
 void registerGasPanelGasPressure(QLabel *label) { gasPanelGasPressureLabel = label; }                  // Страница: Газовая панель
+void registerGasPanelGasPressureStatus(QLabel *statusLabel, QLabel *iconLabel) {
+    gasPanelGasPressureStatusLabel = statusLabel;
+    gasPanelGasPressureStatusIcon = iconLabel;
+}
 
 // Страница Финальные
 void registerFinalGrowthRate(QLabel *label) { finalGrowthRateLabel = label; }  // Страница: Финальные
@@ -750,6 +756,35 @@ void updateGasPanelGasPressure(double value)  // Страница: Газова�
         gasPanelGasPressureLabel->setText(formatValue2(value, QString::fromUtf8("бар")));
         qDebug() << "Values: GasPanel Gas Pressure =" << value;
     }
+}
+
+void updateGasPanelGasPressureStatus(int status)  // 0=Нормальное, 1=Низкое, 2=Высокое
+{
+    QString text;
+    QString color;
+    QString iconBg;
+    if (status == 0) {
+        text = QString::fromUtf8("Нормальное давление");
+        color = "#29AC39";
+        iconBg = "#29AC39";
+    } else if (status == 1) {
+        text = QString::fromUtf8("Низкое давление");
+        color = "#f39c12";
+        iconBg = "#f39c12";
+    } else {
+        text = QString::fromUtf8("Высокое давление");
+        color = "#e74c3c";
+        iconBg = "#e74c3c";
+    }
+    if (gasPanelGasPressureStatusLabel) {
+        gasPanelGasPressureStatusLabel->setText(text);
+        gasPanelGasPressureStatusLabel->setStyleSheet(QString("QLabel { color: %1; font-size: 11px; }").arg(color));
+    }
+    if (gasPanelGasPressureStatusIcon) {
+        gasPanelGasPressureStatusIcon->setStyleSheet(
+            QString("QLabel { background-color: %1; color: white; font-size: 12px; font-weight: bold; border-radius: 10px; min-width: 20px; min-height: 20px; }").arg(iconBg));
+    }
+    qDebug() << "Values: GasPanel Gas Pressure Status =" << status << text;
 }
 
 // Страница Финальные

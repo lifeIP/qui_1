@@ -184,6 +184,8 @@ void DebugConsole::printHelp()
     *m_outputStream << "  values.set.vacuum.chamber <value> - Set Vacuum Chamber Pressure (mbar)\n";
     *m_outputStream << "  values.set.vacuum.time <value> - Set Vacuum Pumping Time (sec)\n";
     *m_outputStream << "  values.set.vacuum.gas <value>   - Set Vacuum Gas Pressure (bar)\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Контроль газа]\n");
+    *m_outputStream << "  values.set.gas.pressure.status <0|1|2> - Gas Pressure Status (0=Normal, 1=Low, 2=High)\n";
     *m_outputStream << "\n";
     *m_outputStream << "Main Page Control commands:\n";
     *m_outputStream << QString::fromUtf8("  [Страница Главная]\n");
@@ -227,6 +229,10 @@ void DebugConsole::printHelp()
     *m_outputStream << "  vacuum.lighting.1 <0|1>         - Lighting Button 1 (left) On/Off\n";
     *m_outputStream << "  vacuum.lighting.2 <0|1>          - Lighting Button 2 (right) On/Off\n";
     *m_outputStream << "  vacuum.lighting.3 <0|1>          - Lighting Button 3 (bottom) On/Off\n";
+    *m_outputStream << QString::fromUtf8("  [Страница Контроль газа]\n");
+    *m_outputStream << "  gas.pressure.status.normal  - Gas Pressure: Normal\n";
+    *m_outputStream << "  gas.pressure.status.low    - Gas Pressure: Low\n";
+    *m_outputStream << "  gas.pressure.status.high   - Gas Pressure: High\n";
     *m_outputStream << "\n";
     *m_outputStream << "Status commands:\n";
     *m_outputStream << QString::fromUtf8("  [Все страницы]\n");
@@ -710,6 +716,17 @@ bool DebugConsole::parseAndExecute(const QString &command)
             *m_outputStream << "Set Vacuum Gas Pressure = " << value << " bar" << endl;
             return true;
         }
+        if (cmd == "values.set.gas.pressure.status") {
+            int intVal = static_cast<int>(value);
+            if (intVal < 0 || intVal > 2) {
+                *m_outputStream << "Error: Invalid value. Use 0 (Normal), 1 (Low), or 2 (High)" << endl;
+                return true;
+            }
+            Values::updateGasPanelGasPressureStatus(intVal);
+            const char* names[] = {"Normal", "Low", "High"};
+            *m_outputStream << "Set Gas Pressure Status = " << names[intVal] << endl;
+            return true;
+        }
     }
     
     // Status commands
@@ -854,7 +871,22 @@ bool DebugConsole::parseAndExecute(const QString &command)
         *m_outputStream << "Settings Page: Lower Spindle: Stop" << endl;
         return true;
     }
-    
+    if (cmd == "gas.pressure.status.normal") {
+        Values::updateGasPanelGasPressureStatus(0);
+        *m_outputStream << "Gas Panel: Pressure Status: Normal" << endl;
+        return true;
+    }
+    if (cmd == "gas.pressure.status.low") {
+        Values::updateGasPanelGasPressureStatus(1);
+        *m_outputStream << "Gas Panel: Pressure Status: Low" << endl;
+        return true;
+    }
+    if (cmd == "gas.pressure.status.high") {
+        Values::updateGasPanelGasPressureStatus(2);
+        *m_outputStream << "Gas Panel: Pressure Status: High" << endl;
+        return true;
+    }
+
     // Vacuum Control commands
     if (cmd == "vacuum.pump.on") {
         Values::updateVacuumPumpSelector(true);
