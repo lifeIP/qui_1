@@ -487,7 +487,7 @@ public:
         TextButtonWidget *accel_btn = new TextButtonWidget("Ускорение", "#29AC39", "#ffffff", 12, this);
         accel_btn->setMinimumHeight(38);
         accel_btn->setOnClick([]() { Activity::handleSettingsUpperSpindleAcceleration(); });
-        IconButtonWidget *rotate_arrow = new IconButtonWidget("right_arrow", this, "#505050");
+        IconButtonWidget *rotate_arrow = new IconButtonWidget("upright_arrow", this, "#505050");
         rotate_arrow->setOnClick([]() { Activity::handleSettingsUpperSpindleRight(); });
         IconButtonWidget *up_arrow = new IconButtonWidget("up_arrow", this, "#505050");
         up_arrow->setOnClick([]() { Activity::handleSettingsUpperSpindleUp(); });
