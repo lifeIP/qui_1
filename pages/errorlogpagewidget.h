@@ -3,9 +3,8 @@
 #include <QWidget>
 
 class QFrame;
+class QTableWidget;
 class QTimer;
-class QVBoxLayout;
-class QWidget;
 
 class ErrorLogPageWidget : public QWidget
 {
@@ -27,6 +26,5 @@ private:
     void refreshFromFile();
 
     QTimer *refreshTimer_ = nullptr;
-    QWidget *rowsContainer_ = nullptr;
-    QVBoxLayout *rowsLayout_ = nullptr;
+    QTableWidget *table_ = nullptr;
 };

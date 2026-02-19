@@ -4,13 +4,13 @@
 #include "widgets/iconbuttonwidget.h"
 #include "widgets/textbuttonwidget.h"
 
-#include <QScrollArea>
+#include <QHeaderView>
 #include <QShowEvent>
 #include <QHideEvent>
+#include <QTableWidget>
 #include <QTimer>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QGridLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
@@ -92,25 +92,29 @@ QFrame* ErrorLogPageWidget::createErrorLogCard(QWidget *parent)
     headerLine->setFixedHeight(1);
     v->addWidget(headerLine);
 
-    QHBoxLayout *colHeaders = new QHBoxLayout();
-    colHeaders->setSpacing(12);
-    colHeaders->addWidget(makeLabel(QString::fromUtf8("Время"), 12, false, "#7f8c8d"), 0, Qt::AlignLeft);
-    colHeaders->addWidget(makeLabel(QString::fromUtf8("Ошибка"), 12, false, "#7f8c8d"), 1, Qt::AlignLeft);
-    colHeaders->addStretch();
-    v->addLayout(colHeaders);
-
-    rowsContainer_ = new QWidget(card);
-    rowsLayout_ = new QVBoxLayout(rowsContainer_);
-    rowsLayout_->setContentsMargins(0, 0, 0, 0);
-    rowsLayout_->setSpacing(0);
-
-    QScrollArea *scroll = new QScrollArea(card);
-    scroll->setWidget(rowsContainer_);
-    scroll->setWidgetResizable(true);
-    scroll->setFrameShape(QFrame::NoFrame);
-    scroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    scroll->setStyleSheet("QScrollArea { background: transparent; }");
-    v->addWidget(scroll, 1);
+    table_ = new QTableWidget(card);
+    table_->setColumnCount(3);
+    table_->setHorizontalHeaderLabels({ QString::fromUtf8("Время"), QString::fromUtf8("Ошибка"), QString() });
+    table_->horizontalHeader()->setStretchLastSection(false);
+    table_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    table_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    table_->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Fixed);
+    table_->setColumnWidth(0, 90);
+    table_->setColumnWidth(2, 110);
+    table_->horizontalHeader()->setMinimumSectionSize(70);
+    table_->verticalHeader()->setDefaultSectionSize(44);
+    table_->verticalHeader()->setMinimumSectionSize(40);
+    table_->verticalHeader()->setVisible(false);
+    table_->setShowGrid(true);
+    table_->setAlternatingRowColors(false);
+    table_->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table_->setSelectionMode(QAbstractItemView::NoSelection);
+    table_->setStyleSheet(
+        "QTableWidget { background: #ffffff; gridline-color: #e8e8e8; }"
+        "QTableWidget::item { padding: 8px 4px; background: #ffffff; }"
+        "QHeaderView::section { background: #ffffff; color: #7f8c8d; font-size: 12px; padding: 8px 4px; }");
+    table_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    v->addWidget(table_, 1);
 
     refreshTimer_ = new QTimer(this);
     connect(refreshTimer_, &QTimer::timeout, this, &ErrorLogPageWidget::refreshFromFile);
@@ -136,52 +140,45 @@ void ErrorLogPageWidget::hideEvent(QHideEvent *event)
 
 void ErrorLogPageWidget::refreshFromFile()
 {
-    if (!rowsLayout_ || !rowsContainer_)
+    if (!table_)
         return;
 
-    while (QLayoutItem *item = rowsLayout_->takeAt(0)) {
-        if (QWidget *w = item->widget())
-            w->deleteLater();
-        delete item;
-    }
-
+    table_->setRowCount(0);
     QList<ErrorLogEntry> entries = ErrorLogIO::readErrorsFile();
+
     for (const ErrorLogEntry &e : entries) {
-        QFrame *row = new QFrame(rowsContainer_);
-        row->setStyleSheet("QFrame { background: transparent; }");
+        int row = table_->rowCount();
+        table_->insertRow(row);
 
-        QHBoxLayout *rowLayout = new QHBoxLayout(row);
-        rowLayout->setContentsMargins(0, 8, 0, 8);
-        rowLayout->setSpacing(12);
+        QTableWidgetItem *timeItem = new QTableWidgetItem(e.time);
+        timeItem->setFlags(timeItem->flags() & ~Qt::ItemIsEditable);
+        timeItem->setForeground(QColor(QString::fromUtf8("#2c3e50")));
+        table_->setItem(row, 0, timeItem);
 
-        QLabel *dot = new QLabel(QString::fromUtf8("●"), row);
-        dot->setStyleSheet(QString("QLabel { color: %1; font-size: 12px; background: transparent; }").arg(e.color));
-        rowLayout->addWidget(dot);
-
-        QLabel *timeLabel = makeLabel(e.time, 14, false, "#2c3e50");
-        timeLabel->setMinimumWidth(70);
-        rowLayout->addWidget(timeLabel);
-
-        QLabel *errorLabel = makeLabel(e.message, 14, false, "#2c3e50");
-        errorLabel->setWordWrap(true);
-        rowLayout->addWidget(errorLabel, 1);
+        QWidget *errorCell = new QWidget(table_);
+        errorCell->setStyleSheet(QString::fromUtf8("background: #ffffff;"));
+        QHBoxLayout *errLayout = new QHBoxLayout(errorCell);
+        errLayout->setContentsMargins(8, 4, 8, 4);
+        errLayout->setSpacing(6);
+        QLabel *dot = new QLabel(QString::fromUtf8("●"), errorCell);
+        dot->setStyleSheet(QString("color: %1; font-size: 12px;").arg(e.color));
+        QLabel *msg = new QLabel(e.message, errorCell);
+        msg->setStyleSheet(QString::fromUtf8("color: #2c3e50; font-size: 14px;"));
+        msg->setWordWrap(true);
+        errLayout->addWidget(dot);
+        errLayout->addWidget(msg, 1);
+        table_->setCellWidget(row, 1, errorCell);
 
         if (e.resettable) {
-            QPushButton *resetBtn = new QPushButton(QString::fromUtf8("Сбросить"), row);
+            QPushButton *resetBtn = new QPushButton(QString::fromUtf8("Сбросить"));
             resetBtn->setStyleSheet(
                 "QPushButton { background: transparent; color: #7f8c8d; font-size: 13px; "
                 "text-decoration: underline; border: none; padding: 4px 8px; }"
                 "QPushButton:hover { color: #3498db; }");
             resetBtn->setCursor(Qt::PointingHandCursor);
-            rowLayout->addWidget(resetBtn);
+            table_->setCellWidget(row, 2, resetBtn);
+        } else {
+            table_->setItem(row, 2, new QTableWidgetItem());
         }
-
-        rowsLayout_->addWidget(row);
-
-        QFrame *separator = new QFrame(rowsContainer_);
-        separator->setFrameShape(QFrame::HLine);
-        separator->setStyleSheet("QFrame { background-color: #e8e8e8; max-height: 1px; }");
-        separator->setFixedHeight(1);
-        rowsLayout_->addWidget(separator);
     }
 }
