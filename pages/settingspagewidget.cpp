@@ -214,7 +214,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         param1Layout->addWidget(separator);
 
@@ -257,7 +257,7 @@ public:
         QFrame *separator1 = new QFrame(this);
         separator1->setFrameShape(QFrame::HLine);
         separator1->setFrameShadow(QFrame::Sunken);
-        separator1->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator1->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator1->setFixedHeight(2);
         param2Layout->addWidget(separator1);
 
@@ -341,11 +341,12 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         param1Layout->addWidget(separator);
 
         QLabel *desc1Label = makeLabel("Смещение", 12);
+        desc1Label->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
         makeEditableParameter(
@@ -372,7 +373,8 @@ public:
         QFrame *separator1 = new QFrame(this);
         separator1->setFrameShape(QFrame::HLine);
         separator1->setFrameShadow(QFrame::Sunken);
-        separator1->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+        separator1->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator1->setFixedHeight(2);
         param2Layout->addWidget(separator1);
 
@@ -535,7 +537,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param1Layout->addWidget(separator);
@@ -560,7 +562,7 @@ public:
         QFrame *separator2 = new QFrame(this);
         separator2->setFrameShape(QFrame::HLine);
         separator2->setFrameShadow(QFrame::Sunken);
-        separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator2->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator2->setFixedHeight(2);
         separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param2Layout->addWidget(separator2);
@@ -695,7 +697,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param1Layout->addWidget(separator);
@@ -764,35 +766,69 @@ public:
         col->setSpacing(10);
         col->setContentsMargins(0, 0, 0, 0);
 
-        CardFrame *generator = new CardFrame("#e67e22");
+        CardFrame *generator = new CardFrame("#B7A378");
         {
             QVBoxLayout *v = new QVBoxLayout(generator);
             v->setContentsMargins(16, 16, 16, 16);
-            v->setSpacing(8);
+            v->setSpacing(10);
 
             TextButtonWidget *resetBtn = new TextButtonWidget(
-                QString::fromUtf8("Сброс"), "#2d3436", "#ffffff", 12, generator);
+                QString::fromUtf8("Сброс"), "#F56D21", "#696969", 12, generator);
             resetBtn->setMinimumHeight(38);
             resetBtn->setOnClick([]() { Activity::handleSettingsGeneratorReset(); });
             v->addWidget(resetBtn);
 
+            QWidget *paramWidget = new QWidget(generator);
+            paramWidget->setMinimumHeight(60);
+            QVBoxLayout *paramLayout = new QVBoxLayout(paramWidget);
+            paramLayout->setSpacing(4);
+            paramLayout->setAlignment(Qt::AlignCenter);
+
             QLabel *percentLabel = makeLabel("0.0 %", 18, true);
             percentLabel->setAlignment(Qt::AlignCenter);
             Values::registerSettingsGeneratorPercent(percentLabel);
-            v->addWidget(percentLabel);
+            paramLayout->addWidget(percentLabel);
 
-            QHBoxLayout *genRow = new QHBoxLayout();
-            genRow->addStretch();
-            QLabel *generatorLabel = makeLabel(QString::fromUtf8("Генератор"), 12, false);
-            QLabel *okLabel = makeLabel("ОК", 12, true);
-            okLabel->setStyleSheet("QLabel { color: #27ae60; }");
-            genRow->addWidget(generatorLabel);
-            genRow->addWidget(okLabel);
-            genRow->addStretch();
-            v->addLayout(genRow);
+            QFrame *separator = new QFrame(generator);
+            separator->setFrameShape(QFrame::HLine);
+            separator->setFrameShadow(QFrame::Sunken);
+            separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
+            separator->setFixedHeight(2);
+            separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            paramLayout->addWidget(separator);
 
-            QHBoxLayout *statusRow = new QHBoxLayout();
-            statusRow->addWidget(makeLabel(QString::fromUtf8("Статус"), 11));
+            paramLayout->addWidget(makeLabel(QString::fromUtf8("Генератор"), 12, false), 0, Qt::AlignHCenter);
+            makeEditableParameter(
+                paramWidget, percentLabel,
+                QString::fromUtf8("Мощность генератора:"),
+                QString::fromUtf8("Задайте мощность генератора, %"),
+                QString::fromUtf8(" %"),
+                [](double v) { Values::updateSettingsGeneratorPercent(v); });
+            v->addWidget(paramWidget);
+
+            QWidget *statusParamWidget = new QWidget(generator);
+            QVBoxLayout *statusParamLayout = new QVBoxLayout(statusParamWidget);
+            statusParamLayout->setSpacing(4);
+            statusParamLayout->setAlignment(Qt::AlignCenter);
+
+            QLabel *statusLabel = makeLabel(QString::fromUtf8("Ок"), 18, true);
+            statusLabel->setAlignment(Qt::AlignCenter);
+            statusLabel->setStyleSheet("QLabel { color: #27ae60; }");
+            Values::registerSettingsGeneratorStatus(statusLabel);
+            statusParamLayout->addWidget(statusLabel);
+
+            QFrame *statusSep = new QFrame(generator);
+            statusSep->setFrameShape(QFrame::HLine);
+            statusSep->setFrameShadow(QFrame::Sunken);
+            statusSep->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
+            statusSep->setFixedHeight(2);
+            statusSep->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+            statusParamLayout->addWidget(statusSep);
+
+            statusParamLayout->addWidget(makeLabel(QString::fromUtf8("Статус"), 12, false), 0, Qt::AlignHCenter);
+
+            v->addWidget(statusParamWidget);
+
             selector *toggle = new selector(generator);
             toggle->set(true, false);
             Values::registerSettingsGeneratorSelector(toggle);
@@ -801,16 +837,7 @@ public:
                 Values::updateSettingsGeneratorSelector(boolState);
                 Activity::handleSettingsGeneratorStateChanged(state);
             });
-            statusRow->addWidget(toggle);
-            statusRow->addStretch();
-            v->addLayout(statusRow);
-
-            makeEditableParameter(
-                generator, percentLabel,
-                QString::fromUtf8("Мощность генератора:"),
-                QString::fromUtf8("Задайте мощность генератора, %"),
-                QString::fromUtf8(" %"),
-                [](double v) { Values::updateSettingsGeneratorPercent(v); });
+            v->addWidget(toggle, 0, Qt::AlignHCenter);
         }
         generator->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         col->addWidget(generator, 1);
@@ -819,12 +846,17 @@ public:
         {
             QVBoxLayout *v = new QVBoxLayout(lighting);
             v->setContentsMargins(16, 16, 16, 16);
-            v->setSpacing(8);
+            v->setSpacing(10);
 
-            v->addWidget(makeLabel(QString::fromUtf8("Освещение"), 12, true), 0, Qt::AlignHCenter);
+            QVBoxLayout *buttonsLayout = new QVBoxLayout();
+            buttonsLayout->setSpacing(4);
+            buttonsLayout->setAlignment(Qt::AlignCenter);
 
-            QGridLayout *grid = new QGridLayout();
-            grid->setSpacing(8);
+            QLabel *lightLabel = makeLabel(QString::fromUtf8("Освещение"), 14, true);
+            lightLabel->setAlignment(Qt::AlignCenter);
+
+            v->addWidget(lightLabel);
+
             auto makeLightBtn = [&](int index, bool initialState) -> IconButtonWidget* {
                 IconButtonWidget *btn = new IconButtonWidget(
                     "lightbulb", lighting, initialState ? "#f1c40f" : "#bdc3c7");
@@ -838,15 +870,26 @@ public:
                 });
                 return btn;
             };
-            grid->addWidget(makeLightBtn(0, true), 0, 0);   // top-left
-            grid->addWidget(makeLightBtn(1, false), 0, 1);  // top-right
-            grid->addWidget(makeLightBtn(2, false), 1, 0);  // bottom-left
-            grid->addWidget(makeLightBtn(3, true), 1, 1);   // bottom-right
-            QHBoxLayout *gridRow = new QHBoxLayout();
-            gridRow->addStretch();
-            gridRow->addLayout(grid);
-            gridRow->addStretch();
-            v->addLayout(gridRow);
+
+            QHBoxLayout *topRow = new QHBoxLayout();
+            topRow->addStretch();
+            topRow->addWidget(makeLightBtn(0, true));   // верх
+            topRow->addStretch();
+            buttonsLayout->addLayout(topRow);
+
+            QHBoxLayout *middleRow = new QHBoxLayout();
+            middleRow->setSpacing(4);
+            middleRow->addWidget(makeLightBtn(1, false));  // лево
+            middleRow->addWidget(makeLightBtn(2, false));  // право
+            buttonsLayout->addLayout(middleRow);
+
+            QHBoxLayout *bottomRow = new QHBoxLayout();
+            bottomRow->addStretch();
+            bottomRow->addWidget(makeLightBtn(3, true));   // низ
+            bottomRow->addStretch();
+            buttonsLayout->addLayout(bottomRow);
+
+            v->addLayout(buttonsLayout);
         }
         lighting->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         col->addWidget(lighting, 1);
@@ -864,7 +907,7 @@ public:
             QFrame *separator = new QFrame(stopwatch);
             separator->setFrameShape(QFrame::HLine);
             separator->setFrameShadow(QFrame::Sunken);
-            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator->setFixedHeight(2);
             v->addWidget(separator);
 
@@ -919,37 +962,62 @@ public:
     {
         QVBoxLayout *v = new QVBoxLayout(this);
         v->setContentsMargins(16, 16, 16, 16);
-        // v->setSpacing(10);
+        v->setSpacing(10);
 
         v->addWidget(makeLabel(QString::fromUtf8("Осцилляция нижнего вращения"), 12, true), 0, Qt::AlignHCenter);
 
         QHBoxLayout *h = new QHBoxLayout();
-        h->setSpacing(20);
+        h->setSpacing(15);
 
-        auto addParam = [&](QLabel *valLabel, const QString &desc) {
+        auto makeParamWidget = [&](QLabel *valueLabel, const QString &desc, const QString &suffix,
+                                  const QString &editTitle, const QString &editDesc,
+                                  std::function<void(double)> onChanged) -> QWidget* {
             QWidget *w = new QWidget(this);
             QVBoxLayout *vl = new QVBoxLayout(w);
             vl->setSpacing(4);
             vl->setAlignment(Qt::AlignCenter);
-            vl->addWidget(valLabel);
-            vl->addWidget(makeLabel(desc, 10), 0, Qt::AlignHCenter);
-            h->addWidget(w);
+            valueLabel->setAlignment(Qt::AlignCenter);
+            vl->addWidget(valueLabel);
+
+            QFrame *sep = new QFrame(this);
+            sep->setFrameShape(QFrame::HLine);
+            sep->setFrameShadow(QFrame::Sunken);
+            sep->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
+            sep->setFixedHeight(2);
+            vl->addWidget(sep);
+
+            QLabel *descLabel = makeLabel(desc, 12);
+            descLabel->setAlignment(Qt::AlignCenter);
+            vl->addWidget(descLabel);
+
+            makeEditableParameter(w, valueLabel, editTitle, editDesc, suffix, std::move(onChanged));
+            w->setMinimumHeight(60);
+            return w;
         };
 
-        QLabel *cwLabel = makeLabel("0°", 16, true);
-        cwLabel->setAlignment(Qt::AlignCenter);
-        QLabel *ccwLabel = makeLabel("0°", 16, true);
-        ccwLabel->setAlignment(Qt::AlignCenter);
-        QLabel *accLabel = makeLabel("0°/сек²", 16, true);
-        accLabel->setAlignment(Qt::AlignCenter);
+        QLabel *cwLabel = makeLabel("0 °", 18, true);
+        QLabel *ccwLabel = makeLabel("0 °", 18, true);
+        QLabel *accLabel = makeLabel("0.0 °/сек²", 18, true);
 
-        addParam(cwLabel, QString::fromUtf8("по часовой"));
-        addParam(ccwLabel, QString::fromUtf8("против час."));
-        addParam(accLabel, QString::fromUtf8("ускорение"));
+        QWidget *param1 = makeParamWidget(cwLabel, QString::fromUtf8("по часовой"), " °",
+            QString::fromUtf8("По часовой:"), QString::fromUtf8("Диапазон: от 0 до 360°"),
+            [](double v) { Values::updateSettingsLowerOscillationClockwise(v); });
+        h->addWidget(param1);
+
+        QWidget *param2 = makeParamWidget(ccwLabel, QString::fromUtf8("против час."), " °",
+            QString::fromUtf8("Против часовой:"), QString::fromUtf8("Диапазон: от 0 до 360°"),
+            [](double v) { Values::updateSettingsLowerOscillationCounterClockwise(v); });
+        h->addWidget(param2);
+
+        QWidget *param3 = makeParamWidget(accLabel, QString::fromUtf8("ускорение"), " °/сек²",
+            QString::fromUtf8("Ускорение:"), QString::fromUtf8("Ускорение осцилляции, °/сек²"),
+            [](double v) { Values::updateSettingsLowerOscillationAcceleration(v); });
+        h->addWidget(param3);
 
         Values::registerSettingsLowerOscillationClockwise(cwLabel);
         Values::registerSettingsLowerOscillationCounterClockwise(ccwLabel);
         Values::registerSettingsLowerOscillationAcceleration(accLabel);
+
         v->addLayout(h);
     }
 };
@@ -967,35 +1035,47 @@ public:
         v->addWidget(makeLabel(QString::fromUtf8("Настройки сигнализации"), 12, true), 0, Qt::AlignHCenter);
 
         QHBoxLayout *h = new QHBoxLayout();
-        h->setSpacing(20);
+        h->setSpacing(15);
 
-        QWidget *modeWidget = new QWidget(this);
-        QVBoxLayout *modeLayout = new QVBoxLayout(modeWidget);
-        modeLayout->setSpacing(4);
-        modeLayout->setAlignment(Qt::AlignCenter);
-        QLabel *modeLabel = makeLabel("5.0 сек", 16, true);
-        modeLabel->setAlignment(Qt::AlignCenter);
-        modeLayout->addWidget(modeLabel);
-        modeLayout->addWidget(makeLabel(QString::fromUtf8("Режим"), 10), 0, Qt::AlignHCenter);
-        h->addWidget(modeWidget);
+        auto makeParamWidget = [&](QLabel *valueLabel, const QString &desc, const QString &suffix,
+                                  const QString &editTitle, const QString &editDesc,
+                                  std::function<void(double)> onChanged) -> QWidget* {
+            QWidget *w = new QWidget(this);
+            QVBoxLayout *vl = new QVBoxLayout(w);
+            vl->setSpacing(4);
+            vl->setAlignment(Qt::AlignCenter);
+            valueLabel->setAlignment(Qt::AlignCenter);
+            vl->addWidget(valueLabel);
+
+            QFrame *sep = new QFrame(this);
+            sep->setFrameShape(QFrame::HLine);
+            sep->setFrameShadow(QFrame::Sunken);
+            sep->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
+            sep->setFixedHeight(2);
+            vl->addWidget(sep);
+
+            QLabel *descLabel = makeLabel(desc, 12);
+            descLabel->setAlignment(Qt::AlignCenter);
+            vl->addWidget(descLabel);
+
+            makeEditableParameter(w, valueLabel, editTitle, editDesc, suffix, std::move(onChanged));
+            w->setMinimumHeight(60);
+            return w;
+        };
+
+        QLabel *modeLabel = makeLabel("5.0 сек", 18, true);
+        QLabel *durationLabel = makeLabel("3.0 сек", 18, true);
+
+        h->addWidget(makeParamWidget(modeLabel, QString::fromUtf8("Режим"), " сек",
+            QString::fromUtf8("Режим:"), QString::fromUtf8("Время режима сигнализации, сек"),
+            [](double v) { Values::updateSettingsAlarmMode(v); }));
+
+        h->addWidget(makeParamWidget(durationLabel, QString::fromUtf8("Длительность"), " сек",
+            QString::fromUtf8("Длительность:"), QString::fromUtf8("Длительность сигнализации, сек"),
+            [](double v) { Values::updateSettingsAlarmDuration(v); }));
+
         Values::registerSettingsAlarmMode(modeLabel);
-        makeEditableParameter(modeWidget, modeLabel,
-            QString::fromUtf8("Режим:"), QString(), " сек",
-            [](double v) { Values::updateSettingsAlarmMode(v); });
-
-        QWidget *durWidget = new QWidget(this);
-        QVBoxLayout *durLayout = new QVBoxLayout(durWidget);
-        durLayout->setSpacing(4);
-        durLayout->setAlignment(Qt::AlignCenter);
-        QLabel *durationLabel = makeLabel("3.0 сек", 16, true);
-        durationLabel->setAlignment(Qt::AlignCenter);
-        durLayout->addWidget(durationLabel);
-        durLayout->addWidget(makeLabel(QString::fromUtf8("Длительность"), 10), 0, Qt::AlignHCenter);
-        h->addWidget(durWidget);
         Values::registerSettingsAlarmDuration(durationLabel);
-        makeEditableParameter(durWidget, durationLabel,
-            QString::fromUtf8("Длительность:"), QString(), " сек",
-            [](double v) { Values::updateSettingsAlarmDuration(v); });
 
         v->addLayout(h);
     }

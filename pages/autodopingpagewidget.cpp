@@ -153,7 +153,7 @@ QFrame* AutodopingPageWidget::createCard(QWidget *parent)
     QFrame *separator = new QFrame(card);
     separator->setFrameShape(QFrame::HLine);
     separator->setFrameShadow(QFrame::Sunken);
-    separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+    separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
     separator->setFixedHeight(2);
     separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 

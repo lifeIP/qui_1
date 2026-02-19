@@ -191,7 +191,7 @@ QFrame* GasPanelPageWidget::createArgonCard(QWidget *parent)
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
-    separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+    separatorTop->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
     setpointLayout->addWidget(separatorTop);
 
@@ -271,7 +271,7 @@ QFrame* GasPanelPageWidget::createExhaustCard(QWidget *parent)
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
-    separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+    separatorTop->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
     setpointLayout->addWidget(separatorTop);
 
@@ -346,7 +346,7 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
-    separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+    separatorTop->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
     setpointLayout->addWidget(separatorTop);
 
@@ -444,7 +444,7 @@ QFrame* GasPanelPageWidget::createGasPressureCard(QWidget *parent)
     QFrame *separatorTop = new QFrame(card);
     separatorTop->setFrameShape(QFrame::HLine);
     separatorTop->setFrameShadow(QFrame::Sunken);
-    separatorTop->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+    separatorTop->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
     separatorTop->setFixedHeight(2);
     setpointLayout->addWidget(separatorTop);
 

@@ -226,7 +226,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         param1Layout->addWidget(separator);
 
@@ -257,7 +257,7 @@ public:
         QFrame *separator1 = new QFrame(this);
         separator1->setFrameShape(QFrame::HLine);
         separator1->setFrameShadow(QFrame::Sunken);
-        separator1->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator1->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator1->setFixedHeight(2);
         param2Layout->addWidget(separator1);
         
@@ -332,7 +332,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         param1Layout->addWidget(separator);
 
@@ -365,7 +365,7 @@ public:
         QFrame *separator1 = new QFrame(this);
         separator1->setFrameShape(QFrame::HLine);
         separator1->setFrameShadow(QFrame::Sunken);
-        separator1->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator1->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator1->setFixedHeight(2);
         param2Layout->addWidget(separator1);
         
@@ -502,7 +502,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param1Layout->addWidget(separator);
@@ -527,7 +527,7 @@ public:
         QFrame *separator2 = new QFrame(this);
         separator2->setFrameShape(QFrame::HLine);
         separator2->setFrameShadow(QFrame::Sunken);
-        separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator2->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator2->setFixedHeight(2);
         separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param2Layout->addWidget(separator2);
@@ -552,7 +552,7 @@ public:
         QFrame *separator3 = new QFrame(this);
         separator3->setFrameShape(QFrame::HLine);
         separator3->setFrameShadow(QFrame::Sunken);
-        separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator3->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator3->setFixedHeight(2);
         separator3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param3Layout->addWidget(separator3);
@@ -715,7 +715,7 @@ public:
         QFrame *separator = new QFrame(this);
         separator->setFrameShape(QFrame::HLine);
         separator->setFrameShadow(QFrame::Sunken);
-        separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator->setFixedHeight(2);
         separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param1Layout->addWidget(separator);
@@ -740,7 +740,7 @@ public:
         QFrame *separator2 = new QFrame(this);
         separator2->setFrameShape(QFrame::HLine);
         separator2->setFrameShadow(QFrame::Sunken);
-        separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator2->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator2->setFixedHeight(2);
         separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param2Layout->addWidget(separator2);
@@ -765,7 +765,7 @@ public:
         QFrame *separator3 = new QFrame(this);
         separator3->setFrameShape(QFrame::HLine);
         separator3->setFrameShadow(QFrame::Sunken);
-        separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator3->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
         separator3->setFixedHeight(2);
         separator3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param3Layout->addWidget(separator3);
@@ -828,7 +828,7 @@ public:
             QFrame *separator2 = new QFrame(this);
             separator2->setFrameShape(QFrame::HLine);
             separator2->setFrameShadow(QFrame::Sunken);
-            separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator2->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator2->setFixedHeight(2);
             v->addWidget(separator2);
 
@@ -857,7 +857,7 @@ public:
             QFrame *separator3 = new QFrame(this);
             separator3->setFrameShape(QFrame::HLine);
             separator3->setFrameShadow(QFrame::Sunken);
-            separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator3->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator3->setFixedHeight(2);
             v->addWidget(separator3);
         
@@ -885,7 +885,7 @@ public:
             QFrame *separator4 = new QFrame(this);
             separator4->setFrameShape(QFrame::HLine);
             separator4->setFrameShadow(QFrame::Sunken);
-            separator4->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator4->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator4->setFixedHeight(2);
             v->addWidget(separator4);
 
@@ -959,7 +959,7 @@ public:
             QFrame *separator = new QFrame(generator);
             separator->setFrameShape(QFrame::HLine);
             separator->setFrameShadow(QFrame::Sunken);
-            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator->setFixedHeight(2);
             paramLayout->addWidget(separator);
 
@@ -1011,7 +1011,7 @@ public:
             QFrame *separator = new QFrame(stopwatch);
             separator->setFrameShape(QFrame::HLine);
             separator->setFrameShadow(QFrame::Sunken);
-            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+            separator->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             separator->setFixedHeight(2);
             v->addWidget(separator);
 

@@ -59,6 +59,8 @@ void registerGeneratorPercent(QLabel *label);
 void registerStopwatchPercent(QLabel *label);
 
 void registerSettingsGeneratorPercent(QLabel *label);
+void registerSettingsGeneratorStatus(QLabel *label);
+void updateSettingsGeneratorStatus(bool isOk);  // true = Ок, false = Ошибка
 
 // Settings Page: Lighting (4 buttons), Internal Thrust, Lower Oscillation, Alarm Settings
 void registerSettingsLightingButton(int index, class QWidget *widget);
@@ -179,6 +181,7 @@ void updateGeneratorPercent(double value);  // в %
 void updateStopwatchPercent(double value);  // в %
 
 void updateSettingsGeneratorPercent(double value);  // в %
+void updateSettingsGeneratorStatus(bool isOk);  // true = Ок, false = Ошибка
 
 // Settings Page: Lighting, Lower Oscillation, Alarm Settings
 void updateSettingsLightingButton(int index, bool isOn);

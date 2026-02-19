@@ -178,6 +178,7 @@ void DebugConsole::printHelp()
     *m_outputStream << "  values.set.settings.i <value>           - Set Settings I Value (%)\n";
     *m_outputStream << "  values.set.settings.u <value>           - Set Settings U Value (%)\n";
     *m_outputStream << "  values.set.settings.generator <value>   - Set Settings Generator Percent (%)\n";
+    *m_outputStream << "  values.set.settings.generator.status <0|1> - Set Generator Status (0=Error, 1=OK)\n";
     *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
     *m_outputStream << "  values.set.vacuum.pump <value>  - Set Vacuum Pump Pressure (mbar)\n";
     *m_outputStream << "  values.set.vacuum.chamber <value> - Set Vacuum Chamber Pressure (mbar)\n";
@@ -201,6 +202,8 @@ void DebugConsole::printHelp()
     *m_outputStream << "  settings.heating.off                - Settings Heating Selector Off\n";
     *m_outputStream << "  settings.generator.on               - Settings Generator Selector On\n";
     *m_outputStream << "  settings.generator.off              - Settings Generator Selector Off\n";
+    *m_outputStream << "  settings.generator.status.ok        - Set Generator Status: OK\n";
+    *m_outputStream << "  settings.generator.status.error     - Set Generator Status: Error\n";
     *m_outputStream << "  settings.upper.start                - Settings Upper Spindle Start\n";
     *m_outputStream << "  settings.upper.stop                 - Settings Upper Spindle Stop\n";
     *m_outputStream << "  settings.lower.start                - Settings Lower Spindle Start\n";
@@ -677,6 +680,16 @@ bool DebugConsole::parseAndExecute(const QString &command)
             *m_outputStream << "Set Settings Generator Percent = " << value << " %" << endl;
             return true;
         }
+        if (cmd == "values.set.settings.generator.status") {
+            int intVal = static_cast<int>(value);
+            if (intVal != 0 && intVal != 1) {
+                *m_outputStream << "Error: Invalid value. Use 0 (Error) or 1 (OK)" << endl;
+                return true;
+            }
+            Values::updateSettingsGeneratorStatus(intVal == 1);
+            *m_outputStream << "Set Settings Generator Status = " << (intVal == 1 ? "OK" : "Error") << endl;
+            return true;
+        }
         if (cmd == "values.set.vacuum.pump") {
             Values::updateVacuumPumpPressure(value);
             *m_outputStream << "Set Vacuum Pump Pressure = " << value << " mbar" << endl;
@@ -805,6 +818,16 @@ bool DebugConsole::parseAndExecute(const QString &command)
     if (cmd == "settings.generator.off") {
         Values::updateSettingsGeneratorSelector(false);
         *m_outputStream << "Settings Page: Generator Selector: Off" << endl;
+        return true;
+    }
+    if (cmd == "settings.generator.status.ok") {
+        Values::updateSettingsGeneratorStatus(true);
+        *m_outputStream << "Settings Page: Generator Status: OK" << endl;
+        return true;
+    }
+    if (cmd == "settings.generator.status.error") {
+        Values::updateSettingsGeneratorStatus(false);
+        *m_outputStream << "Settings Page: Generator Status: Error" << endl;
         return true;
     }
     if (cmd == "settings.upper.start") {

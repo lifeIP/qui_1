@@ -67,10 +67,11 @@ static QLabel *stopwatchPercentLabel = nullptr;
 
 // Settings Page: Generator
 static QLabel *settingsGeneratorPercentLabel = nullptr;
+static QLabel *settingsGeneratorStatusLabel = nullptr;
 
 // Settings Page: Lighting (4 buttons), Lower Oscillation, Alarm Settings
 static QWidget *settingsLightingButtons[4] = {nullptr, nullptr, nullptr, nullptr};
-static bool settingsLightingButtonStates[4] = {true, false, false, true};  // top-left, top-right, bottom-left, bottom-right
+static bool settingsLightingButtonStates[4] = {true, false, false, true};  // top, left, right, bottom
 static QLabel *settingsLowerOscillationClockwiseLabel = nullptr;
 static QLabel *settingsLowerOscillationCounterClockwiseLabel = nullptr;
 static QLabel *settingsLowerOscillationAccelerationLabel = nullptr;
@@ -186,6 +187,7 @@ void registerGeneratorPercent(QLabel *label) { generatorPercentLabel = label; } 
 void registerStopwatchPercent(QLabel *label) { stopwatchPercentLabel = label; }  // Страница: Главная
 
 void registerSettingsGeneratorPercent(QLabel *label) { settingsGeneratorPercentLabel = label; }  // Страница: Настройки
+void registerSettingsGeneratorStatus(QLabel *label) { settingsGeneratorStatusLabel = label; }
 
 void registerSettingsLightingButton(int index, QWidget *widget)  // Страница: Настройки
 {
@@ -544,6 +546,19 @@ void updateSettingsGeneratorPercent(double value)  // Страница: Наст
     }
 }
 
+void updateSettingsGeneratorStatus(bool isOk)  // Страница: Настройки, true = Ок, false = Ошибка
+{
+    if (settingsGeneratorStatusLabel) {
+        if (isOk) {
+            settingsGeneratorStatusLabel->setText(QString::fromUtf8("Ок"));
+            settingsGeneratorStatusLabel->setStyleSheet("QLabel { color: #27ae60; font-size: 18px; font-weight: bold; }");
+        } else {
+            settingsGeneratorStatusLabel->setText(QString::fromUtf8("Ошибка"));
+            settingsGeneratorStatusLabel->setStyleSheet("QLabel { color: #e74c3c; font-size: 18px; font-weight: bold; }");
+        }
+    }
+}
+
 void updateSettingsLightingButton(int index, bool isOn)  // Страница: Настройки
 {
     if (index >= 0 && index < 4 && settingsLightingButtons[index]) {
@@ -566,14 +581,14 @@ bool getSettingsLightingButtonState(int index)
 void updateSettingsLowerOscillationClockwise(double value)
 {
     if (settingsLowerOscillationClockwiseLabel) {
-        settingsLowerOscillationClockwiseLabel->setText(QString::number(static_cast<int>(value)) + "°");
+        settingsLowerOscillationClockwiseLabel->setText(QString::number(static_cast<int>(value)) + " °");
     }
 }
 
 void updateSettingsLowerOscillationCounterClockwise(double value)
 {
     if (settingsLowerOscillationCounterClockwiseLabel) {
-        settingsLowerOscillationCounterClockwiseLabel->setText(QString::number(static_cast<int>(value)) + "°");
+        settingsLowerOscillationCounterClockwiseLabel->setText(QString::number(static_cast<int>(value)) + " °");
     }
 }
 
@@ -581,7 +596,7 @@ void updateSettingsLowerOscillationAcceleration(double value)
 {
     if (settingsLowerOscillationAccelerationLabel) {
         settingsLowerOscillationAccelerationLabel->setText(
-            QString::number(value, 'f', 1) + "°/сек²");
+            QString::number(value, 'f', 1) + " °/сек²");
     }
 }
 
