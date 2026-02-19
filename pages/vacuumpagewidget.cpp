@@ -158,10 +158,10 @@ VacuumPageWidget::VacuumPageWidget(QWidget *parent)
     // Карточка освещения по центру окна по оси X
     QHBoxLayout *lightingRow = new QHBoxLayout();
     lightingRow->setContentsMargins(0, 0, 0, 0);
-    lightingRow->addStretch();
     lightingRow->addWidget(createLightingCard(this), 0, Qt::AlignCenter);
-    lightingRow->addStretch();
-    root->addLayout(lightingRow, 1);
+    lightingRow->setAlignment(Qt::AlignHCenter);
+    root->addLayout(lightingRow, 0);
+    root->addStretch();
 }
 
 QFrame* VacuumPageWidget::createStatusCard(QWidget *parent)
@@ -300,21 +300,18 @@ QFrame* VacuumPageWidget::createPumpControlCard(QWidget *parent)
         vl->setSpacing(6);
 
         QLabel *lbl = makeLabel(title, 11, false, "#7f8c8d");
-        vl->addWidget(lbl, 0, Qt::AlignLeft);
+        lbl->setAlignment(Qt::AlignCenter);
+        vl->addWidget(lbl, 0, Qt::AlignHCenter);
 
-        // Переключатель Вкл/Выкл (selector)
         selector *toggle = new selector(wrap);
-        toggle->set(false, false);  // начальное состояние: выкл
-        // Обработчик синхронизирует состояние с Values при изменении пользователем
+        toggle->set(false, false);
         toggle->setOnStateChanged([toggle, activityHandler, updateStateFunc](int state) {
-            bool boolState = (state == 1);
-            // Используем актуальное состояние из виджета для синхронизации
             bool actualState = toggle->getState();
-            updateStateFunc(actualState);  // Синхронизируем с Values
-            activityHandler(state);  // Вызываем Activity handler
+            updateStateFunc(actualState);
+            activityHandler(state);
         });
         *togglePtr = toggle;
-        vl->addWidget(toggle, 0, Qt::AlignLeft);
+        vl->addWidget(toggle, 0, Qt::AlignHCenter);
 
         return wrap;
     };
@@ -380,29 +377,26 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
         vl->setSpacing(6);
 
         QLabel *lbl = makeLabel(title, 11, false, "#7f8c8d");
-        vl->addWidget(lbl, 0, Qt::AlignLeft);
+        lbl->setAlignment(Qt::AlignCenter);
+        vl->addWidget(lbl, 0, Qt::AlignHCenter);
 
         if (hasTwoButtons) {
-            // doorselector со встроенными подписями "Закр" / "Откр"
             doorselector *toggle = new doorselector(wrap);
-            toggle->set(false, false);  // 0 — Закр, 1 — Откр
+            toggle->set(false, false);
             toggle->setMinimumWidth(120);
-            // Обработчик синхронизирует состояние с Values при изменении пользователем
             toggle->setOnStateChanged([toggle, activityHandler, updateStateFunc](int state) {
-                // Используем актуальное состояние из виджета для синхронизации
                 bool actualState = toggle->getState();
-                updateStateFunc(actualState);  // Синхронизируем с Values
-                activityHandler(state);  // Вызываем Activity handler
+                updateStateFunc(actualState);
+                activityHandler(state);
             });
             *doorPtr = toggle;
-            vl->addWidget(toggle, 0, Qt::AlignLeft);
+            vl->addWidget(toggle, 0, Qt::AlignHCenter);
         } else {
-            // Главная дверь - статус (сигнал), а не кнопка
             TextButtonWidget *btn = new TextButtonWidget(QString::fromUtf8("Дверь закрыта"), "#95a5a6", "#2c3e50", 12, wrap);
             btn->setMinimumWidth(150);
-            btn->setEnabled(false);  // Не кликабельная, только статус
+            btn->setEnabled(false);
             *statusPtr = btn;
-            vl->addWidget(btn);
+            vl->addWidget(btn, 0, Qt::AlignHCenter);
         }
 
         return wrap;
