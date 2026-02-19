@@ -13,8 +13,14 @@ class StatusBarWidget : public QFrame
 public:
     explicit StatusBarWidget(QWidget *parent = nullptr);
 
+signals:
+    void statusClicked();
+
 public slots:
     void setTime(const QTime &time);
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     QLabel *timeLabel;

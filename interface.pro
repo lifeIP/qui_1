@@ -1,6 +1,7 @@
 QT       += widgets
 
 CONFIG   += c++11
+QMAKE_CXXFLAGS += -finput-charset=UTF-8
 TEMPLATE = app
 TARGET   = interface
 
@@ -16,6 +17,7 @@ UI_DIR      = build/ui
 CONFIG += console
 
 SOURCES += main.cpp \
+           errorlogio.cpp \
            activity.cpp \
            values.cpp \
            control/controlthread.cpp \
@@ -35,9 +37,12 @@ SOURCES += main.cpp \
            pages/autodopingpagewidget.cpp \
            pages/vacuumpagewidget.cpp \
            pages/gaspanelpagewidget.cpp \
-           pages/settingspagewidget.cpp
+           pages/settingspagewidget.cpp \
+           pages/errorlogpagewidget.cpp \
+           pages/errorarchivepagewidget.cpp
 
-HEADERS += activity.h \
+HEADERS += errorlogio.h \
+           activity.h \
            values.h \
            control/controlthread.h \
            control/debugconsole.h \
@@ -56,4 +61,6 @@ HEADERS += activity.h \
            pages/autodopingpagewidget.h \
            pages/vacuumpagewidget.h \
            pages/gaspanelpagewidget.h \
-           pages/settingspagewidget.h
+           pages/settingspagewidget.h \
+           pages/errorlogpagewidget.h \
+           pages/errorarchivepagewidget.h

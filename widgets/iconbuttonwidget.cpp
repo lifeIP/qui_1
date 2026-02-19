@@ -2,6 +2,7 @@
 
 #include <QIcon>
 #include <QSize>
+#include <QResizeEvent>
 #include <QStringList>
 #include <QMap>
 #include <QPropertyAnimation>
@@ -73,8 +74,9 @@ void IconButtonWidget::updateStyle()
         hoverColor = "#dfe2ec";
     } else if (hoverColor == "#f0f0f0") {
         hoverColor = "#f5f5f5";
+    } else if (hoverColor == "#7f8c8d") {
+        hoverColor = "#95a5a6";
     } else {
-        // Простое осветление для других цветов
         hoverColor = currentBackgroundColor;
     }
     
@@ -90,28 +92,39 @@ void IconButtonWidget::updateStyle()
         pressedColor = "#bfc2cc";
     } else if (pressedColor == "#f0f0f0") {
         pressedColor = "#e0e0e0";
+    } else if (pressedColor == "#7f8c8d") {
+        pressedColor = "#6c7a7d";
     } else {
         pressedColor = currentBackgroundColor;
     }
     
-    // Стиль круглой кнопки
+    int radius = qMin(width(), height()) / 2;
+    if (radius < 5)
+        radius = 25;
+    QString borderColor = (currentBackgroundColor == "#7f8c8d" || currentBackgroundColor == "#95a5a6")
+        ? "#bdc3c7" : "#505050";
     QString style = QString(
         "QPushButton {"
         "  background-color: %1;"
-        "  border: 2px solid #505050;"
-        "  border-radius: 25px;"
+        "  border: 1px solid %5;"
+        "  border-radius: %4px;"
         "  padding: 10px;"
         "}"
         "QPushButton:hover {"
         "  background-color: %2;"
-        "  border-color: #606060;"
         "}"
         "QPushButton:pressed {"
         "  background-color: %3;"
         "}"
-    ).arg(currentBackgroundColor, hoverColor, pressedColor);
+    ).arg(currentBackgroundColor, hoverColor, pressedColor, QString::number(radius), borderColor);
     
     setStyleSheet(style);
+}
+
+void IconButtonWidget::resizeEvent(QResizeEvent *event)
+{
+    QPushButton::resizeEvent(event);
+    updateStyle();
 }
 
 void IconButtonWidget::mousePressEvent(QMouseEvent *event)

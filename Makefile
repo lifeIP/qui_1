@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -O2 -std=gnu++11 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -finput-charset=UTF-8 -O2 -std=gnu++11 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -Ibuild/moc -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
@@ -53,6 +53,7 @@ OBJECTS_DIR   = build/obj/
 ####### Files
 
 SOURCES       = main.cpp \
+		errorlogio.cpp \
 		activity.cpp \
 		values.cpp \
 		control/controlthread.cpp \
@@ -72,7 +73,9 @@ SOURCES       = main.cpp \
 		pages/autodopingpagewidget.cpp \
 		pages/vacuumpagewidget.cpp \
 		pages/gaspanelpagewidget.cpp \
-		pages/settingspagewidget.cpp build/moc/moc_controlthread.cpp \
+		pages/settingspagewidget.cpp \
+		pages/errorlogpagewidget.cpp \
+		pages/errorarchivepagewidget.cpp build/moc/moc_controlthread.cpp \
 		build/moc/moc_debugconsole.cpp \
 		build/moc/moc_statusbarwidget.cpp \
 		build/moc/moc_bottomnavigationbar.cpp \
@@ -88,8 +91,11 @@ SOURCES       = main.cpp \
 		build/moc/moc_autodopingpagewidget.cpp \
 		build/moc/moc_vacuumpagewidget.cpp \
 		build/moc/moc_gaspanelpagewidget.cpp \
-		build/moc/moc_settingspagewidget.cpp
+		build/moc/moc_settingspagewidget.cpp \
+		build/moc/moc_errorlogpagewidget.cpp \
+		build/moc/moc_errorarchivepagewidget.cpp
 OBJECTS       = build/obj/main.o \
+		build/obj/errorlogio.o \
 		build/obj/activity.o \
 		build/obj/values.o \
 		build/obj/controlthread.o \
@@ -110,6 +116,8 @@ OBJECTS       = build/obj/main.o \
 		build/obj/vacuumpagewidget.o \
 		build/obj/gaspanelpagewidget.o \
 		build/obj/settingspagewidget.o \
+		build/obj/errorlogpagewidget.o \
+		build/obj/errorarchivepagewidget.o \
 		build/obj/moc_controlthread.o \
 		build/obj/moc_debugconsole.o \
 		build/obj/moc_statusbarwidget.o \
@@ -126,7 +134,9 @@ OBJECTS       = build/obj/main.o \
 		build/obj/moc_autodopingpagewidget.o \
 		build/obj/moc_vacuumpagewidget.o \
 		build/obj/moc_gaspanelpagewidget.o \
-		build/obj/moc_settingspagewidget.o
+		build/obj/moc_settingspagewidget.o \
+		build/obj/moc_errorlogpagewidget.o \
+		build/obj/moc_errorarchivepagewidget.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -204,7 +214,8 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		interface.pro activity.h \
+		interface.pro errorlogio.h \
+		activity.h \
 		values.h \
 		control/controlthread.h \
 		control/debugconsole.h \
@@ -223,7 +234,10 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/autodopingpagewidget.h \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
-		pages/settingspagewidget.h main.cpp \
+		pages/settingspagewidget.h \
+		pages/errorlogpagewidget.h \
+		pages/errorarchivepagewidget.h main.cpp \
+		errorlogio.cpp \
 		activity.cpp \
 		values.cpp \
 		control/controlthread.cpp \
@@ -243,7 +257,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		pages/autodopingpagewidget.cpp \
 		pages/vacuumpagewidget.cpp \
 		pages/gaspanelpagewidget.cpp \
-		pages/settingspagewidget.cpp
+		pages/settingspagewidget.cpp \
+		pages/errorlogpagewidget.cpp \
+		pages/errorarchivepagewidget.cpp
 QMAKE_TARGET  = interface
 DESTDIR       = build/
 TARGET        = build/interface
@@ -428,8 +444,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents activity.h values.h control/controlthread.h control/debugconsole.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp widgets/parametereditdialog.h pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/autodopingpagewidget.h pages/vacuumpagewidget.h pages/gaspanelpagewidget.h pages/settingspagewidget.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp activity.cpp values.cpp control/controlthread.cpp control/debugconsole.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp widgets/parametereditdialog.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/autodopingpagewidget.cpp pages/vacuumpagewidget.cpp pages/gaspanelpagewidget.cpp pages/settingspagewidget.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents errorlogio.h activity.h values.h control/controlthread.h control/debugconsole.h widgets/statusbarwidget.h widgets/bottomnavigationbar.h widgets/iconbuttonwidget.h widgets/textbuttonwidget.h widgets/selector.hpp widgets/doorselector.hpp widgets/selector-button.hpp widgets/parametereditdialog.h pages/dopingpagewidget.h pages/mainpagewidget.h pages/finalpagewidget.h pages/autotpagewidget.h pages/autodopingpagewidget.h pages/vacuumpagewidget.h pages/gaspanelpagewidget.h pages/settingspagewidget.h pages/errorlogpagewidget.h pages/errorarchivepagewidget.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp errorlogio.cpp activity.cpp values.cpp control/controlthread.cpp control/debugconsole.cpp widgets/statusbarwidget.cpp widgets/bottomnavigationbar.cpp widgets/iconbuttonwidget.cpp widgets/textbuttonwidget.cpp widgets/selector.cpp widgets/doorselector.cpp widgets/selector-button.cpp widgets/parametereditdialog.cpp pages/dopingpagewidget.cpp pages/mainpagewidget.cpp pages/finalpagewidget.cpp pages/autotpagewidget.cpp pages/autodopingpagewidget.cpp pages/vacuumpagewidget.cpp pages/gaspanelpagewidget.cpp pages/settingspagewidget.cpp pages/errorlogpagewidget.cpp pages/errorarchivepagewidget.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -459,11 +475,11 @@ compiler_moc_predefs_make_all: build/moc/moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) build/moc/moc_predefs.h
 build/moc/moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
-	g++ -pipe -O2 -std=gnu++11 -Wall -Wextra -dM -E -o build/moc/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
+	g++ -pipe -finput-charset=UTF-8 -O2 -std=gnu++11 -Wall -Wextra -dM -E -o build/moc/moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
+compiler_moc_header_make_all: build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp build/moc/moc_errorlogpagewidget.cpp build/moc/moc_errorarchivepagewidget.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp
+	-$(DEL_FILE) build/moc/moc_controlthread.cpp build/moc/moc_debugconsole.cpp build/moc/moc_statusbarwidget.cpp build/moc/moc_bottomnavigationbar.cpp build/moc/moc_iconbuttonwidget.cpp build/moc/moc_textbuttonwidget.cpp build/moc/moc_selector.cpp build/moc/moc_doorselector.cpp build/moc/moc_selector-button.cpp build/moc/moc_dopingpagewidget.cpp build/moc/moc_mainpagewidget.cpp build/moc/moc_finalpagewidget.cpp build/moc/moc_autotpagewidget.cpp build/moc/moc_autodopingpagewidget.cpp build/moc/moc_vacuumpagewidget.cpp build/moc/moc_gaspanelpagewidget.cpp build/moc/moc_settingspagewidget.cpp build/moc/moc_errorlogpagewidget.cpp build/moc/moc_errorarchivepagewidget.cpp
 build/moc/moc_controlthread.cpp: control/controlthread.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -549,6 +565,16 @@ build/moc/moc_settingspagewidget.cpp: pages/settingspagewidget.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/settingspagewidget.h -o build/moc/moc_settingspagewidget.cpp
 
+build/moc/moc_errorlogpagewidget.cpp: pages/errorlogpagewidget.h \
+		build/moc/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/errorlogpagewidget.h -o build/moc/moc_errorlogpagewidget.cpp
+
+build/moc/moc_errorarchivepagewidget.cpp: pages/errorarchivepagewidget.h \
+		build/moc/moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include pages/errorarchivepagewidget.h -o build/moc/moc_errorarchivepagewidget.cpp
+
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all: build/moc/main.moc
@@ -565,7 +591,10 @@ build/moc/main.moc: main.cpp \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
 		pages/settingspagewidget.h \
+		pages/errorlogpagewidget.h \
+		pages/errorarchivepagewidget.h \
 		control/controlthread.h \
+		errorlogio.h \
 		build/moc/moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/vboxuser/Programming/interface/build/moc/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/vboxuser/Programming/interface -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include main.cpp -o build/moc/main.moc
@@ -592,9 +621,15 @@ build/obj/main.o: main.cpp widgets/statusbarwidget.h \
 		pages/vacuumpagewidget.h \
 		pages/gaspanelpagewidget.h \
 		pages/settingspagewidget.h \
+		pages/errorlogpagewidget.h \
+		pages/errorarchivepagewidget.h \
 		control/controlthread.h \
+		errorlogio.h \
 		build/moc/main.moc
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/main.o main.cpp
+
+build/obj/errorlogio.o: errorlogio.cpp errorlogio.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/errorlogio.o errorlogio.cpp
 
 build/obj/activity.o: activity.cpp activity.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/activity.o activity.cpp
@@ -696,6 +731,17 @@ build/obj/settingspagewidget.o: pages/settingspagewidget.cpp pages/settingspagew
 		values.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/settingspagewidget.o pages/settingspagewidget.cpp
 
+build/obj/errorlogpagewidget.o: pages/errorlogpagewidget.cpp pages/errorlogpagewidget.h \
+		errorlogio.h \
+		widgets/iconbuttonwidget.h \
+		widgets/textbuttonwidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/errorlogpagewidget.o pages/errorlogpagewidget.cpp
+
+build/obj/errorarchivepagewidget.o: pages/errorarchivepagewidget.cpp pages/errorarchivepagewidget.h \
+		errorlogio.h \
+		widgets/iconbuttonwidget.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/errorarchivepagewidget.o pages/errorarchivepagewidget.cpp
+
 build/obj/moc_controlthread.o: build/moc/moc_controlthread.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_controlthread.o build/moc/moc_controlthread.cpp
 
@@ -746,6 +792,12 @@ build/obj/moc_gaspanelpagewidget.o: build/moc/moc_gaspanelpagewidget.cpp
 
 build/obj/moc_settingspagewidget.o: build/moc/moc_settingspagewidget.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_settingspagewidget.o build/moc/moc_settingspagewidget.cpp
+
+build/obj/moc_errorlogpagewidget.o: build/moc/moc_errorlogpagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_errorlogpagewidget.o build/moc/moc_errorlogpagewidget.cpp
+
+build/obj/moc_errorarchivepagewidget.o: build/moc/moc_errorarchivepagewidget.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/obj/moc_errorarchivepagewidget.o build/moc/moc_errorarchivepagewidget.cpp
 
 ####### Install
 

@@ -19,7 +19,10 @@
 #include "pages/vacuumpagewidget.h"
 #include "pages/gaspanelpagewidget.h"
 #include "pages/settingspagewidget.h"
+#include "pages/errorlogpagewidget.h"
+#include "pages/errorarchivepagewidget.h"
 #include "control/controlthread.h"
+#include "errorlogio.h"
 
 class MainWindow : public QMainWindow
 {
@@ -67,10 +70,14 @@ public:
         stackedWidget->addWidget(new GasPanelPageWidget(this));
         stackedWidget->addWidget(new SettingsPageWidget(this));
 
-        // Дополнительная страница "Автолегирование" (настройка автолегирования)
-        // Располагается после основных страниц, чтобы не сдвигать индексы навигации
         autodopingPage = new AutodopingPageWidget(this);
         stackedWidget->addWidget(autodopingPage);
+
+        errorLogPage = new ErrorLogPageWidget(this);
+        stackedWidget->addWidget(errorLogPage);
+
+        errorArchivePage = new ErrorArchivePageWidget(this);
+        stackedWidget->addWidget(errorArchivePage);
 
         // Нижняя навигация
         bottomNav = new BottomNavigationBar(this);
@@ -79,9 +86,20 @@ public:
         connect(bottomNav, &BottomNavigationBar::pageSelected,
                 this, &MainWindow::setActivePage);
 
-        // Переход на страницу автолегирования из страницы легирования
         connect(dopingPage, &DopingPageWidget::openAutodopingRequested,
                 this, &MainWindow::openAutodopingPage);
+
+        connect(statusBar, &StatusBarWidget::statusClicked,
+                this, &MainWindow::openErrorLogPage);
+
+        connect(errorLogPage, &ErrorLogPageWidget::backRequested,
+                this, [this]() { closeErrorLogPage(); });
+
+        connect(errorLogPage, &ErrorLogPageWidget::archiveRequested,
+                this, [this]() { openErrorArchivePage(); });
+
+        connect(errorArchivePage, &ErrorArchivePageWidget::backRequested,
+                this, [this]() { closeErrorArchivePage(); });
 
         // Активная страница по умолчанию — "Легирование"
         setActivePage(0);
@@ -125,6 +143,9 @@ private:
 
     QStackedWidget *stackedWidget;
     QWidget *autodopingPage = nullptr;
+    ErrorLogPageWidget *errorLogPage = nullptr;
+    ErrorArchivePageWidget *errorArchivePage = nullptr;
+    int pageBeforeErrorLog = 0;
 
     QWidget* createSimplePage(const QString &title)
     {
@@ -150,13 +171,42 @@ private:
             bottomNav->setActivePage(pageIndex);
     }
 
-    // Открыть страницу "Автолегирование" без изменения активной вкладки навигации
     void openAutodopingPage()
     {
         if (!stackedWidget || !autodopingPage)
             return;
         stackedWidget->setCurrentWidget(autodopingPage);
-        // Нижняя навигация остаётся на странице "Легирование"
+    }
+
+    void openErrorLogPage()
+    {
+        if (!stackedWidget || !errorLogPage)
+            return;
+        pageBeforeErrorLog = stackedWidget->currentIndex();
+        stackedWidget->setCurrentWidget(errorLogPage);
+    }
+
+    void closeErrorLogPage()
+    {
+        if (!stackedWidget)
+            return;
+        stackedWidget->setCurrentIndex(pageBeforeErrorLog);
+        if (bottomNav)
+            bottomNav->setActivePage(pageBeforeErrorLog);
+    }
+
+    void openErrorArchivePage()
+    {
+        if (!stackedWidget || !errorArchivePage)
+            return;
+        stackedWidget->setCurrentWidget(errorArchivePage);
+    }
+
+    void closeErrorArchivePage()
+    {
+        if (!stackedWidget || !errorLogPage)
+            return;
+        stackedWidget->setCurrentWidget(errorLogPage);
     }
 
 protected:
@@ -183,6 +233,8 @@ protected:
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    ErrorLogIO::ensureDefaultFilesExist();
 
     // Запуск управляющего потока
     ControlThread *controlThread = new ControlThread();
