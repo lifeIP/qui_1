@@ -759,6 +759,7 @@ public:
     explicit RightColumnWidget(QWidget *parent = nullptr)
         : QWidget(parent)
     {
+        setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
         QVBoxLayout *col = new QVBoxLayout(this);
         col->setSpacing(10);
         col->setContentsMargins(0, 0, 0, 0);
@@ -811,7 +812,8 @@ public:
                 QString::fromUtf8(" %"),
                 [](double v) { Values::updateSettingsGeneratorPercent(v); });
         }
-        col->addWidget(generator);
+        generator->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        col->addWidget(generator, 1);
 
         CardFrame *lighting = new CardFrame("#ffffff");
         {
@@ -846,7 +848,8 @@ public:
             gridRow->addStretch();
             v->addLayout(gridRow);
         }
-        col->addWidget(lighting);
+        lighting->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        col->addWidget(lighting, 1);
 
         CardFrame *stopwatch = new CardFrame("#A4E3DB");
         {
@@ -903,7 +906,8 @@ public:
                 }
             });
         }
-        col->addWidget(stopwatch);
+        stopwatch->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        col->addWidget(stopwatch, 1);
     }
 };
 
@@ -1021,15 +1025,15 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent)
     upperSpindle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     leftCol->addWidget(upperSpindle, 0);
     leftCol->addWidget(new LowerSpindleControlWidget(), 2);
+    leftCol->addStretch();
 
-    root->addLayout(leftCol);
+    root->addLayout(leftCol, 4);
 
     QVBoxLayout *rightCol = new QVBoxLayout();
-    rightCol->addWidget(new InternalThrustWidget(), 0);
-    rightCol->addWidget(new RightColumnWidget(), 0);
-    rightCol->addStretch();
+    rightCol->addWidget(new InternalThrustWidget(), 1);
+    rightCol->addWidget(new RightColumnWidget(), 4);
 
-    root->addLayout(rightCol);
+    root->addLayout(rightCol, 1);
 
     QHBoxLayout *bottomRow = new QHBoxLayout();
     bottomRow->setSpacing(12);
