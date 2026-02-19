@@ -982,6 +982,7 @@ public:
             QFrame *sep = new QFrame(this);
             sep->setFrameShape(QFrame::HLine);
             sep->setFrameShadow(QFrame::Sunken);
+            sep->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             sep->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             sep->setFixedHeight(2);
             vl->addWidget(sep);
@@ -1050,6 +1051,7 @@ public:
             QFrame *sep = new QFrame(this);
             sep->setFrameShape(QFrame::HLine);
             sep->setFrameShadow(QFrame::Sunken);
+            sep->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
             sep->setStyleSheet("QFrame { background-color: #252525; max-height: 2px; }");
             sep->setFixedHeight(2);
             vl->addWidget(sep);
