@@ -8,6 +8,7 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QGridLayout>
 #include <QFrame>
 #include <QLabel>
 #include <QPushButton>
@@ -166,12 +167,14 @@ public:
         left->setOnClick([]() { Activity::handleSettingsXYLeft(); });
         right->setOnClick([]() { Activity::handleSettingsXYRight(); });
 
-        QLabel *xyLabel = makeLabel("XY", 18, true);
-        xyLabel->setAlignment(Qt::AlignCenter);
+        
 
         QVBoxLayout *buttonsLayout = new QVBoxLayout();
         buttonsLayout->setSpacing(4);
         buttonsLayout->setAlignment(Qt::AlignCenter);
+
+        QLabel *xyLabel = makeLabel("XY", 14, true);
+        xyLabel->setAlignment(Qt::AlignCenter);
 
         QHBoxLayout *topRow = new QHBoxLayout();
         topRow->addStretch();
@@ -237,6 +240,7 @@ public:
         neutralXBtn->setMinimumHeight(28);
         neutralXBtn->setOnClick([]() { Values::updateSettingsXYOffsetX(0); });
         param1Layout->addWidget(neutralXBtn);
+        param1Widget->setMinimumHeight(85);
 
         infoLayout->addWidget(param1Widget);
 
@@ -279,7 +283,7 @@ public:
         neutralYBtn->setMinimumHeight(28);
         neutralYBtn->setOnClick([]() { Values::updateSettingsXYOffsetY(0); });
         param2Layout->addWidget(neutralYBtn);
-
+        param2Widget->setMinimumHeight(85);
         infoLayout->addWidget(param2Widget);
 
         h->addLayout(infoLayout, 1);
@@ -292,11 +296,15 @@ class CoilControlWidget : public CardFrame
 {
 public:
     explicit CoilControlWidget(QWidget *parent = nullptr)
-        : CardFrame("#e6e8ee", parent)
+        : CardFrame("#ffffff", parent)
     {
         QVBoxLayout *v = new QVBoxLayout(this);
         v->setContentsMargins(16, 16, 16, 16);
         v->setSpacing(10);
+
+        QLabel *desc0Label = makeLabel("Смещение витка", 14, true);
+        desc0Label->setAlignment(Qt::AlignLeft);
+        v->addWidget(desc0Label);
 
         QHBoxLayout *h = new QHBoxLayout();
         h->setSpacing(15);
@@ -308,10 +316,6 @@ public:
         IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
         up->setOnClick([]() { Activity::handleSettingsCoilUp(); });
         buttonsLayout->addWidget(up, 0, Qt::AlignHCenter);
-
-        QLabel *desc0Label = makeLabel("Смещение витка", 14, true);
-        desc0Label->setAlignment(Qt::AlignCenter);
-        buttonsLayout->addWidget(desc0Label);
 
         IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
         down->setOnClick([]() { Activity::handleSettingsCoilDown(); });
@@ -327,6 +331,7 @@ public:
         QVBoxLayout *param1Layout = new QVBoxLayout(param1Widget);
         param1Layout->setSpacing(4);
         param1Layout->setAlignment(Qt::AlignCenter);
+
 
         QLabel *value1Label = makeLabel("0.0 MM", 18, true);
         value1Label->setAlignment(Qt::AlignCenter);
@@ -351,6 +356,7 @@ public:
             QString::fromUtf8(" MM"),
             [](double v) { Values::updateSettingsCoilOffset(v); });
 
+        param1Widget->setMinimumHeight(60);
         infoLayout->addWidget(param1Widget);
 
         QWidget *param2Widget = new QWidget(this);
@@ -381,6 +387,7 @@ public:
             QString::fromUtf8(" MM/мин"),
             [](double v) { Values::updateSettingsCoilOscillations(v); });
 
+        param2Widget->setMinimumHeight(60);
         infoLayout->addWidget(param2Widget);
 
         h->addLayout(infoLayout, 1);
@@ -427,6 +434,35 @@ public:
     }
 };
 
+class InternalThrustWidget : public CardFrame
+{
+public:
+    explicit InternalThrustWidget(QWidget *parent = nullptr)
+        : CardFrame("#2d3436", parent)
+    {
+        this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+        QVBoxLayout *v = new QVBoxLayout(this);
+        v->setContentsMargins(16, 16, 16, 16);
+        v->setSpacing(10);
+
+        QLabel *descLabel = makeLabel("Внутренняя тяга", 14, true);
+        descLabel->setStyleSheet("QLabel { font-size: 14px; font-weight: bold; color: #ffffff; }");
+        descLabel->setAlignment(Qt::AlignCenter);
+        v->addWidget(descLabel);
+
+        TextButtonWidget *neutralBtn = new TextButtonWidget(
+            QString::fromUtf8("Нейтральное"),
+            "#505050",
+            "#ffffff",
+            12,
+            this
+        );
+        neutralBtn->setMinimumHeight(50);
+        neutralBtn->setOnClick([]() { Activity::handleSettingsInternalThrustNeutral(); });
+        v->addWidget(neutralBtn, 0, Qt::AlignCenter);
+    }
+};
+
 class UpperSpindleControlWidget : public CardFrame
 {
 public:
@@ -443,61 +479,43 @@ public:
         QHBoxLayout *h = new QHBoxLayout();
         h->setSpacing(15);
 
-        QHBoxLayout *arrows = new QHBoxLayout();
-        arrows->setSpacing(8);
-        IconButtonWidget *left = new IconButtonWidget("upleft_arrow", this, "#505050");
-        IconButtonWidget *right = new IconButtonWidget("upright_arrow", this, "#505050");
-        left->setOnClick([]() { Activity::handleSettingsUpperSpindleLeft(); });
-        right->setOnClick([]() { Activity::handleSettingsUpperSpindleRight(); });
-        arrows->addWidget(left);
-        arrows->addWidget(right);
+        // Верхний ряд: Ускорение (зелёная) + иконка вращения + стрелка вверх
+        QHBoxLayout *row1 = new QHBoxLayout();
+        row1->setSpacing(8);
+        TextButtonWidget *accel_btn = new TextButtonWidget("Ускорение", "#29AC39", "#ffffff", 12, this);
+        accel_btn->setMinimumHeight(38);
+        accel_btn->setOnClick([]() { Activity::handleSettingsUpperSpindleAcceleration(); });
+        IconButtonWidget *rotate_arrow = new IconButtonWidget("right_arrow", this, "#505050");
+        rotate_arrow->setOnClick([]() { Activity::handleSettingsUpperSpindleRight(); });
+        IconButtonWidget *up_arrow = new IconButtonWidget("up_arrow", this, "#505050");
+        up_arrow->setOnClick([]() { Activity::handleSettingsUpperSpindleUp(); });
+        row1->addWidget(accel_btn);
+        row1->addWidget(rotate_arrow);
+        row1->addWidget(up_arrow);
 
-        TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
-        speed_btn->setMinimumHeight(38);
-        speed_btn->setOnClick([]() { Activity::handleSettingsUpperSpindleSpeed(); });
+        // Средний ряд: Нейтральное (чёрная) + стрелка вниз
+        QHBoxLayout *row2 = new QHBoxLayout();
+        row2->setSpacing(8);
+        TextButtonWidget *neutral_btn = new TextButtonWidget("Нейтральное", "#000000", "#ffffff", 12, this);
+        neutral_btn->setMinimumHeight(38);
+        neutral_btn->setOnClick([]() { Activity::handleSettingsUpperSpindleNeutral(); });
+        IconButtonWidget *down_arrow = new IconButtonWidget("down_arrow", this, "#505050");
+        down_arrow->setOnClick([]() { Activity::handleSettingsUpperSpindleDown(); });
+        row2->addWidget(neutral_btn);
+        row2->addWidget(down_arrow);
+
+        // Нижний ряд: СТОП (красная, широкая)
+        TextButtonWidget *stop_btn = new TextButtonWidget("СТОП", "#E53935", "#ffffff", 12, this);
+        stop_btn->setMinimumHeight(38);
+        stop_btn->setOnClick([]() { Activity::handleSettingsUpperSpindleStop(); });
 
         QVBoxLayout *btn_container = new QVBoxLayout();
-        btn_container->addLayout(arrows);
-        btn_container->addWidget(speed_btn);
+        btn_container->setSpacing(8);
+        btn_container->addLayout(row1);
+        btn_container->addLayout(row2);
+        btn_container->addWidget(stop_btn);
 
-        QVBoxLayout *arrows2 = new QVBoxLayout();
-        arrows2->setSpacing(8);
-        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
-        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
-        up->setOnClick([]() { Activity::handleSettingsUpperSpindleUp(); });
-        down->setOnClick([]() { Activity::handleSettingsUpperSpindleDown(); });
-        arrows2->addWidget(up);
-        arrows2->addWidget(down);
-
-        QVBoxLayout *arrows3 = new QVBoxLayout();
-        arrows3->setSpacing(8);
-        IconButtonWidget *upup = new IconButtonWidget("upup_arrow", this, "#505050");
-        IconButtonWidget *downdown = new IconButtonWidget("downdown_arrow", this, "#505050");
-        upup->setOnClick([]() { Activity::handleSettingsUpperSpindleUpUp(); });
-        downdown->setOnClick([]() { Activity::handleSettingsUpperSpindleDownDown(); });
-        arrows3->addWidget(upup);
-        arrows3->addWidget(downdown);
-
-        QHBoxLayout *btn_container2 = new QHBoxLayout();
-        btn_container2->addLayout(btn_container, 0);
-        btn_container2->addLayout(arrows2, 0);
-        btn_container2->addLayout(arrows3, 0);
-
-        TextButtonWidget *start_stop_btn = new TextButtonWidget("СТАРТ", "#29AC39", "#ffffff", 12, this);
-        start_stop_btn->setMinimumHeight(38);
-        start_stop_btn->setStartStopMode(true);
-        Values::registerSettingsUpperSpindleStartStopButton(start_stop_btn);
-        start_stop_btn->setOnClick([start_stop_btn]() {
-            bool isStart = start_stop_btn->isStartState();
-            Values::updateSettingsUpperSpindleStartStop(isStart);
-            Activity::handleSettingsUpperSpindleStartStop(isStart);
-        });
-
-        QVBoxLayout *btn_container3 = new QVBoxLayout();
-        btn_container3->addLayout(btn_container2);
-        btn_container3->addWidget(start_stop_btn);
-
-        h->addLayout(btn_container3);
+        h->addLayout(btn_container);
 
         QVBoxLayout *infoLayout = new QVBoxLayout();
         infoLayout->setSpacing(3);
@@ -534,9 +552,9 @@ public:
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
 
-        QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
+        QLabel *value2Label = makeLabel("0.0 RPM", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
-        Values::registerSettingsUpperSpindleSpeed(value2Label);
+        Values::registerSettingsUpperSpindleRpm(value2Label);
         param2Layout->addWidget(value2Label);
 
         QFrame *separator2 = new QFrame(this);
@@ -547,7 +565,7 @@ public:
         separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param2Layout->addWidget(separator2);
 
-        QLabel *desc2Label = makeLabel("Скорость", 12);
+        QLabel *desc2Label = makeLabel("Позиция", 12);
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
 
@@ -561,18 +579,18 @@ public:
 
         QLabel *value3Label = makeLabel("0.0 MM", 18, true);
         value3Label->setAlignment(Qt::AlignCenter);
-        Values::registerSettingsUpperSpindlePosition(value3Label);
+        Values::registerSettingsUpperSpindleAlarm(value3Label);
         param3Layout->addWidget(value3Label);
 
         QFrame *separator3 = new QFrame(this);
         separator3->setFrameShape(QFrame::HLine);
         separator3->setFrameShadow(QFrame::Sunken);
-        separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator3->setStyleSheet("QFrame { background-color: #E53935; max-height: 2px; }");
         separator3->setFixedHeight(2);
         separator3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param3Layout->addWidget(separator3);
 
-        QLabel *desc3Label = makeLabel("Позиция", 12);
+        QLabel *desc3Label = makeLabel("Сигнализация", 12);
         desc3Label->setAlignment(Qt::AlignCenter);
         param3Layout->addWidget(desc3Label);
 
@@ -589,18 +607,18 @@ public:
         makeEditableParameter(
             param2Widget,
             value2Label,
-            QString::fromUtf8("Скорость верхнего шпинделя:"),
-            QString::fromUtf8("Задайте скорость верхнего шпинделя, мм/мин"),
-            QString::fromUtf8(" MM/мин"),
-            [](double v) { Values::updateSettingsUpperSpindleSpeed(v); });
+            QString::fromUtf8("Позиция верхнего шпинделя:"),
+            QString::fromUtf8("Задайте позицию верхнего шпинделя, RPM"),
+            QString::fromUtf8(" RPM"),
+            [](double v) { Values::updateSettingsUpperSpindleRpm(v); });
 
         makeEditableParameter(
             param3Widget,
             value3Label,
-            QString::fromUtf8("Позиция верхнего шпинделя:"),
-            QString::fromUtf8("Задайте позицию верхнего шпинделя, мм"),
+            QString::fromUtf8("Сигнализация:"),
+            QString::fromUtf8("Задайте величину сигнализации, мм"),
             QString::fromUtf8(" MM"),
-            [](double v) { Values::updateSettingsUpperSpindlePosition(v); });
+            [](double v) { Values::updateSettingsUpperSpindleAlarm(v); });
 
         h->addLayout(infoLayout, 1);
 
@@ -624,83 +642,40 @@ public:
         QHBoxLayout *h = new QHBoxLayout();
         h->setSpacing(15);
 
-        QHBoxLayout *arrows = new QHBoxLayout();
-        arrows->setSpacing(8);
-        IconButtonWidget *left = new IconButtonWidget("upleft_arrow", this, "#505050");
-        IconButtonWidget *right = new IconButtonWidget("upright_arrow", this, "#505050");
-        left->setOnClick([]() { Activity::handleSettingsLowerSpindleLeft(); });
-        right->setOnClick([]() { Activity::handleSettingsLowerSpindleRight(); });
-        arrows->addWidget(left);
-        arrows->addWidget(right);
+        // Верхний ряд: Нейтральное (чёрная) + стрелка вверх
+        QHBoxLayout *row1 = new QHBoxLayout();
+        row1->setSpacing(8);
+        TextButtonWidget *neutral_btn = new TextButtonWidget("Нейтральное", "#000000", "#ffffff", 12, this);
+        neutral_btn->setMinimumHeight(38);
+        neutral_btn->setOnClick([]() { Activity::handleSettingsLowerSpindleNeutral(); });
+        IconButtonWidget *up_arrow = new IconButtonWidget("up_arrow", this, "#505050");
+        up_arrow->setOnClick([]() { Activity::handleSettingsLowerSpindleUp(); });
+        row1->addWidget(neutral_btn);
+        row1->addWidget(up_arrow);
 
-        TextButtonWidget *speed_btn = new TextButtonWidget("Скорость", "#29AC39", "#ffffff", 12, this);
-        speed_btn->setMinimumHeight(38);
-        speed_btn->setOnClick([]() { Activity::handleSettingsLowerSpindleSpeed(); });
+        // Средний ряд: Удерживание (серая) + стрелка вниз
+        QHBoxLayout *row2 = new QHBoxLayout();
+        row2->setSpacing(8);
+        TextButtonWidget *hold_btn = new TextButtonWidget("Удерживание", "#808080", "#ffffff", 12, this);
+        hold_btn->setMinimumHeight(38);
+        hold_btn->setOnClick([]() { Activity::handleSettingsLowerSpindleHold(); });
+        IconButtonWidget *down_arrow = new IconButtonWidget("down_arrow", this, "#505050");
+        down_arrow->setOnClick([]() { Activity::handleSettingsLowerSpindleDown(); });
+        row2->addWidget(hold_btn);
+        row2->addWidget(down_arrow);
+
+        // Нижний ряд: СТОП (красная, широкая)
+        TextButtonWidget *stop_btn = new TextButtonWidget("СТОП", "#E53935", "#ffffff", 12, this);
+        stop_btn->setMinimumHeight(38);
+        stop_btn->setOnClick([]() { Activity::handleSettingsLowerSpindleStop(); });
 
         QVBoxLayout *btn_container = new QVBoxLayout();
-        btn_container->addLayout(arrows);
-        btn_container->addWidget(speed_btn);
+        btn_container->setSpacing(8);
+        btn_container->addLayout(row1);
+        btn_container->addLayout(row2);
+        btn_container->addWidget(stop_btn);
 
-        QVBoxLayout *arrows2 = new QVBoxLayout();
-        arrows2->setSpacing(8);
-        IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
-        IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
-        up->setOnClick([]() { Activity::handleSettingsLowerSpindleUp(); });
-        down->setOnClick([]() { Activity::handleSettingsLowerSpindleDown(); });
-        arrows2->addWidget(up);
-        arrows2->addWidget(down);
-
-        QVBoxLayout *arrows3 = new QVBoxLayout();
-        arrows3->setSpacing(8);
-        IconButtonWidget *upup = new IconButtonWidget("upup_arrow", this, "#505050");
-        IconButtonWidget *downdown = new IconButtonWidget("downdown_arrow", this, "#505050");
-        upup->setOnClick([]() { Activity::handleSettingsLowerSpindleUpUp(); });
-        downdown->setOnClick([]() { Activity::handleSettingsLowerSpindleDownDown(); });
-        arrows3->addWidget(upup);
-        arrows3->addWidget(downdown);
-
-        QHBoxLayout *btn_container2 = new QHBoxLayout();
-        btn_container2->addLayout(btn_container, 0);
-        btn_container2->addLayout(arrows2, 0);
-        btn_container2->addLayout(arrows3, 0);
-
-        TextButtonWidget *start_stop_btn = new TextButtonWidget("СТАРТ", "#29AC39", "#ffffff", 12, this);
-        start_stop_btn->setMinimumHeight(38);
-        start_stop_btn->setStartStopMode(true);
-        Values::registerSettingsLowerSpindleStartStopButton(start_stop_btn);
-        start_stop_btn->setOnClick([start_stop_btn]() {
-            bool isStart = start_stop_btn->isStartState();
-            Values::updateSettingsLowerSpindleStartStop(isStart);
-            Activity::handleSettingsLowerSpindleStartStop(isStart);
-        });
-
-        QVBoxLayout *btn_container3 = new QVBoxLayout();
-        btn_container3->addLayout(btn_container2);
-        btn_container3->addWidget(start_stop_btn);
-
-        h->addLayout(btn_container3);
-
-        QVBoxLayout *middleButtonsLayout = new QVBoxLayout();
-        middleButtonsLayout->setSpacing(8);
-        middleButtonsLayout->setAlignment(Qt::AlignCenter);
-
-        TextButtonWidget *holdBtn = new TextButtonWidget("Удерживание", "#808080", "#ffffff", 12, this);
-        holdBtn->setMinimumHeight(38);
-        holdBtn->setOnClick([]() { Activity::handleSettingsLowerSpindleHold(); });
-        middleButtonsLayout->addWidget(holdBtn);
-
-        TextButtonWidget *oscillateBtn = new TextButtonWidget("Осциллировать", "#2d3436", "#ffffff", 12, this);
-        oscillateBtn->setMinimumHeight(38);
-        oscillateBtn->setOnClick([]() { Activity::handleSettingsLowerSpindleOscillate(); });
-
-        middleButtonsLayout->addWidget(oscillateBtn);
-
-        TextButtonWidget *autotBtn = new TextButtonWidget("Автотяга", "#2d3436", "#ffffff", 12, this);
-        autotBtn->setMinimumHeight(38);
-        autotBtn->setOnClick([]() { Activity::handleSettingsLowerSpindleAutot(); });
-        middleButtonsLayout->addWidget(autotBtn);
-
-        h->addLayout(middleButtonsLayout);
+        h->addLayout(btn_container);
 
         QVBoxLayout *infoLayout = new QVBoxLayout();
         infoLayout->setSpacing(8);
@@ -725,7 +700,7 @@ public:
         separator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param1Layout->addWidget(separator);
 
-        QLabel *desc1Label = makeLabel("Верхняя тяга", 12);
+        QLabel *desc1Label = makeLabel("Нижняя тяга", 12);
         desc1Label->setAlignment(Qt::AlignCenter);
         param1Layout->addWidget(desc1Label);
 
@@ -737,49 +712,24 @@ public:
         param2Layout->setSpacing(4);
         param2Layout->setAlignment(Qt::AlignCenter);
 
-        QLabel *value2Label = makeLabel("0.0 MM/мин", 18, true);
+        QLabel *value2Label = makeLabel("0.0 MM", 18, true);
         value2Label->setAlignment(Qt::AlignCenter);
-        Values::registerSettingsLowerSpindleSpeed(value2Label);
+        Values::registerSettingsLowerSpindleAlarm(value2Label);
         param2Layout->addWidget(value2Label);
 
         QFrame *separator2 = new QFrame(this);
         separator2->setFrameShape(QFrame::HLine);
         separator2->setFrameShadow(QFrame::Sunken);
-        separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
+        separator2->setStyleSheet("QFrame { background-color: #E53935; max-height: 2px; }");
         separator2->setFixedHeight(2);
         separator2->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         param2Layout->addWidget(separator2);
 
-        QLabel *desc2Label = makeLabel("Скорость", 12);
+        QLabel *desc2Label = makeLabel("Сигнализация", 12);
         desc2Label->setAlignment(Qt::AlignCenter);
         param2Layout->addWidget(desc2Label);
 
         infoLayout->addWidget(param2Widget);
-
-        QWidget *param3Widget = new QWidget(this);
-        param3Widget->setMinimumHeight(60);
-        QVBoxLayout *param3Layout = new QVBoxLayout(param3Widget);
-        param3Layout->setSpacing(4);
-        param3Layout->setAlignment(Qt::AlignCenter);
-
-        QLabel *value3Label = makeLabel("0.0 MM", 18, true);
-        value3Label->setAlignment(Qt::AlignCenter);
-        Values::registerSettingsLowerSpindlePosition(value3Label);
-        param3Layout->addWidget(value3Label);
-
-        QFrame *separator3 = new QFrame(this);
-        separator3->setFrameShape(QFrame::HLine);
-        separator3->setFrameShadow(QFrame::Sunken);
-        separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
-        separator3->setFixedHeight(2);
-        separator3->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        param3Layout->addWidget(separator3);
-
-        QLabel *desc3Label = makeLabel("Позиция", 12);
-        desc3Label->setAlignment(Qt::AlignCenter);
-        param3Layout->addWidget(desc3Label);
-
-        infoLayout->addWidget(param3Widget);
 
         makeEditableParameter(
             param1Widget,
@@ -792,18 +742,10 @@ public:
         makeEditableParameter(
             param2Widget,
             value2Label,
-            QString::fromUtf8("Скорость нижнего шпинделя:"),
-            QString::fromUtf8("Задайте скорость нижнего шпинделя, мм/мин"),
-            QString::fromUtf8(" MM/мин"),
-            [](double v) { Values::updateSettingsLowerSpindleSpeed(v); });
-
-        makeEditableParameter(
-            param3Widget,
-            value3Label,
-            QString::fromUtf8("Позиция нижнего шпинделя:"),
-            QString::fromUtf8("Задайте позицию нижнего шпинделя, мм"),
+            QString::fromUtf8("Сигнализация:"),
+            QString::fromUtf8("Задайте величину сигнализации, мм"),
             QString::fromUtf8(" MM"),
-            [](double v) { Values::updateSettingsLowerSpindlePosition(v); });
+            [](double v) { Values::updateSettingsLowerSpindleAlarm(v); });
 
         h->addLayout(infoLayout, 1);
 
@@ -811,180 +753,100 @@ public:
     }
 };
 
-class HeatingColumnWidget : public QWidget
+class RightColumnWidget : public QWidget
 {
 public:
-    explicit HeatingColumnWidget(QWidget *parent = nullptr)
+    explicit RightColumnWidget(QWidget *parent = nullptr)
         : QWidget(parent)
     {
         QVBoxLayout *col = new QVBoxLayout(this);
         col->setSpacing(10);
         col->setContentsMargins(0, 0, 0, 0);
 
-        CardFrame *heat = new CardFrame("#f7e7b5");
-        {
-            QVBoxLayout *v = new QVBoxLayout(heat);
-            v->setContentsMargins(12, 12, 12, 12);
-            v->addWidget(makeLabel("Подогрев", 11, true), 0, Qt::AlignHCenter);
-
-            QFrame *separator2 = new QFrame(this);
-            separator2->setFrameShape(QFrame::HLine);
-            separator2->setFrameShadow(QFrame::Sunken);
-            separator2->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
-            separator2->setFixedHeight(2);
-            v->addWidget(separator2);
-
-            selector *toggle = new selector(this);
-            toggle->set(false, false);
-            Values::registerSettingsHeatingSelector(toggle);
-            toggle->setOnStateChanged([](int state) {
-                bool boolState = (state == 1);
-                Values::updateSettingsHeatingSelector(boolState);
-                Activity::handleSettingsHeatingStateChanged(state);
-            });
-            v->addWidget(toggle, 0, Qt::AlignHCenter);
-        }
-        col->addWidget(heat);
-
-        CardFrame *grid = new CardFrame("#e2d6f9");
-        {
-            QVBoxLayout *v = new QVBoxLayout(grid);
-            v->setContentsMargins(12, 12, 12, 12);
-            QLabel *gridLabel = makeLabel("0.00 AMP", 12, true);
-            Values::registerSettingsGridAmp(gridLabel);
-            v->addWidget(gridLabel, 0, Qt::AlignHCenter);
-
-            QFrame *separator3 = new QFrame(this);
-            separator3->setFrameShape(QFrame::HLine);
-            separator3->setFrameShadow(QFrame::Sunken);
-            separator3->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
-            separator3->setFixedHeight(2);
-            v->addWidget(separator3);
-
-            QLabel *gridText = makeLabel("GRID", 11, true);
-            v->addWidget(gridText, 0, Qt::AlignHCenter);
-
-            makeEditableParameter(
-                grid,
-                gridLabel,
-                QString::fromUtf8("GRID ток:"),
-                QString::fromUtf8("Задайте ток GRID, А"),
-                QString::fromUtf8(" AMP"),
-                [](double v) { Values::updateSettingsGridAmp(v); });
-        }
-        col->addWidget(grid);
-
-        auto makeValueCard = [&](const QString &name) {
-            CardFrame *c = new CardFrame("#e6dbff");
-            QVBoxLayout *v = new QVBoxLayout(c);
-            v->setContentsMargins(10, 8, 10, 8);
-            QLabel *percentLabel = makeLabel("0.0 %", 12, true);
-            v->addWidget(percentLabel, 0, Qt::AlignHCenter);
-
-            QFrame *separator4 = new QFrame(this);
-            separator4->setFrameShape(QFrame::HLine);
-            separator4->setFrameShadow(QFrame::Sunken);
-            separator4->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
-            separator4->setFixedHeight(2);
-            v->addWidget(separator4);
-
-            QLabel *nameLabel = makeLabel(name, 10);
-            v->addWidget(nameLabel, 0, Qt::AlignHCenter);
-
-            if (name == "P") {
-                Values::registerSettingsPValue(percentLabel);
-                makeEditableParameter(
-                    c,
-                    percentLabel,
-                    QString::fromUtf8("Параметр P:"),
-                    QString::fromUtf8("Задайте коэффициент P, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updateSettingsPValue(v); });
-            } else if (name == "I") {
-                Values::registerSettingsIValue(percentLabel);
-                makeEditableParameter(
-                    c,
-                    percentLabel,
-                    QString::fromUtf8("Параметр I:"),
-                    QString::fromUtf8("Задайте коэффициент I, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updateSettingsIValue(v); });
-            } else if (name == "U") {
-                Values::registerSettingsUValue(percentLabel);
-                makeEditableParameter(
-                    c,
-                    percentLabel,
-                    QString::fromUtf8("Параметр U:"),
-                    QString::fromUtf8("Задайте коэффициент U, %"),
-                    QString::fromUtf8(" %"),
-                    [](double v) { Values::updateSettingsUValue(v); });
-            }
-            return c;
-        };
-
-        col->addWidget(makeValueCard("P"));
-        col->addWidget(makeValueCard("I"));
-        col->addWidget(makeValueCard("U"));
-
-        CardFrame *generator = new CardFrame("#f5f0d8");
+        CardFrame *generator = new CardFrame("#e67e22");
         {
             QVBoxLayout *v = new QVBoxLayout(generator);
             v->setContentsMargins(16, 16, 16, 16);
             v->setSpacing(8);
 
-            TextButtonWidget *resetBtn = new TextButtonWidget("Сброс", "#2d3436", "#ffffff", 12, generator);
+            TextButtonWidget *resetBtn = new TextButtonWidget(
+                QString::fromUtf8("Сброс"), "#2d3436", "#ffffff", 12, generator);
             resetBtn->setMinimumHeight(38);
-            resetBtn->setOnClick([]() {
-                Activity::handleSettingsGeneratorReset();
-            });
+            resetBtn->setOnClick([]() { Activity::handleSettingsGeneratorReset(); });
             v->addWidget(resetBtn);
-
-            QWidget *paramWidget = new QWidget(generator);
-            QVBoxLayout *paramLayout = new QVBoxLayout(paramWidget);
-            paramLayout->setContentsMargins(0, 0, 0, 0);
-            paramLayout->setSpacing(4);
 
             QLabel *percentLabel = makeLabel("0.0 %", 18, true);
             percentLabel->setAlignment(Qt::AlignCenter);
             Values::registerSettingsGeneratorPercent(percentLabel);
-            paramLayout->addWidget(percentLabel);
+            v->addWidget(percentLabel);
 
-            QFrame *separator = new QFrame(generator);
-            separator->setFrameShape(QFrame::HLine);
-            separator->setFrameShadow(QFrame::Sunken);
-            separator->setStyleSheet("QFrame { background-color: #b0b0b0; max-height: 2px; }");
-            separator->setFixedHeight(2);
-            paramLayout->addWidget(separator);
+            QHBoxLayout *genRow = new QHBoxLayout();
+            genRow->addStretch();
+            QLabel *generatorLabel = makeLabel(QString::fromUtf8("Генератор"), 12, false);
+            QLabel *okLabel = makeLabel("ОК", 12, true);
+            okLabel->setStyleSheet("QLabel { color: #27ae60; }");
+            genRow->addWidget(generatorLabel);
+            genRow->addWidget(okLabel);
+            genRow->addStretch();
+            v->addLayout(genRow);
 
-            QLabel *generatorLabel = makeLabel("Генератор", 12, false);
-            generatorLabel->setAlignment(Qt::AlignCenter);
-            paramLayout->addWidget(generatorLabel);
-
-            v->addWidget(paramWidget);
-
-            makeEditableParameter(
-                paramWidget,
-                percentLabel,
-                QString::fromUtf8("Мощность генератора:"),
-                QString::fromUtf8("Задайте мощность генератора, %"),
-                QString::fromUtf8(" %"),
-                [](double v) { Values::updateSettingsGeneratorPercent(v); });
-
-            QHBoxLayout *selectorLayout = new QHBoxLayout();
-            selectorLayout->setContentsMargins(0, 0, 0, 0);
+            QHBoxLayout *statusRow = new QHBoxLayout();
+            statusRow->addWidget(makeLabel(QString::fromUtf8("Статус"), 11));
             selector *toggle = new selector(generator);
-            toggle->set(false, false);
+            toggle->set(true, false);
             Values::registerSettingsGeneratorSelector(toggle);
             toggle->setOnStateChanged([](int state) {
                 bool boolState = (state == 1);
                 Values::updateSettingsGeneratorSelector(boolState);
                 Activity::handleSettingsGeneratorStateChanged(state);
             });
-            selectorLayout->addWidget(toggle, 0, Qt::AlignLeft);
-            selectorLayout->addStretch();
-            v->addLayout(selectorLayout);
+            statusRow->addWidget(toggle);
+            statusRow->addStretch();
+            v->addLayout(statusRow);
+
+            makeEditableParameter(
+                generator, percentLabel,
+                QString::fromUtf8("Мощность генератора:"),
+                QString::fromUtf8("Задайте мощность генератора, %"),
+                QString::fromUtf8(" %"),
+                [](double v) { Values::updateSettingsGeneratorPercent(v); });
         }
         col->addWidget(generator);
+
+        CardFrame *lighting = new CardFrame("#ffffff");
+        {
+            QVBoxLayout *v = new QVBoxLayout(lighting);
+            v->setContentsMargins(16, 16, 16, 16);
+            v->setSpacing(8);
+
+            v->addWidget(makeLabel(QString::fromUtf8("Освещение"), 12, true), 0, Qt::AlignHCenter);
+
+            QGridLayout *grid = new QGridLayout();
+            grid->setSpacing(8);
+            auto makeLightBtn = [&](int index, bool initialState) -> IconButtonWidget* {
+                IconButtonWidget *btn = new IconButtonWidget(
+                    "lightbulb", lighting, initialState ? "#f1c40f" : "#bdc3c7");
+                btn->setFixedSize(50, 50);
+                Values::registerSettingsLightingButton(index, btn);
+                Values::updateSettingsLightingButton(index, initialState);
+                btn->setOnClick([index]() {
+                    bool newState = !Values::getSettingsLightingButtonState(index);
+                    Values::updateSettingsLightingButton(index, newState);
+                    Activity::handleSettingsLightingButtonToggled(index, newState);
+                });
+                return btn;
+            };
+            grid->addWidget(makeLightBtn(0, true), 0, 0);   // top-left
+            grid->addWidget(makeLightBtn(1, false), 0, 1);  // top-right
+            grid->addWidget(makeLightBtn(2, false), 1, 0);  // bottom-left
+            grid->addWidget(makeLightBtn(3, true), 1, 1);   // bottom-right
+            QHBoxLayout *gridRow = new QHBoxLayout();
+            gridRow->addStretch();
+            gridRow->addLayout(grid);
+            gridRow->addStretch();
+            v->addLayout(gridRow);
+        }
+        col->addWidget(lighting);
 
         CardFrame *stopwatch = new CardFrame("#A4E3DB");
         {
@@ -992,7 +854,7 @@ public:
             v->setContentsMargins(16, 16, 16, 16);
             v->setSpacing(8);
 
-            QLabel *timeLabel = makeLabel("00:00", 18, true);
+            QLabel *timeLabel = makeLabel("0.0 сек", 18, true);
             timeLabel->setAlignment(Qt::AlignCenter);
             v->addWidget(timeLabel);
 
@@ -1007,40 +869,37 @@ public:
             stopwatchLabel->setAlignment(Qt::AlignCenter);
             v->addWidget(stopwatchLabel);
 
-            TextButtonWidget *button = new TextButtonWidget("Пуск", "#2d3436", "#ffffff", 12, stopwatch);
+            TextButtonWidget *button = new TextButtonWidget(
+                QString::fromUtf8("Пуск"), "#29AC39", "#ffffff", 12, stopwatch);
             button->setMinimumHeight(38);
             v->addWidget(button);
 
             QTimer *timer = new QTimer(stopwatch);
-            timer->setInterval(1000);
+            timer->setInterval(100);
 
-            struct StopwatchState { bool running = false; int elapsed = 0; };
+            struct StopwatchState { bool running = false; double elapsedSec = 0; };
             auto state = std::make_shared<StopwatchState>();
 
             QObject::connect(timer, &QTimer::timeout, stopwatch, [timeLabel, state]() {
-                ++state->elapsed;
-                int minutes = state->elapsed / 60;
-                int seconds = state->elapsed % 60;
-                timeLabel->setText(
-                    QString("%1:%2")
-                        .arg(minutes, 2, 10, QChar('0'))
-                        .arg(seconds, 2, 10, QChar('0')));
+                state->elapsedSec += 0.1;
+                timeLabel->setText(QString::number(state->elapsedSec, 'f', 1) + " сек");
             });
 
-            QObject::connect(button, &QPushButton::clicked, stopwatch, [button, timer, timeLabel, state]() {
+            QObject::connect(button, &QPushButton::clicked, stopwatch,
+                [button, timer, timeLabel, state]() {
                 if (!state->running) {
                     state->running = true;
-                    state->elapsed = 0;
+                    state->elapsedSec = 0;
                     timer->start();
                     button->setText(QString::fromUtf8("Стоп"));
-                    button->setBackgroundColor("#e74c3c");
+                    button->setBackgroundColor("#E53935");
                 } else {
                     state->running = false;
                     timer->stop();
-                    state->elapsed = 0;
-                    timeLabel->setText("00:00");
+                    state->elapsedSec = 0;
+                    timeLabel->setText("0.0 сек");
                     button->setText(QString::fromUtf8("Пуск"));
-                    button->setBackgroundColor("#2d3436");
+                    button->setBackgroundColor("#29AC39");
                 }
             });
         }
@@ -1048,96 +907,93 @@ public:
     }
 };
 
-class BottomControlsWidget : public QWidget
+class LowerOscillationWidget : public CardFrame
 {
 public:
-    explicit BottomControlsWidget(QWidget *parent = nullptr)
-        : QWidget(parent)
+    explicit LowerOscillationWidget(QWidget *parent = nullptr)
+        : CardFrame("#ffd6de", parent)
     {
-        QHBoxLayout *h = new QHBoxLayout(this);
-        h->setSpacing(10);
-        h->setContentsMargins(0, 0, 0, 0);
+        QVBoxLayout *v = new QVBoxLayout(this);
+        v->setContentsMargins(16, 16, 16, 16);
+        // v->setSpacing(10);
 
-        CardFrame *reflector = new CardFrame("#ffffff");
-        {
-            QHBoxLayout *reflectorLayout = new QHBoxLayout(reflector);
-            reflectorLayout->setContentsMargins(16, 16, 16, 16);
-            reflectorLayout->setSpacing(10);
-            IconButtonWidget *up = new IconButtonWidget("up_arrow", this, "#505050");
-            IconButtonWidget *down = new IconButtonWidget("down_arrow", this, "#505050");
-            up->setOnClick([]() { Activity::handleSettingsReflectorUp(); });
-            down->setOnClick([]() { Activity::handleSettingsReflectorDown(); });
-            reflectorLayout->addWidget(up);
-            reflectorLayout->addWidget(down);
-            reflectorLayout->addWidget(makeLabel("Рефлектор", 15, true));
-            reflectorLayout->addStretch();
-        }
-        h->addWidget(reflector, 0);
+        v->addWidget(makeLabel(QString::fromUtf8("Осцилляция нижнего вращения"), 12, true), 0, Qt::AlignHCenter);
 
-        QVBoxLayout *buttonsCol = new QVBoxLayout();
-        buttonsCol->setSpacing(8);
-        buttonsCol->setContentsMargins(0, 0, 0, 0);
+        QHBoxLayout *h = new QHBoxLayout();
+        h->setSpacing(20);
 
-        CardFrame *lighting = new CardFrame("#f5f0d8");
-        {
-            QHBoxLayout *v = new QHBoxLayout(lighting);
-            v->setContentsMargins(16, 16, 16, 16);
-            v->setSpacing(8);
+        auto addParam = [&](QLabel *valLabel, const QString &desc) {
+            QWidget *w = new QWidget(this);
+            QVBoxLayout *vl = new QVBoxLayout(w);
+            vl->setSpacing(4);
+            vl->setAlignment(Qt::AlignCenter);
+            vl->addWidget(valLabel);
+            vl->addWidget(makeLabel(desc, 10), 0, Qt::AlignHCenter);
+            h->addWidget(w);
+        };
 
-            v->addWidget(makeLabel("Освещение", 12, true));
+        QLabel *cwLabel = makeLabel("0°", 16, true);
+        cwLabel->setAlignment(Qt::AlignCenter);
+        QLabel *ccwLabel = makeLabel("0°", 16, true);
+        ccwLabel->setAlignment(Qt::AlignCenter);
+        QLabel *accLabel = makeLabel("0°/сек²", 16, true);
+        accLabel->setAlignment(Qt::AlignCenter);
 
-            QHBoxLayout *modeRow = new QHBoxLayout();
-            modeRow->setSpacing(6);
+        addParam(cwLabel, QString::fromUtf8("по часовой"));
+        addParam(ccwLabel, QString::fromUtf8("против час."));
+        addParam(accLabel, QString::fromUtf8("ускорение"));
 
-            TextButtonWidget *allBtn = new TextButtonWidget("Всё", "#808080", "#ffffff", 12, lighting);
-            TextButtonWidget *halfBtn = new TextButtonWidget("50%", "#808080", "#ffffff", 12, lighting);
+        Values::registerSettingsLowerOscillationClockwise(cwLabel);
+        Values::registerSettingsLowerOscillationCounterClockwise(ccwLabel);
+        Values::registerSettingsLowerOscillationAcceleration(accLabel);
+        v->addLayout(h);
+    }
+};
 
-            auto updateLightingMode = [allBtn, halfBtn](int mode) {
-                if (mode == 0) {
-                    allBtn->setBackgroundColor("#2d3436");
-                    halfBtn->setBackgroundColor("#808080");
-                } else {
-                    allBtn->setBackgroundColor("#808080");
-                    halfBtn->setBackgroundColor("#2d3436");
-                }
-                Activity::handleSettingsLightingMode(mode);
-            };
+class AlarmSettingsWidget : public CardFrame
+{
+public:
+    explicit AlarmSettingsWidget(QWidget *parent = nullptr)
+        : CardFrame("#ffffff", parent)
+    {
+        QVBoxLayout *v = new QVBoxLayout(this);
+        v->setContentsMargins(16, 16, 16, 16);
+        v->setSpacing(10);
 
-            allBtn->setBackgroundColor("#2d3436");
-            halfBtn->setBackgroundColor("#808080");
+        v->addWidget(makeLabel(QString::fromUtf8("Настройки сигнализации"), 12, true), 0, Qt::AlignHCenter);
 
-            allBtn->setOnClick([updateLightingMode]() {
-                updateLightingMode(0);
-            });
+        QHBoxLayout *h = new QHBoxLayout();
+        h->setSpacing(20);
 
-            halfBtn->setOnClick([updateLightingMode]() {
-                updateLightingMode(1);
-            });
+        QWidget *modeWidget = new QWidget(this);
+        QVBoxLayout *modeLayout = new QVBoxLayout(modeWidget);
+        modeLayout->setSpacing(4);
+        modeLayout->setAlignment(Qt::AlignCenter);
+        QLabel *modeLabel = makeLabel("5.0 сек", 16, true);
+        modeLabel->setAlignment(Qt::AlignCenter);
+        modeLayout->addWidget(modeLabel);
+        modeLayout->addWidget(makeLabel(QString::fromUtf8("Режим"), 10), 0, Qt::AlignHCenter);
+        h->addWidget(modeWidget);
+        Values::registerSettingsAlarmMode(modeLabel);
+        makeEditableParameter(modeWidget, modeLabel,
+            QString::fromUtf8("Режим:"), QString(), " сек",
+            [](double v) { Values::updateSettingsAlarmMode(v); });
 
-            allBtn->setMinimumHeight(38);
-            halfBtn->setMinimumHeight(38);
+        QWidget *durWidget = new QWidget(this);
+        QVBoxLayout *durLayout = new QVBoxLayout(durWidget);
+        durLayout->setSpacing(4);
+        durLayout->setAlignment(Qt::AlignCenter);
+        QLabel *durationLabel = makeLabel("3.0 сек", 16, true);
+        durationLabel->setAlignment(Qt::AlignCenter);
+        durLayout->addWidget(durationLabel);
+        durLayout->addWidget(makeLabel(QString::fromUtf8("Длительность"), 10), 0, Qt::AlignHCenter);
+        h->addWidget(durWidget);
+        Values::registerSettingsAlarmDuration(durationLabel);
+        makeEditableParameter(durWidget, durationLabel,
+            QString::fromUtf8("Длительность:"), QString(), " сек",
+            [](double v) { Values::updateSettingsAlarmDuration(v); });
 
-            modeRow->addWidget(allBtn);
-            modeRow->addWidget(halfBtn);
-            v->addLayout(modeRow);
-        }
-        buttonsCol->addWidget(lighting, 0);
-
-        TextButtonWidget *nitrogenBtn = new TextButtonWidget("Открыть азот. кран", "#2d3436", "#ffffff", 12, this);
-        nitrogenBtn->setMinimumHeight(38);
-        nitrogenBtn->setOnClick([]() {
-            Activity::handleSettingsNitrogenValveOpen();
-        });
-        buttonsCol->addWidget(nitrogenBtn);
-
-        TextButtonWidget *autodopeBtn = new TextButtonWidget("Автолегировать", "#2d3436", "#ffffff", 12, this);
-        autodopeBtn->setMinimumHeight(38);
-        autodopeBtn->setOnClick([]() {
-            Activity::handleSettingsAutodope();
-        });
-        buttonsCol->addWidget(autodopeBtn);
-
-        h->addLayout(buttonsCol);
+        v->addLayout(h);
     }
 };
 
@@ -1146,45 +1002,41 @@ public:
 SettingsPageWidget::SettingsPageWidget(QWidget *parent)
     : QWidget(parent)
 {
-    QHBoxLayout *root = new QHBoxLayout(this);
+    QVBoxLayout *upper_root = new QVBoxLayout(this);
+    upper_root->setContentsMargins(15, 0, 15, 0);
+    upper_root->setSpacing(12);
+
+    QHBoxLayout *root = new QHBoxLayout();
     root->setSpacing(12);
-    root->setContentsMargins(15, 0, 15, 0);
+    root->setContentsMargins(0, 0, 0, 0);
+    upper_root->addLayout(root);
 
-    QWidget *leftColWidget = new QWidget(this);
-    QVBoxLayout *leftCol = new QVBoxLayout(leftColWidget);
-    leftCol->setSpacing(12);
-    leftColWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
+    QVBoxLayout *leftCol = new QVBoxLayout();    
     QHBoxLayout *topRow = new QHBoxLayout();
-    topRow->setSpacing(12);
-
-    XYControlWidget *xy_control = new XYControlWidget();
-    CoilControlWidget *coil_control = new CoilControlWidget();
-    coil_control->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    topRow->addWidget(xy_control, 2);
-    topRow->addWidget(coil_control, 2);
+    topRow->addWidget(new XYControlWidget(), 2);
+    topRow->addWidget(new CoilControlWidget(), 2);
     leftCol->addLayout(topRow);
 
     UpperSpindleControlWidget *upperSpindle = new UpperSpindleControlWidget();
     upperSpindle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     leftCol->addWidget(upperSpindle, 0);
+    leftCol->addWidget(new LowerSpindleControlWidget(), 2);
 
-    LowerSpindleControlWidget *lowerSpindle = new LowerSpindleControlWidget();
-    lowerSpindle->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    leftCol->addWidget(lowerSpindle, 0);
-
-    BottomControlsWidget *bottom_controls = new BottomControlsWidget();
-    bottom_controls->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-    leftCol->addWidget(bottom_controls, 0);
-
-    root->addWidget(leftColWidget, 4, Qt::AlignTop);
+    root->addLayout(leftCol);
 
     QVBoxLayout *rightCol = new QVBoxLayout();
-    rightCol->setSpacing(12);
-    rightCol->addWidget(new HeatingColumnWidget(), 0);
+    rightCol->addWidget(new InternalThrustWidget(), 0);
+    rightCol->addWidget(new RightColumnWidget(), 0);
     rightCol->addStretch();
 
-    root->addLayout(rightCol, 1);
+    root->addLayout(rightCol);
+
+    QHBoxLayout *bottomRow = new QHBoxLayout();
+    bottomRow->setSpacing(12);
+    bottomRow->setContentsMargins(0, 0, 0, 0);
+    bottomRow->addWidget(new LowerOscillationWidget(), 0);
+    bottomRow->addWidget(new AlarmSettingsWidget(), 0);
+    upper_root->addLayout(bottomRow);
 }
 
 

@@ -49,6 +49,9 @@ void handleSettingsUpperSpindleDown();
 void handleSettingsUpperSpindleUpUp();
 void handleSettingsUpperSpindleDownDown();
 void handleSettingsUpperSpindleStartStop(bool isStart);
+void handleSettingsUpperSpindleAcceleration();
+void handleSettingsUpperSpindleNeutral();
+void handleSettingsUpperSpindleStop();
 
 // Lower Spindle Control
 void handleLowerSpindleLeft();
@@ -75,6 +78,8 @@ void handleSettingsLowerSpindleStartStop(bool isStart);
 void handleSettingsLowerSpindleHold();
 void handleSettingsLowerSpindleOscillate();
 void handleSettingsLowerSpindleAutot();
+void handleSettingsLowerSpindleNeutral();
+void handleSettingsLowerSpindleStop();
 
 // Heating
 void handleHeatingStateChanged(int state); // 0 = Выкл, 1 = Вкл
@@ -111,6 +116,10 @@ void handleAutodope();
 // Bottom Controls (Settings Page)
 void handleSettingsNitrogenValveOpen();
 void handleSettingsAutodope();
+
+// Internal Thrust, Lighting, Lower Oscillation (Settings Page)
+void handleSettingsInternalThrustNeutral();
+void handleSettingsLightingButtonToggled(int buttonIndex, bool isOn);
 
 // Doping Page
 void handleArgonStartStop(bool isStart);

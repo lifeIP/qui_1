@@ -38,6 +38,8 @@ static QLabel *upperSpindlePositionLabel = nullptr;
 static QLabel *settingsUpperSpindleXOffsetLabel = nullptr;
 static QLabel *settingsUpperSpindleSpeedLabel = nullptr;
 static QLabel *settingsUpperSpindlePositionLabel = nullptr;
+static QLabel *settingsUpperSpindleRpmLabel = nullptr;
+static QLabel *settingsUpperSpindleAlarmLabel = nullptr;
 
 static QLabel *lowerSpindleXOffsetLabel = nullptr;
 static QLabel *lowerSpindleSpeedLabel = nullptr;
@@ -47,6 +49,7 @@ static QLabel *lowerSpindlePositionLabel = nullptr;
 static QLabel *settingsLowerSpindleXOffsetLabel = nullptr;
 static QLabel *settingsLowerSpindleSpeedLabel = nullptr;
 static QLabel *settingsLowerSpindlePositionLabel = nullptr;
+static QLabel *settingsLowerSpindleAlarmLabel = nullptr;
 
 static QLabel *gridAmpLabel = nullptr;
 static QLabel *pValueLabel = nullptr;
@@ -64,6 +67,15 @@ static QLabel *stopwatchPercentLabel = nullptr;
 
 // Settings Page: Generator
 static QLabel *settingsGeneratorPercentLabel = nullptr;
+
+// Settings Page: Lighting (4 buttons), Lower Oscillation, Alarm Settings
+static QWidget *settingsLightingButtons[4] = {nullptr, nullptr, nullptr, nullptr};
+static bool settingsLightingButtonStates[4] = {true, false, false, true};  // top-left, top-right, bottom-left, bottom-right
+static QLabel *settingsLowerOscillationClockwiseLabel = nullptr;
+static QLabel *settingsLowerOscillationCounterClockwiseLabel = nullptr;
+static QLabel *settingsLowerOscillationAccelerationLabel = nullptr;
+static QLabel *settingsAlarmModeLabel = nullptr;
+static QLabel *settingsAlarmDurationLabel = nullptr;
 
 // ============================================================================
 // Страница Финальные (Final Page)
@@ -148,6 +160,8 @@ void registerUpperSpindlePosition(QLabel *label) { upperSpindlePositionLabel = l
 void registerSettingsUpperSpindleXOffset(QLabel *label) { settingsUpperSpindleXOffsetLabel = label; }  // Страница: Настройки
 void registerSettingsUpperSpindleSpeed(QLabel *label) { settingsUpperSpindleSpeedLabel = label; }  // Страница: Настройки
 void registerSettingsUpperSpindlePosition(QLabel *label) { settingsUpperSpindlePositionLabel = label; }  // Страница: Настройки
+void registerSettingsUpperSpindleRpm(QLabel *label) { settingsUpperSpindleRpmLabel = label; }  // Страница: Настройки
+void registerSettingsUpperSpindleAlarm(QLabel *label) { settingsUpperSpindleAlarmLabel = label; }  // Страница: Настройки
 
 void registerLowerSpindleXOffset(QLabel *label) { lowerSpindleXOffsetLabel = label; }  // Страница: Главная
 void registerLowerSpindleSpeed(QLabel *label) { lowerSpindleSpeedLabel = label; }  // Страница: Главная
@@ -156,6 +170,7 @@ void registerLowerSpindlePosition(QLabel *label) { lowerSpindlePositionLabel = l
 void registerSettingsLowerSpindleXOffset(QLabel *label) { settingsLowerSpindleXOffsetLabel = label; }  // Страница: Настройки
 void registerSettingsLowerSpindleSpeed(QLabel *label) { settingsLowerSpindleSpeedLabel = label; }  // Страница: Настройки
 void registerSettingsLowerSpindlePosition(QLabel *label) { settingsLowerSpindlePositionLabel = label; }  // Страница: Настройки
+void registerSettingsLowerSpindleAlarm(QLabel *label) { settingsLowerSpindleAlarmLabel = label; }  // Страница: Настройки
 
 void registerGridAmp(QLabel *label) { gridAmpLabel = label; }  // Страница: Главная
 void registerPValue(QLabel *label) { pValueLabel = label; }  // Страница: Главная
@@ -171,6 +186,19 @@ void registerGeneratorPercent(QLabel *label) { generatorPercentLabel = label; } 
 void registerStopwatchPercent(QLabel *label) { stopwatchPercentLabel = label; }  // Страница: Главная
 
 void registerSettingsGeneratorPercent(QLabel *label) { settingsGeneratorPercentLabel = label; }  // Страница: Настройки
+
+void registerSettingsLightingButton(int index, QWidget *widget)  // Страница: Настройки
+{
+    if (index >= 0 && index < 4) {
+        settingsLightingButtons[index] = widget;
+    }
+}
+
+void registerSettingsLowerOscillationClockwise(QLabel *label) { settingsLowerOscillationClockwiseLabel = label; }
+void registerSettingsLowerOscillationCounterClockwise(QLabel *label) { settingsLowerOscillationCounterClockwiseLabel = label; }
+void registerSettingsLowerOscillationAcceleration(QLabel *label) { settingsLowerOscillationAccelerationLabel = label; }
+void registerSettingsAlarmMode(QLabel *label) { settingsAlarmModeLabel = label; }
+void registerSettingsAlarmDuration(QLabel *label) { settingsAlarmDurationLabel = label; }
 
 // Страница Легирования
 void registerDopingArgon(QLabel *label) { dopingArgonLabel = label; }  // Страница: Легирование
@@ -356,6 +384,22 @@ void updateSettingsUpperSpindlePosition(double value)  // Страница: На
     }
 }
 
+void updateSettingsUpperSpindleRpm(double value)  // Страница: Настройки
+{
+    if (settingsUpperSpindleRpmLabel) {
+        settingsUpperSpindleRpmLabel->setText(formatValue(value, "RPM"));
+        qDebug() << "Values: Settings Upper Spindle RPM =" << value;
+    }
+}
+
+void updateSettingsUpperSpindleAlarm(double value)  // Страница: Настройки
+{
+    if (settingsUpperSpindleAlarmLabel) {
+        settingsUpperSpindleAlarmLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Upper Spindle Alarm =" << value;
+    }
+}
+
 void updateLowerSpindleXOffset(double value)  // Страница: Главная
 {
     if (lowerSpindleXOffsetLabel) {
@@ -401,6 +445,14 @@ void updateSettingsLowerSpindlePosition(double value)  // Страница: На
     if (settingsLowerSpindlePositionLabel) {
         settingsLowerSpindlePositionLabel->setText(formatValue(value, "MM"));
         qDebug() << "Values: Settings Lower Spindle Position =" << value;
+    }
+}
+
+void updateSettingsLowerSpindleAlarm(double value)  // Страница: Настройки
+{
+    if (settingsLowerSpindleAlarmLabel) {
+        settingsLowerSpindleAlarmLabel->setText(formatValue(value, "MM"));
+        qDebug() << "Values: Settings Lower Spindle Alarm =" << value;
     }
 }
 
@@ -489,6 +541,61 @@ void updateSettingsGeneratorPercent(double value)  // Страница: Наст
     if (settingsGeneratorPercentLabel) {
         settingsGeneratorPercentLabel->setText(formatValue(value, "%"));
         qDebug() << "Values: Settings Generator Percent =" << value;
+    }
+}
+
+void updateSettingsLightingButton(int index, bool isOn)  // Страница: Настройки
+{
+    if (index >= 0 && index < 4 && settingsLightingButtons[index]) {
+        IconButtonWidget *btn = qobject_cast<IconButtonWidget*>(settingsLightingButtons[index]);
+        if (btn) {
+            settingsLightingButtonStates[index] = isOn;
+            btn->setBackgroundColor(isOn ? "#f1c40f" : "#bdc3c7");
+        }
+    }
+}
+
+bool getSettingsLightingButtonState(int index)
+{
+    if (index >= 0 && index < 4) {
+        return settingsLightingButtonStates[index];
+    }
+    return false;
+}
+
+void updateSettingsLowerOscillationClockwise(double value)
+{
+    if (settingsLowerOscillationClockwiseLabel) {
+        settingsLowerOscillationClockwiseLabel->setText(QString::number(static_cast<int>(value)) + "°");
+    }
+}
+
+void updateSettingsLowerOscillationCounterClockwise(double value)
+{
+    if (settingsLowerOscillationCounterClockwiseLabel) {
+        settingsLowerOscillationCounterClockwiseLabel->setText(QString::number(static_cast<int>(value)) + "°");
+    }
+}
+
+void updateSettingsLowerOscillationAcceleration(double value)
+{
+    if (settingsLowerOscillationAccelerationLabel) {
+        settingsLowerOscillationAccelerationLabel->setText(
+            QString::number(value, 'f', 1) + "°/сек²");
+    }
+}
+
+void updateSettingsAlarmMode(double value)
+{
+    if (settingsAlarmModeLabel) {
+        settingsAlarmModeLabel->setText(formatValue(value, "сек"));
+    }
+}
+
+void updateSettingsAlarmDuration(double value)
+{
+    if (settingsAlarmDurationLabel) {
+        settingsAlarmDurationLabel->setText(formatValue(value, "сек"));
     }
 }
 

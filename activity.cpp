@@ -222,6 +222,24 @@ void handleSettingsUpperSpindleStartStop(bool isStart)  // Страница: Н�
     }
 }
 
+void handleSettingsUpperSpindleAcceleration()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Upper Spindle Acceleration";
+    // TODO: реализовать режим ускорения верхнего шпинделя (настройки)
+}
+
+void handleSettingsUpperSpindleNeutral()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Upper Spindle Neutral";
+    // TODO: реализовать нейтральный режим верхнего шпинделя (настройки)
+}
+
+void handleSettingsUpperSpindleStop()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Upper Spindle Stop";
+    // TODO: реализовать остановку верхнего шпинделя (настройки)
+}
+
 // Lower Spindle Control
 void handleLowerSpindleLeft()  // Страница: Главная
 {
@@ -366,6 +384,18 @@ void handleSettingsLowerSpindleAutot()  // Страница: Настройки
     // TODO: реализовать обработку автотяги нижнего шпинделя (настройки)
 }
 
+void handleSettingsLowerSpindleNeutral()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Lower Spindle Neutral";
+    // TODO: реализовать нейтральный режим нижнего шпинделя (настройки)
+}
+
+void handleSettingsLowerSpindleStop()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Lower Spindle Stop";
+    // TODO: реализовать остановку нижнего шпинделя (настройки)
+}
+
 // Heating
 void handleHeatingStateChanged(int state)  // Страница: Главная
 {
@@ -500,6 +530,18 @@ void handleSettingsAutodope()  // Страница: Настройки
 {
     qDebug() << "Activity: Settings Autodope";
     // TODO: реализовать автолегирование (настройки)
+}
+
+void handleSettingsInternalThrustNeutral()  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Internal Thrust Neutral";
+    // TODO: реализовать нейтральное положение внутренней тяги
+}
+
+void handleSettingsLightingButtonToggled(int buttonIndex, bool isOn)  // Страница: Настройки
+{
+    qDebug() << "Activity: Settings Lighting Button" << buttonIndex << (isOn ? "On" : "Off");
+    // TODO: передать в контроллер состояние освещения
 }
 
 

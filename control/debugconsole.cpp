@@ -622,6 +622,16 @@ bool DebugConsole::parseAndExecute(const QString &command)
             *m_outputStream << "Set Settings Upper Spindle Position = " << value << " MM" << endl;
             return true;
         }
+        if (cmd == "values.set.settings.upper.rpm") {
+            Values::updateSettingsUpperSpindleRpm(value);
+            *m_outputStream << "Set Settings Upper Spindle RPM = " << value << " RPM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.upper.alarm") {
+            Values::updateSettingsUpperSpindleAlarm(value);
+            *m_outputStream << "Set Settings Upper Spindle Alarm = " << value << " MM" << endl;
+            return true;
+        }
         if (cmd == "values.set.settings.lower.x") {
             Values::updateSettingsLowerSpindleXOffset(value);
             *m_outputStream << "Set Settings Lower Spindle X Offset = " << value << " MM" << endl;
@@ -635,6 +645,11 @@ bool DebugConsole::parseAndExecute(const QString &command)
         if (cmd == "values.set.settings.lower.pos") {
             Values::updateSettingsLowerSpindlePosition(value);
             *m_outputStream << "Set Settings Lower Spindle Position = " << value << " MM" << endl;
+            return true;
+        }
+        if (cmd == "values.set.settings.lower.alarm") {
+            Values::updateSettingsLowerSpindleAlarm(value);
+            *m_outputStream << "Set Settings Lower Spindle Alarm = " << value << " MM" << endl;
             return true;
         }
         if (cmd == "values.set.settings.grid.amp") {

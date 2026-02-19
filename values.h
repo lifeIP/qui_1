@@ -33,6 +33,8 @@ void registerUpperSpindlePosition(QLabel *label);
 void registerSettingsUpperSpindleXOffset(QLabel *label);
 void registerSettingsUpperSpindleSpeed(QLabel *label);
 void registerSettingsUpperSpindlePosition(QLabel *label);
+void registerSettingsUpperSpindleRpm(QLabel *label);
+void registerSettingsUpperSpindleAlarm(QLabel *label);
 
 void registerLowerSpindleXOffset(QLabel *label);
 void registerLowerSpindleSpeed(QLabel *label);
@@ -41,6 +43,7 @@ void registerLowerSpindlePosition(QLabel *label);
 void registerSettingsLowerSpindleXOffset(QLabel *label);
 void registerSettingsLowerSpindleSpeed(QLabel *label);
 void registerSettingsLowerSpindlePosition(QLabel *label);
+void registerSettingsLowerSpindleAlarm(QLabel *label);
 
 void registerGridAmp(QLabel *label);
 void registerPValue(QLabel *label);
@@ -56,6 +59,22 @@ void registerGeneratorPercent(QLabel *label);
 void registerStopwatchPercent(QLabel *label);
 
 void registerSettingsGeneratorPercent(QLabel *label);
+
+// Settings Page: Lighting (4 buttons), Internal Thrust, Lower Oscillation, Alarm Settings
+void registerSettingsLightingButton(int index, class QWidget *widget);
+void updateSettingsLightingButton(int index, bool isOn);
+bool getSettingsLightingButtonState(int index);
+
+void registerSettingsLowerOscillationClockwise(QLabel *label);
+void registerSettingsLowerOscillationCounterClockwise(QLabel *label);
+void registerSettingsLowerOscillationAcceleration(QLabel *label);
+void registerSettingsAlarmMode(QLabel *label);
+void registerSettingsAlarmDuration(QLabel *label);
+void updateSettingsLowerOscillationClockwise(double value);
+void updateSettingsLowerOscillationCounterClockwise(double value);
+void updateSettingsLowerOscillationAcceleration(double value);
+void updateSettingsAlarmMode(double value);
+void updateSettingsAlarmDuration(double value);
 
 void registerDopingArgon(QLabel *label);
 void registerDopingGas(QLabel *label);
@@ -134,6 +153,8 @@ void updateUpperSpindlePosition(double value);  // в MM
 void updateSettingsUpperSpindleXOffset(double value);  // в MM
 void updateSettingsUpperSpindleSpeed(double value);  // в MM/мин
 void updateSettingsUpperSpindlePosition(double value);  // в MM
+void updateSettingsUpperSpindleRpm(double value);  // в RPM
+void updateSettingsUpperSpindleAlarm(double value);  // в MM
 
 void updateLowerSpindleXOffset(double value);  // в MM
 void updateLowerSpindleSpeed(double value);  // в MM/мин
@@ -142,6 +163,7 @@ void updateLowerSpindlePosition(double value);  // в MM
 void updateSettingsLowerSpindleXOffset(double value);  // в MM
 void updateSettingsLowerSpindleSpeed(double value);  // в MM/мин
 void updateSettingsLowerSpindlePosition(double value);  // в MM
+void updateSettingsLowerSpindleAlarm(double value);  // в MM
 
 void updateGridAmp(double value);  // в AMP
 void updatePValue(double value);  // в %
@@ -157,6 +179,14 @@ void updateGeneratorPercent(double value);  // в %
 void updateStopwatchPercent(double value);  // в %
 
 void updateSettingsGeneratorPercent(double value);  // в %
+
+// Settings Page: Lighting, Lower Oscillation, Alarm Settings
+void updateSettingsLightingButton(int index, bool isOn);
+void updateSettingsLowerOscillationClockwise(double value);   // в градусах
+void updateSettingsLowerOscillationCounterClockwise(double value);
+void updateSettingsLowerOscillationAcceleration(double value); // в градусах/сек²
+void updateSettingsAlarmMode(double value);      // в сек
+void updateSettingsAlarmDuration(double value); // в сек
 
 void updateDopingArgon(double value, const QString &unit = "л/мин");
 void updateDopingGas(double value, const QString &unit = "мл/мин");
