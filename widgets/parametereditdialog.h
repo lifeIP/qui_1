@@ -23,5 +23,6 @@ private:
     void changeValue(double delta);
 
     QLineEdit *valueEdit;
+    bool replaceOnNextInput = true;  // первый ввод заменяет значение (как AC)
 };
 

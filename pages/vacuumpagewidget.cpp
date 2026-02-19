@@ -383,7 +383,6 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
         if (hasTwoButtons) {
             doorselector *toggle = new doorselector(wrap);
             toggle->set(false, false);
-            toggle->setMinimumWidth(120);
             toggle->setOnStateChanged([toggle, activityHandler, updateStateFunc](int state) {
                 bool actualState = toggle->getState();
                 updateStateFunc(actualState);
@@ -393,7 +392,6 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
             vl->addWidget(toggle, 0, Qt::AlignHCenter);
         } else {
             TextButtonWidget *btn = new TextButtonWidget(QString::fromUtf8("Дверь закрыта"), "#95a5a6", "#2c3e50", 12, wrap);
-            btn->setMinimumWidth(150);
             btn->setEnabled(false);
             *statusPtr = btn;
             vl->addWidget(btn, 0, Qt::AlignHCenter);
