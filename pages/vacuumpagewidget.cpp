@@ -148,7 +148,7 @@ VacuumPageWidget::VacuumPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *root = new QVBoxLayout(this);
-    root->setContentsMargins(20, 10, 20, 20);
+    root->setContentsMargins(15, 0, 15, 15);
     root->setSpacing(12);
 
     root->addWidget(createStatusCard(this));
@@ -169,7 +169,7 @@ QFrame* VacuumPageWidget::createStatusCard(QWidget *parent)
     CardFrame *card = new CardFrame(parent);
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(16);
+    v->setSpacing(12);
 
     // Состояние
     QHBoxLayout *stateLayout = new QHBoxLayout();
@@ -289,7 +289,7 @@ QFrame* VacuumPageWidget::createPumpControlCard(QWidget *parent)
     v->addWidget(makeLabel(QString::fromUtf8("Управление"), 13, true));
 
     QHBoxLayout *row = new QHBoxLayout();
-    row->setSpacing(24);
+    row->setSpacing(12);
 
     auto makeToggleGroup = [&](const QString &title, selector **togglePtr, 
                                 void (*activityHandler)(int),
@@ -365,7 +365,7 @@ QFrame* VacuumPageWidget::createDoorControlCard(QWidget *parent)
     v->addWidget(makeLabel(QString::fromUtf8("Управление дверьми"), 13, true));
 
     QHBoxLayout *row = new QHBoxLayout();
-    row->setSpacing(24);
+    row->setSpacing(12);
 
     auto makeDoorGroup = [&](const QString &title, bool hasTwoButtons, 
                              doorselector **doorPtr, QWidget **statusPtr,
@@ -444,7 +444,7 @@ QFrame* VacuumPageWidget::createLightingCard(QWidget *parent)
 
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(20, 20, 20, 20);
-    v->setSpacing(16);
+    v->setSpacing(12);
 
     // Заголовок
     QLabel *title = makeLabel(QString::fromUtf8("Освещение в камере"), 13, true);

@@ -57,8 +57,8 @@ FinalPageWidget::FinalPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *rootLayout = new QVBoxLayout(this);
-    rootLayout->setSpacing(20);
-    rootLayout->setContentsMargins(20, 20, 20, 20);
+    rootLayout->setSpacing(12);
+    rootLayout->setContentsMargins(15, 0, 15, 15);
 
     // Заголовок страницы
     QLabel *titleLabel = new QLabel("Настройка финальных параметров", this);
@@ -68,7 +68,7 @@ FinalPageWidget::FinalPageWidget(QWidget *parent)
 
     // Сетка для карточек параметров
     QGridLayout *gridLayout = new QGridLayout();
-    gridLayout->setSpacing(20);
+    gridLayout->setSpacing(12);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 
     // Первая карточка: Скорость роста, мм
@@ -266,7 +266,7 @@ QFrame* FinalPageWidget::createParameterCard(const QString &label, const QString
 
     QVBoxLayout *cardLayout = new QVBoxLayout(card);
     cardLayout->setContentsMargins(20, 20, 20, 20);
-    cardLayout->setSpacing(10);
+    cardLayout->setSpacing(12);
 
     // Значение будет добавлено позже через insertWidget(0, ...)
     // Здесь создаем только структуру карточки

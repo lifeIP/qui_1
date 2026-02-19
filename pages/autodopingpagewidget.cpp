@@ -48,8 +48,8 @@ AutodopingPageWidget::AutodopingPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *rootLayout = new QVBoxLayout(this);
-    rootLayout->setContentsMargins(20, 20, 20, 20);
-    rootLayout->setSpacing(16);
+    rootLayout->setContentsMargins(15, 0, 15, 15);
+    rootLayout->setSpacing(12);
 
     // Заголовок секции как на главной странице
     QLabel *pageTitle = makeLabel(QString::fromUtf8("Автолегирование"), 20, true);
@@ -66,7 +66,7 @@ QFrame* AutodopingPageWidget::createCard(QWidget *parent)
 
     QVBoxLayout *cardLayout = new QVBoxLayout(card);
     cardLayout->setContentsMargins(20, 20, 20, 20);
-    cardLayout->setSpacing(16);
+    cardLayout->setSpacing(12);
 
     // Таблица 10 строк, 4 столбца (Аргон / Легирующий газ / Впрыск / Время)
     QTableWidget *table = new QTableWidget(10, 4, card);
@@ -125,7 +125,7 @@ QFrame* AutodopingPageWidget::createCard(QWidget *parent)
 
     // Нижний параметр: Диаметр кристалла, мл/мин
     QVBoxLayout *bottomLayout = new QVBoxLayout();
-    bottomLayout->setSpacing(8);
+    bottomLayout->setSpacing(12);
     bottomLayout->setAlignment(Qt::AlignHCenter);
 
     QLabel *paramTitle = new QLabel(QString::fromUtf8("Диаметр кристалла, мл/мин"), card);

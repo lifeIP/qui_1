@@ -13,8 +13,8 @@ AutotPageWidget::AutotPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *rootLayout = new QVBoxLayout(this);
-    rootLayout->setContentsMargins(20, 20, 20, 20);
-    rootLayout->setSpacing(0);
+    rootLayout->setContentsMargins(15, 0, 15, 15);
+    rootLayout->setSpacing(12);
 
     // Карточка с контентом (тело / конус)
     QFrame *card = createCard(this);

@@ -1175,14 +1175,12 @@ MainPageWidget::MainPageWidget(QWidget *parent)
 {
     QHBoxLayout *root = new QHBoxLayout(this);
     root->setSpacing(12);
-    root->setContentsMargins(15, 0, 15, 0);  // Отступы по бокам от карточек и экрана
+    root->setContentsMargins(15, 0, 15, 15);
 
     // Левая большая колонка
-    QWidget *leftColWidget = new QWidget(this);
-    QVBoxLayout *leftCol = new QVBoxLayout(leftColWidget);
+    QVBoxLayout *leftCol = new QVBoxLayout();
     leftCol->setSpacing(12);
-    leftColWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
+    
     // Верхний ряд: XY и смещение витка
     QHBoxLayout *topRow = new QHBoxLayout();
     topRow->setSpacing(12);
@@ -1210,7 +1208,7 @@ MainPageWidget::MainPageWidget(QWidget *parent)
     bottom_controls->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
     leftCol->addWidget(bottom_controls, 0);
     
-    root->addWidget(leftColWidget, 4, Qt::AlignTop);
+    root->addLayout(leftCol);
 
     // Правая колонка с подогревом, GRID, P/I/U и т.п.
     QVBoxLayout *rightCol = new QVBoxLayout();

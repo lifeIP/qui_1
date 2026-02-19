@@ -139,8 +139,8 @@ DopingPageWidget::DopingPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *rootLayout = new QVBoxLayout(this);
-    rootLayout->setSpacing(16);
-    rootLayout->setContentsMargins(20, 20, 20, 20);
+    rootLayout->setSpacing(12);
+    rootLayout->setContentsMargins(15, 0, 15, 15);
 
     createDopingSection(rootLayout);
     createFlowPressureSection(rootLayout);
@@ -171,7 +171,7 @@ QFrame* DopingPageWidget::createCard(const QString &title, const QString &value,
 
     QVBoxLayout *cardLayout = new QVBoxLayout(card);
     cardLayout->setContentsMargins(16, 16, 16, 16);
-    cardLayout->setSpacing(8);
+    cardLayout->setSpacing(12);
 
     QLabel *valueLabel = makeLabel(value, 22, true);
     valueLabel->setObjectName("valueLabel");
@@ -202,7 +202,7 @@ void DopingPageWidget::createDopingSection(QVBoxLayout *mainLayout)
 
     QWidget *dopingFrame = new QWidget();
     QGridLayout *gridLayout = new QGridLayout(dopingFrame);
-    gridLayout->setSpacing(16);
+    gridLayout->setSpacing(12);
     gridLayout->setContentsMargins(0, 0, 0, 0);
 
     // Аргон
@@ -243,7 +243,7 @@ void DopingPageWidget::createDopingSection(QVBoxLayout *mainLayout)
         QString::fromUtf8(" мл/мин"),
         [](double v) { Values::updateDopingGas(v); });
     QHBoxLayout *gasButtonsLayout = new QHBoxLayout();
-    gasButtonsLayout->setSpacing(10);
+    gasButtonsLayout->setSpacing(12);
 
     // Кнопки выбора режима легирующего газа (взаимоисключающий выбор)
     phosphorusButton = new TextButtonWidget(QString::fromUtf8("Фосфор"), "#95a5a6", "#ffffff", 16, dopingGasCard);
@@ -322,7 +322,7 @@ void DopingPageWidget::createFlowPressureSection(QVBoxLayout *mainLayout)
     mainLayout->addWidget(sectionTitle);
 
     QHBoxLayout *flowLayout = new QHBoxLayout();
-    flowLayout->setSpacing(15);
+    flowLayout->setSpacing(12);
     flowLayout->setContentsMargins(0, 0, 0, 0);
 
     QFrame *argonCard = createCard(QString::fromUtf8("Аргон, л/мин"), "0.0");

@@ -58,10 +58,10 @@ QFrame* ErrorLogPageWidget::createErrorLogCard(QWidget *parent)
 
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(24, 20, 24, 24);
-    v->setSpacing(16);
+    v->setSpacing(12);
 
     QHBoxLayout *header = new QHBoxLayout();
-    header->setSpacing(16);
+    header->setSpacing(12);
 
     IconButtonWidget *backBtn = new IconButtonWidget("left_arrow", card, "#7f8c8d");
     backBtn->setFixedSize(44, 44);

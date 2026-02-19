@@ -144,8 +144,8 @@ GasPanelPageWidget::GasPanelPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *root = new QVBoxLayout(this);
-    root->setContentsMargins(20, 20, 20, 20);
-    root->setSpacing(16);
+    root->setContentsMargins(15, 0, 15, 15);
+    root->setSpacing(12);
 
     QLabel *title = new QLabel(QString::fromUtf8("Контроль газа"), this);
     title->setAlignment(Qt::AlignCenter);
@@ -153,7 +153,7 @@ GasPanelPageWidget::GasPanelPageWidget(QWidget *parent)
     root->addWidget(title);
 
     QGridLayout *grid = new QGridLayout();
-    grid->setSpacing(16);
+    grid->setSpacing(12);
 
     grid->setColumnStretch(0, 1);
     grid->setColumnStretch(1, 1);
@@ -174,7 +174,7 @@ QFrame* GasPanelPageWidget::createArgonCard(QWidget *parent)
     CardFrame *card = new CardFrame(parent);
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(10);
+    v->setSpacing(12);
 
     QWidget *setpointWidget = new QWidget(card);
     QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
@@ -262,7 +262,7 @@ QFrame* GasPanelPageWidget::createExhaustCard(QWidget *parent)
     CardFrame *card = new CardFrame(parent);
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(10);
+    v->setSpacing(12);
 
     QWidget *setpointWidget = new QWidget(card);
     QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
@@ -349,7 +349,7 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     CardFrame *card = new CardFrame(parent);
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(10);
+    v->setSpacing(12);
 
     QWidget *setpointWidget = new QWidget(card);
     QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
@@ -394,7 +394,7 @@ QFrame* GasPanelPageWidget::createNitrogenCard(QWidget *parent)
     QWidget *valuesWidget = new QWidget(bottomCard);
     QHBoxLayout *valuesRow = new QHBoxLayout(valuesWidget);
     valuesRow->setContentsMargins(0, 0, 0, 0);
-    valuesRow->setSpacing(20);
+    valuesRow->setSpacing(12);
 
     QLabel *val1 = makeLabel("0.0", 11, false, "#95a5a6");
     QLabel *val2 = makeLabel("0.0", 11, false, "#95a5a6");
@@ -453,7 +453,7 @@ QFrame* GasPanelPageWidget::createGasPressureCard(QWidget *parent)
     CardFrame *card = new CardFrame(parent);
     QVBoxLayout *v = new QVBoxLayout(card);
     v->setContentsMargins(16, 16, 16, 16);
-    v->setSpacing(10);
+    v->setSpacing(12);
 
     QWidget *setpointWidget = new QWidget(card);
     QVBoxLayout *setpointLayout = new QVBoxLayout(setpointWidget);
