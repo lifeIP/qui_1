@@ -1,6 +1,7 @@
 #include "errorlogio.h"
 
 #include <QCoreApplication>
+#include <QDate>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
@@ -20,9 +21,12 @@ QString ErrorLogIO::archiveFilePath()
     return logsDir() + QString::fromUtf8("/archive.log");
 }
 
-static QString consoleLogFilePath()
+static QString consoleLogFilePathForDate(const QDate &date)
 {
-    return QCoreApplication::applicationDirPath() + QString::fromUtf8("/logs/console.log");
+    QString yyyy = QString::number(date.year());
+    QString mm = QString::number(date.month()).rightJustified(2, QChar::fromLatin1('0'));
+    QString dd = QString::number(date.day()).rightJustified(2, QChar::fromLatin1('0'));
+    return logsDir() + QString::fromUtf8("/") + yyyy + QString::fromUtf8("/") + mm + QString::fromUtf8("/") + dd + QString::fromUtf8("_.log");
 }
 
 void ErrorLogIO::ensureDefaultFilesExist()
@@ -151,13 +155,17 @@ static QMutex s_consoleLogMutex;
 void ErrorLogIO::appendToConsoleLog(const QString &line)
 {
     QMutexLocker lock(&s_consoleLogMutex);
+    QDate today = QDate::currentDate();
+    QString dirPath = logsDir() + QString::fromUtf8("/") + QString::number(today.year())
+        + QString::fromUtf8("/") + QString::number(today.month()).rightJustified(2, QChar::fromLatin1('0'));
     QDir dir;
-    dir.mkpath(QCoreApplication::applicationDirPath() + QString::fromUtf8("/logs"));
+    dir.mkpath(dirPath);
 
     QString timeStr = QDateTime::currentDateTime().toString(QString::fromUtf8("yyyy-MM-dd HH:mm:ss"));
     QString logLine = timeStr + QString::fromUtf8(" | ") + line + QString::fromUtf8("\n");
 
-    QFile f(consoleLogFilePath());
+    QString filePath = consoleLogFilePathForDate(today);
+    QFile f(filePath);
     if (f.open(QIODevice::Append)) {
         f.write(logLine.toUtf8());
         f.close();
