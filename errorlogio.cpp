@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QTime>
 static QString logsDir()
 {
     return QCoreApplication::applicationDirPath() + QString::fromUtf8("/logs");
@@ -109,4 +110,32 @@ QList<ArchiveEntry> ErrorLogIO::readArchiveFile()
         }
     }
     return entries;
+}
+
+void ErrorLogIO::appendToErrorsLog(const QString &message, const QString &color, bool resettable)
+{
+    ensureDefaultFilesExist();
+    QString timeStr = QTime::currentTime().toString(QString::fromUtf8("HH:mm:ss"));
+    QString col = color.isEmpty() ? QString::fromUtf8("#e74c3c") : color;
+    QString line = timeStr + QString::fromUtf8("|") + message + QString::fromUtf8("|") + col
+        + QString::fromUtf8("|") + (resettable ? QString::fromUtf8("1") : QString::fromUtf8("0")) + QString::fromUtf8("\n");
+
+    QFile f(errorsFilePath());
+    if (f.open(QIODevice::Append)) {
+        f.write(line.toUtf8());
+        f.close();
+    }
+}
+
+void ErrorLogIO::appendToArchive(const QString &message)
+{
+    ensureDefaultFilesExist();
+    QString timeStr = QTime::currentTime().toString(QString::fromUtf8("HH:mm:ss"));
+    QString line = timeStr + QString::fromUtf8("|") + message + QString::fromUtf8("\n");
+
+    QFile f(archiveFilePath());
+    if (f.open(QIODevice::Append)) {
+        f.write(line.toUtf8());
+        f.close();
+    }
 }

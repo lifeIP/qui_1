@@ -1,5 +1,6 @@
 #include "control/debugconsole.h"
 #include "activity.h"
+#include "errorlogio.h"
 #include "values.h"
 
 #include <QDebug>
@@ -233,6 +234,9 @@ void DebugConsole::printHelp()
     *m_outputStream << "  gas.pressure.status.normal  - Gas Pressure: Normal\n";
     *m_outputStream << "  gas.pressure.status.low    - Gas Pressure: Low\n";
     *m_outputStream << "  gas.pressure.status.high   - Gas Pressure: High\n";
+    *m_outputStream << QString::fromUtf8("\n  Журнал и архив ошибок:\n");
+    *m_outputStream << "  log.add <message> [color] [0|1]  - Add to Error Log (color e.g. #e74c3c, resettable 1/0)\n";
+    *m_outputStream << "  archive.add <message>           - Add to Error Archive\n";
     *m_outputStream << "\n";
     *m_outputStream << "Status commands:\n";
     *m_outputStream << QString::fromUtf8("  [Все страницы]\n");
@@ -884,6 +888,50 @@ bool DebugConsole::parseAndExecute(const QString &command)
     if (cmd == "gas.pressure.status.high") {
         Values::updateGasPanelGasPressureStatus(2);
         *m_outputStream << "Gas Panel: Pressure Status: High" << endl;
+        return true;
+    }
+
+    // Error Log and Archive commands
+    if (cmd == "log.add") {
+        if (parts.size() < 2) {
+            *m_outputStream << "Error: Message required. Usage: log.add <message> [color] [0|1]" << endl;
+            return true;
+        }
+        QStringList msgParts = parts.mid(1);
+        QString color;
+        bool resettable = true;
+        for (int i = msgParts.size() - 1; i >= 0; --i) {
+            if (msgParts[i].startsWith(QString::fromUtf8("#"))) {
+                color = msgParts[i];
+                msgParts.removeAt(i);
+                break;
+            }
+        }
+        if (!msgParts.isEmpty() && (msgParts.last() == QString::fromUtf8("0") || msgParts.last() == QString::fromUtf8("1"))) {
+            resettable = (msgParts.last() == QString::fromUtf8("1"));
+            msgParts.removeLast();
+        }
+        QString message = msgParts.join(QString::fromUtf8(" ")).trimmed();
+        if (message.isEmpty()) {
+            *m_outputStream << "Error: Message cannot be empty" << endl;
+            return true;
+        }
+        ErrorLogIO::appendToErrorsLog(message, color, resettable);
+        *m_outputStream << "Added to Error Log: " << message << endl;
+        return true;
+    }
+    if (cmd == "archive.add") {
+        if (parts.size() < 2) {
+            *m_outputStream << "Error: Message required. Usage: archive.add <message>" << endl;
+            return true;
+        }
+        QString message = parts.mid(1).join(QString::fromUtf8(" ")).trimmed();
+        if (message.isEmpty()) {
+            *m_outputStream << "Error: Message cannot be empty" << endl;
+            return true;
+        }
+        ErrorLogIO::appendToArchive(message);
+        *m_outputStream << "Added to Archive: " << message << endl;
         return true;
     }
 

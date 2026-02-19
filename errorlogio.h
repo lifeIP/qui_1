@@ -24,4 +24,8 @@ void ensureDefaultFilesExist();
 QList<ErrorLogEntry> readErrorsFile();
 QList<ArchiveEntry> readArchiveFile();
 
+// Append new entries (writes UTF-8)
+void appendToErrorsLog(const QString &message, const QString &color = QString(), bool resettable = true);
+void appendToArchive(const QString &message);
+
 }
