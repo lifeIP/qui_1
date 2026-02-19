@@ -28,4 +28,7 @@ QList<ArchiveEntry> readArchiveFile();
 void appendToErrorsLog(const QString &message, const QString &color = QString(), bool resettable = true);
 void appendToArchive(const QString &message);
 
+// Append console output to logs/console.log (UTF-8, with timestamp)
+void appendToConsoleLog(const QString &line);
+
 }

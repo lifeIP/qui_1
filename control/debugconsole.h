@@ -23,7 +23,8 @@ private:
     void printHelp();
     void printWelcome();
     bool parseAndExecute(const QString &command);
-    
+    void writeLine(const QString &text);
+
     QTextStream *m_inputStream;
     QTextStream *m_outputStream;
     bool m_running;

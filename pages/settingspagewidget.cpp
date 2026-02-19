@@ -1089,7 +1089,7 @@ SettingsPageWidget::SettingsPageWidget(QWidget *parent)
     : QWidget(parent)
 {
     QVBoxLayout *upper_root = new QVBoxLayout(this);
-    upper_root->setContentsMargins(15, 0, 15, 0);
+    upper_root->setContentsMargins(15, 0, 15, 15);
     upper_root->setSpacing(12);
 
     QHBoxLayout *root = new QHBoxLayout();

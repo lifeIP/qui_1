@@ -35,7 +35,7 @@ ErrorArchivePageWidget::ErrorArchivePageWidget(QWidget *parent)
     setStyleSheet("QWidget { background-color: #f5f5f5; }");
 
     QVBoxLayout *root = new QVBoxLayout(this);
-    root->setContentsMargins(0, 0, 0, 0);
+    root->setContentsMargins(15, 0, 15, 15);
 
     root->addWidget(createArchiveCard(this));
 }
@@ -79,11 +79,11 @@ QFrame* ErrorArchivePageWidget::createArchiveCard(QWidget *parent)
 
     table_ = new QTableWidget(card);
     table_->setColumnCount(2);
-    table_->setHorizontalHeaderLabels({ QString::fromUtf8("Время"), QString::fromUtf8("Ошибка") });
+    table_->setHorizontalHeaderLabels({ QString::fromUtf8("Дата и время"), QString::fromUtf8("Ошибка") });
     table_->horizontalHeader()->setStretchLastSection(false);
     table_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     table_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    table_->setColumnWidth(0, 90);
+    table_->setColumnWidth(0, 140);
     table_->horizontalHeader()->setMinimumSectionSize(70);
     table_->verticalHeader()->setDefaultSectionSize(44);
     table_->verticalHeader()->setMinimumSectionSize(40);

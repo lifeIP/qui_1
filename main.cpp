@@ -1,4 +1,8 @@
 #include <QApplication>
+#include <QDateTime>
+#include <QDebug>
+#include <QFile>
+#include <QMessageLogContext>
 #include <QMainWindow>
 #include <QWidget>
 #include <QVBoxLayout>
@@ -230,9 +234,34 @@ protected:
 
 #include "main.moc"
 
+static QtMessageHandler s_originalMessageHandler = nullptr;
+
+static void appMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString prefix;
+    switch (type) {
+    case QtDebugMsg:    prefix = QString::fromUtf8("[Debug]"); break;
+    case QtInfoMsg:     prefix = QString::fromUtf8("[Info]"); break;
+    case QtWarningMsg:  prefix = QString::fromUtf8("[Warning]"); break;
+    case QtCriticalMsg: prefix = QString::fromUtf8("[Critical]"); break;
+    case QtFatalMsg:    prefix = QString::fromUtf8("[Fatal]"); break;
+    default:            prefix = QString::fromUtf8("[Log]"); break;
+    }
+    QString logLine = prefix + QString::fromUtf8(" ") + msg;
+    if (context.file && context.line > 0) {
+        logLine += QString::fromUtf8(" [") + QString::fromUtf8(context.file) + QString::fromUtf8(":") + QString::number(context.line) + QString::fromUtf8("]");
+    }
+    ErrorLogIO::appendToConsoleLog(logLine);
+
+    if (s_originalMessageHandler)
+        s_originalMessageHandler(type, context, msg);
+}
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    s_originalMessageHandler = qInstallMessageHandler(appMessageHandler);
 
     ErrorLogIO::ensureDefaultFilesExist();
 

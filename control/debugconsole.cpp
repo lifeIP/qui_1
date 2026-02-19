@@ -39,7 +39,7 @@ void DebugConsole::start()
     // Запускаем обработку команд в отдельном цикле
     QString line;
     while (m_running) {
-        *m_outputStream << "> " << flush;
+        *m_outputStream << "> " << Qt::flush;
         
         // Ждем ввода данных (блокирующий вызов)
         line = m_inputStream->readLine();
@@ -54,7 +54,7 @@ void DebugConsole::start()
             continue;
         
         if (line.toLower() == "quit" || line.toLower() == "exit") {
-            *m_outputStream << "Exiting debug console..." << endl;
+            writeLine(QString::fromUtf8("Exiting debug console..."));
             m_running = false;
             break;
         }
@@ -73,183 +73,186 @@ void DebugConsole::stop()
     m_running = false;
 }
 
+void DebugConsole::writeLine(const QString &text)
+{
+    if (m_outputStream) {
+        *m_outputStream << text << Qt::endl;
+        m_outputStream->flush();
+    }
+    ErrorLogIO::appendToConsoleLog(text);
+}
+
 void DebugConsole::printWelcome()
 {
-    if (!m_outputStream)
-        return;
-    
-    *m_outputStream << "\n";
-    *m_outputStream << "========================================\n";
-    *m_outputStream << "  Control Thread Debug Console\n";
-    *m_outputStream << "========================================\n";
-    *m_outputStream << "Type 'help' for available commands\n";
-    *m_outputStream << "Type 'quit' or 'exit' to exit\n";
-    *m_outputStream << "\n";
+    writeLine(QString());
+    writeLine(QString::fromUtf8("========================================"));
+    writeLine(QString::fromUtf8("  Control Thread Debug Console"));
+    writeLine(QString::fromUtf8("========================================"));
+    writeLine(QString::fromUtf8("Type 'help' for available commands"));
+    writeLine(QString::fromUtf8("Type 'quit' or 'exit' to exit"));
+    writeLine(QString());
 }
 
 void DebugConsole::printHelp()
 {
-    if (!m_outputStream)
-        return;
-    
-    *m_outputStream << "\n";
-    *m_outputStream << "Available commands:\n";
-    *m_outputStream << "  help                          - Show this help\n";
-    *m_outputStream << "  quit/exit                     - Exit console\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Activity commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Главная страница]\n");
-    *m_outputStream << "  activity.xy.up                - XY Up\n";
-    *m_outputStream << "  activity.xy.down              - XY Down\n";
-    *m_outputStream << "  activity.xy.left              - XY Left\n";
-    *m_outputStream << "  activity.xy.right              - XY Right\n";
-    *m_outputStream << "  activity.coil.up              - Coil Up\n";
-    *m_outputStream << "  activity.coil.down          - Coil Down\n";
-    *m_outputStream << "  activity.coil.start           - Start Oscillations\n";
-    *m_outputStream << "  activity.upper.start          - Upper Spindle Start\n";
-    *m_outputStream << "  activity.upper.stop           - Upper Spindle Stop\n";
-    *m_outputStream << "  activity.lower.start          - Lower Spindle Start\n";
-    *m_outputStream << "  activity.lower.stop           - Lower Spindle Stop\n";
-    *m_outputStream << "  activity.heating.on            - Heating On\n";
-    *m_outputStream << "  activity.heating.off          - Heating Off\n";
-    *m_outputStream << "  activity.generator.on         - Generator On\n";
-    *m_outputStream << "  activity.generator.off         - Generator Off\n";
-    *m_outputStream << "  activity.generator.reset      - Generator Reset\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
-    *m_outputStream << "  activity.settings.xy.up                - Settings XY Up\n";
-    *m_outputStream << "  activity.settings.xy.down              - Settings XY Down\n";
-    *m_outputStream << "  activity.settings.xy.left              - Settings XY Left\n";
-    *m_outputStream << "  activity.settings.xy.right             - Settings XY Right\n";
-    *m_outputStream << "  activity.settings.coil.up              - Settings Coil Up\n";
-    *m_outputStream << "  activity.settings.coil.down            - Settings Coil Down\n";
-    *m_outputStream << "  activity.settings.coil.neutral          - Settings Coil Neutral\n";
-    *m_outputStream << "  activity.settings.coil.acceleration    - Settings Coil Acceleration\n";
-    *m_outputStream << "  activity.settings.coil.service         - Settings Coil Service\n";
-    *m_outputStream << "  activity.settings.upper.start          - Settings Upper Spindle Start\n";
-    *m_outputStream << "  activity.settings.upper.stop           - Settings Upper Spindle Stop\n";
-    *m_outputStream << "  activity.settings.lower.start          - Settings Lower Spindle Start\n";
-    *m_outputStream << "  activity.settings.lower.stop           - Settings Lower Spindle Stop\n";
-    *m_outputStream << "  activity.settings.heating.on           - Settings Heating On\n";
-    *m_outputStream << "  activity.settings.heating.off          - Settings Heating Off\n";
-    *m_outputStream << "  activity.settings.generator.on         - Settings Generator On\n";
-    *m_outputStream << "  activity.settings.generator.off        - Settings Generator Off\n";
-    *m_outputStream << "  activity.settings.generator.reset      - Settings Generator Reset\n";
-    *m_outputStream << "  activity.settings.reflector.up         - Settings Reflector Up\n";
-    *m_outputStream << "  activity.settings.reflector.down       - Settings Reflector Down\n";
-    *m_outputStream << "  activity.settings.lighting.all         - Settings Lighting All\n";
-    *m_outputStream << "  activity.settings.lighting.half        - Settings Lighting 50%\n";
-    *m_outputStream << "  activity.settings.nitrogen.open        - Settings Nitrogen Valve Open\n";
-    *m_outputStream << "  activity.settings.autodope             - Settings Autodope\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Легирования]\n");
-    *m_outputStream << "  activity.argon.start          - Argon Start\n";
-    *m_outputStream << "  activity.argon.stop            - Argon Stop\n";
-    *m_outputStream << "  activity.injection.start       - Injection Start\n";
-    *m_outputStream << "  activity.injection.stop       - Injection Stop\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Values commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Главная страница]\n");
-    *m_outputStream << "  values.set.xy.x <value>       - Set XY Offset X (MM)\n";
-    *m_outputStream << "  values.set.xy.y <value>       - Set XY Offset Y (MM)\n";
-    *m_outputStream << "  values.set.coil.offset <value> - Set Coil Offset (MM)\n";
-    *m_outputStream << "  values.set.coil.osc <value>   - Set Coil Oscillations (MM/min)\n";
-    *m_outputStream << "  values.set.upper.x <value>     - Set Upper Spindle X Offset (MM)\n";
-    *m_outputStream << "  values.set.upper.speed <value> - Set Upper Spindle Speed (MM/min)\n";
-    *m_outputStream << "  values.set.upper.pos <value>   - Set Upper Spindle Position (MM)\n";
-    *m_outputStream << "  values.set.lower.x <value>     - Set Lower Spindle X Offset (MM)\n";
-    *m_outputStream << "  values.set.lower.speed <value> - Set Lower Spindle Speed (MM/min)\n";
-    *m_outputStream << "  values.set.lower.pos <value>   - Set Lower Spindle Position (MM)\n";
-    *m_outputStream << "  values.set.grid.amp <value>    - Set Grid AMP\n";
-    *m_outputStream << "  values.set.p <value>           - Set P Value (%)\n";
-    *m_outputStream << "  values.set.i <value>           - Set I Value (%)\n";
-    *m_outputStream << "  values.set.u <value>           - Set U Value (%)\n";
-    *m_outputStream << "  values.set.generator <value>    - Set Generator Percent (%)\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
-    *m_outputStream << "  values.set.settings.xy.x <value>        - Set Settings XY Offset X (MM)\n";
-    *m_outputStream << "  values.set.settings.xy.y <value>        - Set Settings XY Offset Y (MM)\n";
-    *m_outputStream << "  values.set.settings.coil.offset <value> - Set Settings Coil Offset (MM)\n";
-    *m_outputStream << "  values.set.settings.coil.osc <value>    - Set Settings Coil Oscillations (MM/min)\n";
-    *m_outputStream << "  values.set.settings.upper.x <value>     - Set Settings Upper Spindle X Offset (MM)\n";
-    *m_outputStream << "  values.set.settings.upper.speed <value> - Set Settings Upper Spindle Speed (MM/min)\n";
-    *m_outputStream << "  values.set.settings.upper.pos <value>   - Set Settings Upper Spindle Position (MM)\n";
-    *m_outputStream << "  values.set.settings.lower.x <value>     - Set Settings Lower Spindle X Offset (MM)\n";
-    *m_outputStream << "  values.set.settings.lower.speed <value> - Set Settings Lower Spindle Speed (MM/min)\n";
-    *m_outputStream << "  values.set.settings.lower.pos <value>   - Set Settings Lower Spindle Position (MM)\n";
-    *m_outputStream << "  values.set.settings.grid.amp <value>    - Set Settings Grid AMP\n";
-    *m_outputStream << "  values.set.settings.p <value>           - Set Settings P Value (%)\n";
-    *m_outputStream << "  values.set.settings.i <value>           - Set Settings I Value (%)\n";
-    *m_outputStream << "  values.set.settings.u <value>           - Set Settings U Value (%)\n";
-    *m_outputStream << "  values.set.settings.generator <value>   - Set Settings Generator Percent (%)\n";
-    *m_outputStream << "  values.set.settings.generator.status <0|1> - Set Generator Status (0=Error, 1=OK)\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
-    *m_outputStream << "  values.set.vacuum.pump <value>  - Set Vacuum Pump Pressure (mbar)\n";
-    *m_outputStream << "  values.set.vacuum.chamber <value> - Set Vacuum Chamber Pressure (mbar)\n";
-    *m_outputStream << "  values.set.vacuum.time <value> - Set Vacuum Pumping Time (sec)\n";
-    *m_outputStream << "  values.set.vacuum.gas <value>   - Set Vacuum Gas Pressure (bar)\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Контроль газа]\n");
-    *m_outputStream << "  values.set.gas.pressure.status <0|1|2> - Gas Pressure Status (0=Normal, 1=Low, 2=High)\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Main Page Control commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Главная]\n");
-    *m_outputStream << "  main.heating.on                 - Heating Selector On\n";
-    *m_outputStream << "  main.heating.off                - Heating Selector Off\n";
-    *m_outputStream << "  main.generator.on               - Generator Selector On\n";
-    *m_outputStream << "  main.generator.off              - Generator Selector Off\n";
-    *m_outputStream << "  main.upper.start               - Upper Spindle Start\n";
-    *m_outputStream << "  main.upper.stop                - Upper Spindle Stop\n";
-    *m_outputStream << "  main.lower.start               - Lower Spindle Start\n";
-    *m_outputStream << "  main.lower.stop                - Lower Spindle Stop\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Settings Page Control commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Настроек]\n");
-    *m_outputStream << "  settings.heating.on                 - Settings Heating Selector On\n";
-    *m_outputStream << "  settings.heating.off                - Settings Heating Selector Off\n";
-    *m_outputStream << "  settings.generator.on               - Settings Generator Selector On\n";
-    *m_outputStream << "  settings.generator.off              - Settings Generator Selector Off\n";
-    *m_outputStream << "  settings.generator.status.ok        - Set Generator Status: OK\n";
-    *m_outputStream << "  settings.generator.status.error     - Set Generator Status: Error\n";
-    *m_outputStream << "  settings.upper.start                - Settings Upper Spindle Start\n";
-    *m_outputStream << "  settings.upper.stop                 - Settings Upper Spindle Stop\n";
-    *m_outputStream << "  settings.lower.start                - Settings Lower Spindle Start\n";
-    *m_outputStream << "  settings.lower.stop                 - Settings Lower Spindle Stop\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Vacuum Control commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
-    *m_outputStream << "  vacuum.pump.on                  - Vacuum Pump On\n";
-    *m_outputStream << "  vacuum.pump.off                  - Vacuum Pump Off\n";
-    *m_outputStream << "  vacuum.valve.on                  - Vacuum Valve On\n";
-    *m_outputStream << "  vacuum.valve.off                 - Vacuum Valve Off\n";
-    *m_outputStream << "  vacuum.autopump.on              - Auto Pump Down On\n";
-    *m_outputStream << "  vacuum.autopump.off              - Auto Pump Down Off\n";
-    *m_outputStream << "  vacuum.upperdoor.open            - Upper Door Open\n";
-    *m_outputStream << "  vacuum.upperdoor.close           - Upper Door Close\n";
-    *m_outputStream << "  vacuum.lowerdoor.open            - Lower Door Open\n";
-    *m_outputStream << "  vacuum.lowerdoor.close           - Lower Door Close\n";
-    *m_outputStream << "  vacuum.maindoor.open             - Main Door Status: Open\n";
-    *m_outputStream << "  vacuum.maindoor.close            - Main Door Status: Close\n";
-    *m_outputStream << "  vacuum.lighting.0 <0|1>         - Lighting Button 0 (top) On/Off\n";
-    *m_outputStream << "  vacuum.lighting.1 <0|1>         - Lighting Button 1 (left) On/Off\n";
-    *m_outputStream << "  vacuum.lighting.2 <0|1>          - Lighting Button 2 (right) On/Off\n";
-    *m_outputStream << "  vacuum.lighting.3 <0|1>          - Lighting Button 3 (bottom) On/Off\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Контроль газа]\n");
-    *m_outputStream << "  gas.pressure.status.normal  - Gas Pressure: Normal\n";
-    *m_outputStream << "  gas.pressure.status.low    - Gas Pressure: Low\n";
-    *m_outputStream << "  gas.pressure.status.high   - Gas Pressure: High\n";
-    *m_outputStream << QString::fromUtf8("\n  Журнал и архив ошибок:\n");
-    *m_outputStream << "  log.add <message> [color] [0|1]  - Add to Error Log (color e.g. #e74c3c, resettable 1/0)\n";
-    *m_outputStream << "  archive.add <message>           - Add to Error Archive\n";
-    *m_outputStream << "\n";
-    *m_outputStream << "Status commands:\n";
-    *m_outputStream << QString::fromUtf8("  [Все страницы]\n");
-    *m_outputStream << "  status.connection.connecting   - Set connection status: Connecting\n";
-    *m_outputStream << "  status.connection.disconnected  - Set connection status: Disconnected\n";
-    *m_outputStream << "  status.connection.connected      - Set connection status: Connected\n";
-    *m_outputStream << QString::fromUtf8("  [Страница Вакуум]\n");
-    *m_outputStream << "  status.pump.low                 - Set pump pressure: Low\n";
-    *m_outputStream << "  status.pump.lowmedium           - Set pump pressure: Low-Medium\n";
-    *m_outputStream << "  status.pump.medium               - Set pump pressure: Medium\n";
-    *m_outputStream << "  status.pump.mediumhigh          - Set pump pressure: Medium-High\n";
-    *m_outputStream << "  status.pump.high                 - Set pump pressure: High\n";
-    *m_outputStream << "\n";
+    writeLine(QString());
+    writeLine(QString::fromUtf8("Available commands:"));
+    writeLine(QString::fromUtf8("  help                          - Show this help"));
+    writeLine(QString::fromUtf8("  quit/exit                     - Exit console"));
+    writeLine(QString());
+    writeLine(QString::fromUtf8("Activity commands:"));
+    writeLine(QString::fromUtf8("  [Главная страница]"));
+    writeLine(QString::fromUtf8("  activity.xy.up                - XY Up"));
+    writeLine(QString::fromUtf8("  activity.xy.down              - XY Down"));
+    writeLine(QString::fromUtf8("  activity.xy.left              - XY Left"));
+    writeLine(QString::fromUtf8("  activity.xy.right              - XY Right"));
+    writeLine(QString::fromUtf8("  activity.coil.up              - Coil Up"));
+    writeLine(QString::fromUtf8("  activity.coil.down          - Coil Down"));
+    writeLine(QString::fromUtf8("  activity.coil.start           - Start Oscillations"));
+    writeLine(QString::fromUtf8("  activity.upper.start          - Upper Spindle Start"));
+    writeLine(QString::fromUtf8("  activity.upper.stop           - Upper Spindle Stop"));
+    writeLine(QString::fromUtf8("  activity.lower.start          - Lower Spindle Start"));
+    writeLine(QString::fromUtf8("  activity.lower.stop           - Lower Spindle Stop"));
+    writeLine(QString::fromUtf8("  activity.heating.on            - Heating On"));
+    writeLine(QString::fromUtf8("  activity.heating.off          - Heating Off"));
+    writeLine(QString::fromUtf8("  activity.generator.on         - Generator On"));
+    writeLine(QString::fromUtf8("  activity.generator.off         - Generator Off"));
+    writeLine(QString::fromUtf8("  activity.generator.reset      - Generator Reset"));
+    writeLine(QString::fromUtf8("  [Страница Настроек]"));
+    writeLine(QString::fromUtf8("  activity.settings.xy.up                - Settings XY Up"));
+    writeLine(QString::fromUtf8("  activity.settings.xy.down              - Settings XY Down"));
+    writeLine(QString::fromUtf8("  activity.settings.xy.left              - Settings XY Left"));
+    writeLine(QString::fromUtf8("  activity.settings.xy.right             - Settings XY Right"));
+    writeLine(QString::fromUtf8("  activity.settings.coil.up              - Settings Coil Up"));
+    writeLine(QString::fromUtf8("  activity.settings.coil.down            - Settings Coil Down"));
+    writeLine(QString::fromUtf8("  activity.settings.coil.neutral          - Settings Coil Neutral"));
+    writeLine(QString::fromUtf8("  activity.settings.coil.acceleration    - Settings Coil Acceleration"));
+    writeLine(QString::fromUtf8("  activity.settings.coil.service         - Settings Coil Service"));
+    writeLine(QString::fromUtf8("  activity.settings.upper.start          - Settings Upper Spindle Start"));
+    writeLine(QString::fromUtf8("  activity.settings.upper.stop           - Settings Upper Spindle Stop"));
+    writeLine(QString::fromUtf8("  activity.settings.lower.start          - Settings Lower Spindle Start"));
+    writeLine(QString::fromUtf8("  activity.settings.lower.stop           - Settings Lower Spindle Stop"));
+    writeLine(QString::fromUtf8("  activity.settings.heating.on           - Settings Heating On"));
+    writeLine(QString::fromUtf8("  activity.settings.heating.off          - Settings Heating Off"));
+    writeLine(QString::fromUtf8("  activity.settings.generator.on         - Settings Generator On"));
+    writeLine(QString::fromUtf8("  activity.settings.generator.off        - Settings Generator Off"));
+    writeLine(QString::fromUtf8("  activity.settings.generator.reset      - Settings Generator Reset"));
+    writeLine(QString::fromUtf8("  activity.settings.reflector.up         - Settings Reflector Up"));
+    writeLine(QString::fromUtf8("  activity.settings.reflector.down       - Settings Reflector Down"));
+    writeLine(QString::fromUtf8("  activity.settings.lighting.all         - Settings Lighting All"));
+    writeLine(QString::fromUtf8("  activity.settings.lighting.half        - Settings Lighting 50%"));
+    writeLine(QString::fromUtf8("  activity.settings.nitrogen.open        - Settings Nitrogen Valve Open"));
+    writeLine(QString::fromUtf8("  activity.settings.autodope             - Settings Autodope"));
+    writeLine(QString::fromUtf8("  [Страница Легирования]"));
+    writeLine(QString::fromUtf8("  activity.argon.start          - Argon Start"));
+    writeLine(QString::fromUtf8("  activity.argon.stop            - Argon Stop"));
+    writeLine(QString::fromUtf8("  activity.injection.start       - Injection Start"));
+    writeLine(QString::fromUtf8("  activity.injection.stop       - Injection Stop"));
+    writeLine(QString::fromUtf8(""));
+    writeLine(QString::fromUtf8("Values commands:"));
+    writeLine(QString::fromUtf8("  [Главная страница]"));
+    writeLine(QString::fromUtf8("  values.set.xy.x <value>       - Set XY Offset X (MM)"));
+    writeLine(QString::fromUtf8("  values.set.xy.y <value>       - Set XY Offset Y (MM)"));
+    writeLine(QString::fromUtf8("  values.set.coil.offset <value> - Set Coil Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.coil.osc <value>   - Set Coil Oscillations (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.upper.x <value>     - Set Upper Spindle X Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.upper.speed <value> - Set Upper Spindle Speed (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.upper.pos <value>   - Set Upper Spindle Position (MM)"));
+    writeLine(QString::fromUtf8("  values.set.lower.x <value>     - Set Lower Spindle X Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.lower.speed <value> - Set Lower Spindle Speed (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.lower.pos <value>   - Set Lower Spindle Position (MM)"));
+    writeLine(QString::fromUtf8("  values.set.grid.amp <value>    - Set Grid AMP"));
+    writeLine(QString::fromUtf8("  values.set.p <value>           - Set P Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.i <value>           - Set I Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.u <value>           - Set U Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.generator <value>    - Set Generator Percent (%)"));
+    writeLine(QString::fromUtf8("  [Страница Настроек]"));
+    writeLine(QString::fromUtf8("  values.set.settings.xy.x <value>        - Set Settings XY Offset X (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.xy.y <value>        - Set Settings XY Offset Y (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.coil.offset <value> - Set Settings Coil Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.coil.osc <value>    - Set Settings Coil Oscillations (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.settings.upper.x <value>     - Set Settings Upper Spindle X Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.upper.speed <value> - Set Settings Upper Spindle Speed (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.settings.upper.pos <value>   - Set Settings Upper Spindle Position (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.lower.x <value>     - Set Settings Lower Spindle X Offset (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.lower.speed <value> - Set Settings Lower Spindle Speed (MM/min)"));
+    writeLine(QString::fromUtf8("  values.set.settings.lower.pos <value>   - Set Settings Lower Spindle Position (MM)"));
+    writeLine(QString::fromUtf8("  values.set.settings.grid.amp <value>    - Set Settings Grid AMP"));
+    writeLine(QString::fromUtf8("  values.set.settings.p <value>           - Set Settings P Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.settings.i <value>           - Set Settings I Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.settings.u <value>           - Set Settings U Value (%)"));
+    writeLine(QString::fromUtf8("  values.set.settings.generator <value>   - Set Settings Generator Percent (%)"));
+    writeLine(QString::fromUtf8("  values.set.settings.generator.status <0|1> - Set Generator Status (0=Error, 1=OK)"));
+    writeLine(QString::fromUtf8("  [Страница Вакуум]"));
+    writeLine(QString::fromUtf8("  values.set.vacuum.pump <value>  - Set Vacuum Pump Pressure (mbar)"));
+    writeLine(QString::fromUtf8("  values.set.vacuum.chamber <value> - Set Vacuum Chamber Pressure (mbar)"));
+    writeLine(QString::fromUtf8("  values.set.vacuum.time <value> - Set Vacuum Pumping Time (sec)"));
+    writeLine(QString::fromUtf8("  values.set.vacuum.gas <value>   - Set Vacuum Gas Pressure (bar)"));
+    writeLine(QString::fromUtf8("  [Страница Контроль газа]"));
+    writeLine(QString::fromUtf8("  values.set.gas.pressure.status <0|1|2> - Gas Pressure Status (0=Normal, 1=Low, 2=High)"));
+    writeLine(QString::fromUtf8(""));
+    writeLine(QString::fromUtf8("Main Page Control commands:"));
+    writeLine(QString::fromUtf8("  [Страница Главная]"));
+    writeLine(QString::fromUtf8("  main.heating.on                 - Heating Selector On"));
+    writeLine(QString::fromUtf8("  main.heating.off                - Heating Selector Off"));
+    writeLine(QString::fromUtf8("  main.generator.on               - Generator Selector On"));
+    writeLine(QString::fromUtf8("  main.generator.off              - Generator Selector Off"));
+    writeLine(QString::fromUtf8("  main.upper.start               - Upper Spindle Start"));
+    writeLine(QString::fromUtf8("  main.upper.stop                - Upper Spindle Stop"));
+    writeLine(QString::fromUtf8("  main.lower.start               - Lower Spindle Start"));
+    writeLine(QString::fromUtf8("  main.lower.stop                - Lower Spindle Stop"));
+    writeLine(QString::fromUtf8(""));
+    writeLine(QString::fromUtf8("Settings Page Control commands:"));
+    writeLine(QString::fromUtf8("  [Страница Настроек]"));
+    writeLine(QString::fromUtf8("  settings.heating.on                 - Settings Heating Selector On"));
+    writeLine(QString::fromUtf8("  settings.heating.off                - Settings Heating Selector Off"));
+    writeLine(QString::fromUtf8("  settings.generator.on               - Settings Generator Selector On"));
+    writeLine(QString::fromUtf8("  settings.generator.off              - Settings Generator Selector Off"));
+    writeLine(QString::fromUtf8("  settings.generator.status.ok        - Set Generator Status: OK"));
+    writeLine(QString::fromUtf8("  settings.generator.status.error     - Set Generator Status: Error"));
+    writeLine(QString::fromUtf8("  settings.upper.start                - Settings Upper Spindle Start"));
+    writeLine(QString::fromUtf8("  settings.upper.stop                 - Settings Upper Spindle Stop"));
+    writeLine(QString::fromUtf8("  settings.lower.start                - Settings Lower Spindle Start"));
+    writeLine(QString::fromUtf8("  settings.lower.stop                 - Settings Lower Spindle Stop"));
+    writeLine(QString::fromUtf8(""));
+    writeLine(QString::fromUtf8("Vacuum Control commands:"));
+    writeLine(QString::fromUtf8("  [Страница Вакуум]"));
+    writeLine(QString::fromUtf8("  vacuum.pump.on                  - Vacuum Pump On"));
+    writeLine(QString::fromUtf8("  vacuum.pump.off                  - Vacuum Pump Off"));
+    writeLine(QString::fromUtf8("  vacuum.valve.on                  - Vacuum Valve On"));
+    writeLine(QString::fromUtf8("  vacuum.valve.off                 - Vacuum Valve Off"));
+    writeLine(QString::fromUtf8("  vacuum.autopump.on              - Auto Pump Down On"));
+    writeLine(QString::fromUtf8("  vacuum.autopump.off              - Auto Pump Down Off"));
+    writeLine(QString::fromUtf8("  vacuum.upperdoor.open            - Upper Door Open"));
+    writeLine(QString::fromUtf8("  vacuum.upperdoor.close           - Upper Door Close"));
+    writeLine(QString::fromUtf8("  vacuum.lowerdoor.open            - Lower Door Open"));
+    writeLine(QString::fromUtf8("  vacuum.lowerdoor.close           - Lower Door Close"));
+    writeLine(QString::fromUtf8("  vacuum.maindoor.open             - Main Door Status: Open"));
+    writeLine(QString::fromUtf8("  vacuum.maindoor.close            - Main Door Status: Close"));
+    writeLine(QString::fromUtf8("  vacuum.lighting.0 <0|1>         - Lighting Button 0 (top) On/Off"));
+    writeLine(QString::fromUtf8("  vacuum.lighting.1 <0|1>         - Lighting Button 1 (left) On/Off"));
+    writeLine(QString::fromUtf8("  vacuum.lighting.2 <0|1>          - Lighting Button 2 (right) On/Off"));
+    writeLine(QString::fromUtf8("  vacuum.lighting.3 <0|1>          - Lighting Button 3 (bottom) On/Off"));
+    writeLine(QString::fromUtf8("  [Страница Контроль газа]"));
+    writeLine(QString::fromUtf8("  gas.pressure.status.normal  - Gas Pressure: Normal"));
+    writeLine(QString::fromUtf8("  gas.pressure.status.low    - Gas Pressure: Low"));
+    writeLine(QString::fromUtf8("  gas.pressure.status.high   - Gas Pressure: High"));
+    writeLine(QString::fromUtf8("\n  Журнал и архив ошибок:"));
+    writeLine(QString::fromUtf8("  log.add <message> [color] [0|1]  - Add to Error Log (color e.g. #e74c3c, resettable 1/0)"));
+    writeLine(QString::fromUtf8("  archive.add <message>           - Add to Error Archive"));
+    writeLine(QString::fromUtf8(""));
+    writeLine(QString::fromUtf8("Status commands:"));
+    writeLine(QString::fromUtf8("  [Все страницы]"));
+    writeLine(QString::fromUtf8("  status.connection.connecting   - Set connection status: Connecting"));
+    writeLine(QString::fromUtf8("  status.connection.disconnected  - Set connection status: Disconnected"));
+    writeLine(QString::fromUtf8("  status.connection.connected      - Set connection status: Connected"));
+    writeLine(QString::fromUtf8("  [Страница Вакуум]"));
+    writeLine(QString::fromUtf8("  status.pump.low                 - Set pump pressure: Low"));
+    writeLine(QString::fromUtf8("  status.pump.lowmedium           - Set pump pressure: Low-Medium"));
+    writeLine(QString::fromUtf8("  status.pump.medium               - Set pump pressure: Medium"));
+    writeLine(QString::fromUtf8("  status.pump.mediumhigh          - Set pump pressure: Medium-High"));
+    writeLine(QString::fromUtf8("  status.pump.high                 - Set pump pressure: High"));
+    writeLine(QString::fromUtf8(""));
 }
 
 void DebugConsole::processCommand(const QString &command)
@@ -258,8 +261,8 @@ void DebugConsole::processCommand(const QString &command)
         return;
     
     if (!parseAndExecute(command)) {
-        *m_outputStream << "Unknown command: " << command << endl;
-        *m_outputStream << "Type 'help' for available commands" << endl;
+        writeLine(QString::fromUtf8("Unknown command: ") + command);
+        writeLine(QString::fromUtf8("Type 'help' for available commands"));
     }
 }
 
@@ -274,461 +277,461 @@ bool DebugConsole::parseAndExecute(const QString &command)
     // Activity commands
     if (cmd == "activity.xy.up") {
         Activity::handleXYUp();
-        *m_outputStream << "Executed: XY Up" << endl;
+        writeLine(QString::fromUtf8("Executed: XY Up"));
         return true;
     }
     if (cmd == "activity.xy.down") {
         Activity::handleXYDown();
-        *m_outputStream << "Executed: XY Down" << endl;
+        writeLine(QString::fromUtf8("Executed: XY Down"));
         return true;
     }
     if (cmd == "activity.xy.left") {
         Activity::handleXYLeft();
-        *m_outputStream << "Executed: XY Left" << endl;
+        writeLine(QString::fromUtf8("Executed: XY Left"));
         return true;
     }
     if (cmd == "activity.xy.right") {
         Activity::handleXYRight();
-        *m_outputStream << "Executed: XY Right" << endl;
+        writeLine(QString::fromUtf8("Executed: XY Right"));
         return true;
     }
     if (cmd == "activity.coil.up") {
         Activity::handleCoilUp();
-        *m_outputStream << "Executed: Coil Up" << endl;
+        writeLine(QString::fromUtf8("Executed: Coil Up"));
         return true;
     }
     if (cmd == "activity.coil.down") {
         Activity::handleCoilDown();
-        *m_outputStream << "Executed: Coil Down" << endl;
+        writeLine(QString::fromUtf8("Executed: Coil Down"));
         return true;
     }
     if (cmd == "activity.coil.start") {
         Activity::handleStartOscillations();
-        *m_outputStream << "Executed: Start Oscillations" << endl;
+        writeLine(QString::fromUtf8("Executed: Start Oscillations"));
         return true;
     }
     if (cmd == "activity.upper.start") {
         Activity::handleUpperSpindleStartStop(true);
         Values::updateUpperSpindleStartStop(true);
-        *m_outputStream << "Executed: Upper Spindle Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Upper Spindle Start"));
         return true;
     }
     if (cmd == "activity.upper.stop") {
         Activity::handleUpperSpindleStartStop(false);
         Values::updateUpperSpindleStartStop(false);
-        *m_outputStream << "Executed: Upper Spindle Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Upper Spindle Stop"));
         return true;
     }
     if (cmd == "activity.lower.start") {
         Activity::handleLowerSpindleStartStop(true);
         Values::updateLowerSpindleStartStop(true);
-        *m_outputStream << "Executed: Lower Spindle Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Lower Spindle Start"));
         return true;
     }
     if (cmd == "activity.lower.stop") {
         Activity::handleLowerSpindleStartStop(false);
         Values::updateLowerSpindleStartStop(false);
-        *m_outputStream << "Executed: Lower Spindle Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Lower Spindle Stop"));
         return true;
     }
     if (cmd == "activity.heating.on") {
         Activity::handleHeatingStateChanged(1);
         Values::updateHeatingSelector(true);
-        *m_outputStream << "Executed: Heating On" << endl;
+        writeLine(QString::fromUtf8("Executed: Heating On"));
         return true;
     }
     if (cmd == "activity.heating.off") {
         Activity::handleHeatingStateChanged(0);
         Values::updateHeatingSelector(false);
-        *m_outputStream << "Executed: Heating Off" << endl;
+        writeLine(QString::fromUtf8("Executed: Heating Off"));
         return true;
     }
     if (cmd == "activity.generator.on") {
         Activity::handleGeneratorStateChanged(1);
         Values::updateGeneratorSelector(true);
-        *m_outputStream << "Executed: Generator On" << endl;
+        writeLine(QString::fromUtf8("Executed: Generator On"));
         return true;
     }
     if (cmd == "activity.generator.off") {
         Activity::handleGeneratorStateChanged(0);
         Values::updateGeneratorSelector(false);
-        *m_outputStream << "Executed: Generator Off" << endl;
+        writeLine(QString::fromUtf8("Executed: Generator Off"));
         return true;
     }
     if (cmd == "activity.generator.reset") {
         Activity::handleGeneratorReset();
-        *m_outputStream << "Executed: Generator Reset" << endl;
+        writeLine(QString::fromUtf8("Executed: Generator Reset"));
         return true;
     }
     // Activity commands - Settings Page
     if (cmd == "activity.settings.xy.up") {
         Activity::handleSettingsXYUp();
-        *m_outputStream << "Executed: Settings XY Up" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings XY Up"));
         return true;
     }
     if (cmd == "activity.settings.xy.down") {
         Activity::handleSettingsXYDown();
-        *m_outputStream << "Executed: Settings XY Down" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings XY Down"));
         return true;
     }
     if (cmd == "activity.settings.xy.left") {
         Activity::handleSettingsXYLeft();
-        *m_outputStream << "Executed: Settings XY Left" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings XY Left"));
         return true;
     }
     if (cmd == "activity.settings.xy.right") {
         Activity::handleSettingsXYRight();
-        *m_outputStream << "Executed: Settings XY Right" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings XY Right"));
         return true;
     }
     if (cmd == "activity.settings.coil.up") {
         Activity::handleSettingsCoilUp();
-        *m_outputStream << "Executed: Settings Coil Up" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Coil Up"));
         return true;
     }
     if (cmd == "activity.settings.coil.down") {
         Activity::handleSettingsCoilDown();
-        *m_outputStream << "Executed: Settings Coil Down" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Coil Down"));
         return true;
     }
     if (cmd == "activity.settings.coil.neutral") {
         Activity::handleSettingsCoilNeutral();
-        *m_outputStream << "Executed: Settings Coil Neutral" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Coil Neutral"));
         return true;
     }
     if (cmd == "activity.settings.coil.acceleration") {
         Activity::handleSettingsCoilAcceleration();
-        *m_outputStream << "Executed: Settings Coil Acceleration" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Coil Acceleration"));
         return true;
     }
     if (cmd == "activity.settings.coil.service") {
         Activity::handleSettingsCoilService();
-        *m_outputStream << "Executed: Settings Coil Service" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Coil Service"));
         return true;
     }
     if (cmd == "activity.settings.upper.start") {
         Activity::handleSettingsUpperSpindleStartStop(true);
         Values::updateSettingsUpperSpindleStartStop(true);
-        *m_outputStream << "Executed: Settings Upper Spindle Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Upper Spindle Start"));
         return true;
     }
     if (cmd == "activity.settings.upper.stop") {
         Activity::handleSettingsUpperSpindleStartStop(false);
         Values::updateSettingsUpperSpindleStartStop(false);
-        *m_outputStream << "Executed: Settings Upper Spindle Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Upper Spindle Stop"));
         return true;
     }
     if (cmd == "activity.settings.lower.start") {
         Activity::handleSettingsLowerSpindleStartStop(true);
         Values::updateSettingsLowerSpindleStartStop(true);
-        *m_outputStream << "Executed: Settings Lower Spindle Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Lower Spindle Start"));
         return true;
     }
     if (cmd == "activity.settings.lower.stop") {
         Activity::handleSettingsLowerSpindleStartStop(false);
         Values::updateSettingsLowerSpindleStartStop(false);
-        *m_outputStream << "Executed: Settings Lower Spindle Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Lower Spindle Stop"));
         return true;
     }
     if (cmd == "activity.settings.heating.on") {
         Activity::handleSettingsHeatingStateChanged(1);
         Values::updateSettingsHeatingSelector(true);
-        *m_outputStream << "Executed: Settings Heating On" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Heating On"));
         return true;
     }
     if (cmd == "activity.settings.heating.off") {
         Activity::handleSettingsHeatingStateChanged(0);
         Values::updateSettingsHeatingSelector(false);
-        *m_outputStream << "Executed: Settings Heating Off" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Heating Off"));
         return true;
     }
     if (cmd == "activity.settings.generator.on") {
         Activity::handleSettingsGeneratorStateChanged(1);
         Values::updateSettingsGeneratorSelector(true);
-        *m_outputStream << "Executed: Settings Generator On" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Generator On"));
         return true;
     }
     if (cmd == "activity.settings.generator.off") {
         Activity::handleSettingsGeneratorStateChanged(0);
         Values::updateSettingsGeneratorSelector(false);
-        *m_outputStream << "Executed: Settings Generator Off" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Generator Off"));
         return true;
     }
     if (cmd == "activity.settings.generator.reset") {
         Activity::handleSettingsGeneratorReset();
-        *m_outputStream << "Executed: Settings Generator Reset" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Generator Reset"));
         return true;
     }
     if (cmd == "activity.settings.reflector.up") {
         Activity::handleSettingsReflectorUp();
-        *m_outputStream << "Executed: Settings Reflector Up" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Reflector Up"));
         return true;
     }
     if (cmd == "activity.settings.reflector.down") {
         Activity::handleSettingsReflectorDown();
-        *m_outputStream << "Executed: Settings Reflector Down" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Reflector Down"));
         return true;
     }
     if (cmd == "activity.settings.lighting.all") {
         Activity::handleSettingsLightingMode(0);
-        *m_outputStream << "Executed: Settings Lighting Mode - All" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Lighting Mode - All"));
         return true;
     }
     if (cmd == "activity.settings.lighting.half") {
         Activity::handleSettingsLightingMode(1);
-        *m_outputStream << "Executed: Settings Lighting Mode - 50%" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Lighting Mode - 50%"));
         return true;
     }
     if (cmd == "activity.settings.nitrogen.open") {
         Activity::handleSettingsNitrogenValveOpen();
-        *m_outputStream << "Executed: Settings Nitrogen Valve Open" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Nitrogen Valve Open"));
         return true;
     }
     if (cmd == "activity.settings.autodope") {
         Activity::handleSettingsAutodope();
-        *m_outputStream << "Executed: Settings Autodope" << endl;
+        writeLine(QString::fromUtf8("Executed: Settings Autodope"));
         return true;
     }
     if (cmd == "activity.argon.start") {
         Activity::handleArgonStartStop(true);
-        *m_outputStream << "Executed: Argon Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Argon Start"));
         return true;
     }
     if (cmd == "activity.argon.stop") {
         Activity::handleArgonStartStop(false);
-        *m_outputStream << "Executed: Argon Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Argon Stop"));
         return true;
     }
     if (cmd == "activity.injection.start") {
         Activity::handleInjectionStartStop(true);
-        *m_outputStream << "Executed: Injection Start" << endl;
+        writeLine(QString::fromUtf8("Executed: Injection Start"));
         return true;
     }
     if (cmd == "activity.injection.stop") {
         Activity::handleInjectionStartStop(false);
-        *m_outputStream << "Executed: Injection Stop" << endl;
+        writeLine(QString::fromUtf8("Executed: Injection Stop"));
         return true;
     }
     
     // Values commands
     if (cmd.startsWith("values.set.")) {
         if (parts.size() < 2) {
-            *m_outputStream << "Error: Value required. Usage: " << cmd << " <value>" << endl;
+            writeLine(QString::fromUtf8("Error: Value required. Usage: ") + cmd + QString::fromUtf8(" <value>"));
             return true;
         }
         
         bool ok;
         double value = parts[1].toDouble(&ok);
         if (!ok) {
-            *m_outputStream << "Error: Invalid value: " << parts[1] << endl;
+            writeLine(QString::fromUtf8("Error: Invalid value: ") + parts[1]);
             return true;
         }
         
         if (cmd == "values.set.xy.x") {
             Values::updateXYOffsetX(value);
-            *m_outputStream << "Set XY Offset X = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set XY Offset X = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.xy.y") {
             Values::updateXYOffsetY(value);
-            *m_outputStream << "Set XY Offset Y = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set XY Offset Y = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.coil.offset") {
             Values::updateCoilOffset(value);
-            *m_outputStream << "Set Coil Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Coil Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.coil.osc") {
             Values::updateCoilOscillations(value);
-            *m_outputStream << "Set Coil Oscillations = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Coil Oscillations = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.upper.x") {
             Values::updateUpperSpindleXOffset(value);
-            *m_outputStream << "Set Upper Spindle X Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Upper Spindle X Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.upper.speed") {
             Values::updateUpperSpindleSpeed(value);
-            *m_outputStream << "Set Upper Spindle Speed = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Upper Spindle Speed = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.upper.pos") {
             Values::updateUpperSpindlePosition(value);
-            *m_outputStream << "Set Upper Spindle Position = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Upper Spindle Position = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.lower.x") {
             Values::updateLowerSpindleXOffset(value);
-            *m_outputStream << "Set Lower Spindle X Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Lower Spindle X Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.lower.speed") {
             Values::updateLowerSpindleSpeed(value);
-            *m_outputStream << "Set Lower Spindle Speed = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Lower Spindle Speed = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.lower.pos") {
             Values::updateLowerSpindlePosition(value);
-            *m_outputStream << "Set Lower Spindle Position = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Lower Spindle Position = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.grid.amp") {
             Values::updateGridAmp(value);
-            *m_outputStream << "Set Grid AMP = " << value << " AMP" << endl;
+            writeLine(QString::fromUtf8("Set Grid AMP = ") + value + QString::fromUtf8(" AMP"));
             return true;
         }
         if (cmd == "values.set.p") {
             Values::updatePValue(value);
-            *m_outputStream << "Set P Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set P Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.i") {
             Values::updateIValue(value);
-            *m_outputStream << "Set I Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set I Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.u") {
             Values::updateUValue(value);
-            *m_outputStream << "Set U Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set U Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.generator") {
             Values::updateGeneratorPercent(value);
-            *m_outputStream << "Set Generator Percent = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set Generator Percent = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         // Settings Page values
         if (cmd == "values.set.settings.xy.x") {
             Values::updateSettingsXYOffsetX(value);
-            *m_outputStream << "Set Settings XY Offset X = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings XY Offset X = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.xy.y") {
             Values::updateSettingsXYOffsetY(value);
-            *m_outputStream << "Set Settings XY Offset Y = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings XY Offset Y = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.coil.offset") {
             Values::updateSettingsCoilOffset(value);
-            *m_outputStream << "Set Settings Coil Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Coil Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.coil.osc") {
             Values::updateSettingsCoilOscillations(value);
-            *m_outputStream << "Set Settings Coil Oscillations = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Settings Coil Oscillations = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.settings.upper.x") {
             Values::updateSettingsUpperSpindleXOffset(value);
-            *m_outputStream << "Set Settings Upper Spindle X Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Upper Spindle X Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.upper.speed") {
             Values::updateSettingsUpperSpindleSpeed(value);
-            *m_outputStream << "Set Settings Upper Spindle Speed = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Settings Upper Spindle Speed = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.settings.upper.pos") {
             Values::updateSettingsUpperSpindlePosition(value);
-            *m_outputStream << "Set Settings Upper Spindle Position = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Upper Spindle Position = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.upper.rpm") {
             Values::updateSettingsUpperSpindleRpm(value);
-            *m_outputStream << "Set Settings Upper Spindle RPM = " << value << " RPM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Upper Spindle RPM = ") + value + QString::fromUtf8(" RPM"));
             return true;
         }
         if (cmd == "values.set.settings.upper.alarm") {
             Values::updateSettingsUpperSpindleAlarm(value);
-            *m_outputStream << "Set Settings Upper Spindle Alarm = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Upper Spindle Alarm = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.lower.x") {
             Values::updateSettingsLowerSpindleXOffset(value);
-            *m_outputStream << "Set Settings Lower Spindle X Offset = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Lower Spindle X Offset = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.lower.speed") {
             Values::updateSettingsLowerSpindleSpeed(value);
-            *m_outputStream << "Set Settings Lower Spindle Speed = " << value << " MM/min" << endl;
+            writeLine(QString::fromUtf8("Set Settings Lower Spindle Speed = ") + value + QString::fromUtf8(" MM/min"));
             return true;
         }
         if (cmd == "values.set.settings.lower.pos") {
             Values::updateSettingsLowerSpindlePosition(value);
-            *m_outputStream << "Set Settings Lower Spindle Position = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Lower Spindle Position = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.lower.alarm") {
             Values::updateSettingsLowerSpindleAlarm(value);
-            *m_outputStream << "Set Settings Lower Spindle Alarm = " << value << " MM" << endl;
+            writeLine(QString::fromUtf8("Set Settings Lower Spindle Alarm = ") + value + QString::fromUtf8(" MM"));
             return true;
         }
         if (cmd == "values.set.settings.grid.amp") {
             Values::updateSettingsGridAmp(value);
-            *m_outputStream << "Set Settings Grid AMP = " << value << " AMP" << endl;
+            writeLine(QString::fromUtf8("Set Settings Grid AMP = ") + value + QString::fromUtf8(" AMP"));
             return true;
         }
         if (cmd == "values.set.settings.p") {
             Values::updateSettingsPValue(value);
-            *m_outputStream << "Set Settings P Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set Settings P Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.settings.i") {
             Values::updateSettingsIValue(value);
-            *m_outputStream << "Set Settings I Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set Settings I Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.settings.u") {
             Values::updateSettingsUValue(value);
-            *m_outputStream << "Set Settings U Value = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set Settings U Value = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.settings.generator") {
             Values::updateSettingsGeneratorPercent(value);
-            *m_outputStream << "Set Settings Generator Percent = " << value << " %" << endl;
+            writeLine(QString::fromUtf8("Set Settings Generator Percent = ") + value + QString::fromUtf8(" %"));
             return true;
         }
         if (cmd == "values.set.settings.generator.status") {
             int intVal = static_cast<int>(value);
             if (intVal != 0 && intVal != 1) {
-                *m_outputStream << "Error: Invalid value. Use 0 (Error) or 1 (OK)" << endl;
+                writeLine(QString::fromUtf8("Error: Invalid value. Use 0 (Error) or 1 (OK)"));
                 return true;
             }
             Values::updateSettingsGeneratorStatus(intVal == 1);
-            *m_outputStream << "Set Settings Generator Status = " << (intVal == 1 ? "OK" : "Error") << endl;
+            writeLine(QString::fromUtf8("Set Settings Generator Status = ") + (intVal == 1 ? QString::fromUtf8("OK") : QString::fromUtf8("Error")));
             return true;
         }
         if (cmd == "values.set.vacuum.pump") {
             Values::updateVacuumPumpPressure(value);
-            *m_outputStream << "Set Vacuum Pump Pressure = " << value << " mbar" << endl;
+            writeLine(QString::fromUtf8("Set Vacuum Pump Pressure = ") + value + QString::fromUtf8(" mbar"));
             return true;
         }
         if (cmd == "values.set.vacuum.chamber") {
             Values::updateVacuumChamberPressure(value);
-            *m_outputStream << "Set Vacuum Chamber Pressure = " << value << " mbar" << endl;
+            writeLine(QString::fromUtf8("Set Vacuum Chamber Pressure = ") + value + QString::fromUtf8(" mbar"));
             return true;
         }
         if (cmd == "values.set.vacuum.time") {
             Values::updateVacuumPumpingTime(value);
-            *m_outputStream << "Set Vacuum Pumping Time = " << value << " sec" << endl;
+            writeLine(QString::fromUtf8("Set Vacuum Pumping Time = ") + value + QString::fromUtf8(" sec"));
             return true;
         }
         if (cmd == "values.set.vacuum.gas") {
             Values::updateVacuumGasPressure(value);
-            *m_outputStream << "Set Vacuum Gas Pressure = " << value << " bar" << endl;
+            writeLine(QString::fromUtf8("Set Vacuum Gas Pressure = ") + value + QString::fromUtf8(" bar"));
             return true;
         }
         if (cmd == "values.set.gas.pressure.status") {
             int intVal = static_cast<int>(value);
             if (intVal < 0 || intVal > 2) {
-                *m_outputStream << "Error: Invalid value. Use 0 (Normal), 1 (Low), or 2 (High)" << endl;
+                writeLine(QString::fromUtf8("Error: Invalid value. Use 0 (Normal), 1 (Low), or 2 (High)"));
                 return true;
             }
             Values::updateGasPanelGasPressureStatus(intVal);
             const char* names[] = {"Normal", "Low", "High"};
-            *m_outputStream << "Set Gas Pressure Status = " << names[intVal] << endl;
+            writeLine(QString::fromUtf8("Set Gas Pressure Status = ") + names[intVal]);
             return true;
         }
     }
@@ -736,165 +739,165 @@ bool DebugConsole::parseAndExecute(const QString &command)
     // Status commands
     if (cmd == "status.connection.connecting") {
         Values::updateConnectionStatus(Values::ConnectionStatus::Connecting);
-        *m_outputStream << "Set connection status: Connecting" << endl;
+        writeLine(QString::fromUtf8("Set connection status: Connecting"));
         return true;
     }
     if (cmd == "status.connection.disconnected") {
         Values::updateConnectionStatus(Values::ConnectionStatus::Disconnected);
-        *m_outputStream << "Set connection status: Disconnected" << endl;
+        writeLine(QString::fromUtf8("Set connection status: Disconnected"));
         return true;
     }
     if (cmd == "status.connection.connected") {
         Values::updateConnectionStatus(Values::ConnectionStatus::Connected);
-        *m_outputStream << "Set connection status: Connected" << endl;
+        writeLine(QString::fromUtf8("Set connection status: Connected"));
         return true;
     }
     if (cmd == "status.pump.low") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::Low);
-        *m_outputStream << "Set pump pressure: Low" << endl;
+        writeLine(QString::fromUtf8("Set pump pressure: Low"));
         return true;
     }
     if (cmd == "status.pump.lowmedium") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::LowMedium);
-        *m_outputStream << "Set pump pressure: Low-Medium" << endl;
+        writeLine(QString::fromUtf8("Set pump pressure: Low-Medium"));
         return true;
     }
     if (cmd == "status.pump.medium") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::Medium);
-        *m_outputStream << "Set pump pressure: Medium" << endl;
+        writeLine(QString::fromUtf8("Set pump pressure: Medium"));
         return true;
     }
     if (cmd == "status.pump.mediumhigh") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::MediumHigh);
-        *m_outputStream << "Set pump pressure: Medium-High" << endl;
+        writeLine(QString::fromUtf8("Set pump pressure: Medium-High"));
         return true;
     }
     if (cmd == "status.pump.high") {
         Values::updatePumpPressureStatus(Values::PumpPressureStatus::High);
-        *m_outputStream << "Set pump pressure: High" << endl;
+        writeLine(QString::fromUtf8("Set pump pressure: High"));
         return true;
     }
     
     // Main Page Control commands
     if (cmd == "main.heating.on") {
         Values::updateHeatingSelector(true);
-        *m_outputStream << "Main Page: Heating Selector: On" << endl;
+        writeLine(QString::fromUtf8("Main Page: Heating Selector: On"));
         return true;
     }
     if (cmd == "main.heating.off") {
         Values::updateHeatingSelector(false);
-        *m_outputStream << "Main Page: Heating Selector: Off" << endl;
+        writeLine(QString::fromUtf8("Main Page: Heating Selector: Off"));
         return true;
     }
     if (cmd == "main.generator.on") {
         Values::updateGeneratorSelector(true);
-        *m_outputStream << "Main Page: Generator Selector: On" << endl;
+        writeLine(QString::fromUtf8("Main Page: Generator Selector: On"));
         return true;
     }
     if (cmd == "main.generator.off") {
         Values::updateGeneratorSelector(false);
-        *m_outputStream << "Main Page: Generator Selector: Off" << endl;
+        writeLine(QString::fromUtf8("Main Page: Generator Selector: Off"));
         return true;
     }
     if (cmd == "main.upper.start") {
         Values::updateUpperSpindleStartStop(true);
         Activity::handleUpperSpindleStartStop(true);
-        *m_outputStream << "Main Page: Upper Spindle: Start" << endl;
+        writeLine(QString::fromUtf8("Main Page: Upper Spindle: Start"));
         return true;
     }
     if (cmd == "main.upper.stop") {
         Values::updateUpperSpindleStartStop(false);
         Activity::handleUpperSpindleStartStop(false);
-        *m_outputStream << "Main Page: Upper Spindle: Stop" << endl;
+        writeLine(QString::fromUtf8("Main Page: Upper Spindle: Stop"));
         return true;
     }
     if (cmd == "main.lower.start") {
         Values::updateLowerSpindleStartStop(true);
         Activity::handleLowerSpindleStartStop(true);
-        *m_outputStream << "Main Page: Lower Spindle: Start" << endl;
+        writeLine(QString::fromUtf8("Main Page: Lower Spindle: Start"));
         return true;
     }
     if (cmd == "main.lower.stop") {
         Values::updateLowerSpindleStartStop(false);
         Activity::handleLowerSpindleStartStop(false);
-        *m_outputStream << "Main Page: Lower Spindle: Stop" << endl;
+        writeLine(QString::fromUtf8("Main Page: Lower Spindle: Stop"));
         return true;
     }
     // Settings Page Control commands
     if (cmd == "settings.heating.on") {
         Values::updateSettingsHeatingSelector(true);
-        *m_outputStream << "Settings Page: Heating Selector: On" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Heating Selector: On"));
         return true;
     }
     if (cmd == "settings.heating.off") {
         Values::updateSettingsHeatingSelector(false);
-        *m_outputStream << "Settings Page: Heating Selector: Off" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Heating Selector: Off"));
         return true;
     }
     if (cmd == "settings.generator.on") {
         Values::updateSettingsGeneratorSelector(true);
-        *m_outputStream << "Settings Page: Generator Selector: On" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Generator Selector: On"));
         return true;
     }
     if (cmd == "settings.generator.off") {
         Values::updateSettingsGeneratorSelector(false);
-        *m_outputStream << "Settings Page: Generator Selector: Off" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Generator Selector: Off"));
         return true;
     }
     if (cmd == "settings.generator.status.ok") {
         Values::updateSettingsGeneratorStatus(true);
-        *m_outputStream << "Settings Page: Generator Status: OK" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Generator Status: OK"));
         return true;
     }
     if (cmd == "settings.generator.status.error") {
         Values::updateSettingsGeneratorStatus(false);
-        *m_outputStream << "Settings Page: Generator Status: Error" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Generator Status: Error"));
         return true;
     }
     if (cmd == "settings.upper.start") {
         Values::updateSettingsUpperSpindleStartStop(true);
         Activity::handleSettingsUpperSpindleStartStop(true);
-        *m_outputStream << "Settings Page: Upper Spindle: Start" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Upper Spindle: Start"));
         return true;
     }
     if (cmd == "settings.upper.stop") {
         Values::updateSettingsUpperSpindleStartStop(false);
         Activity::handleSettingsUpperSpindleStartStop(false);
-        *m_outputStream << "Settings Page: Upper Spindle: Stop" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Upper Spindle: Stop"));
         return true;
     }
     if (cmd == "settings.lower.start") {
         Values::updateSettingsLowerSpindleStartStop(true);
         Activity::handleSettingsLowerSpindleStartStop(true);
-        *m_outputStream << "Settings Page: Lower Spindle: Start" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Lower Spindle: Start"));
         return true;
     }
     if (cmd == "settings.lower.stop") {
         Values::updateSettingsLowerSpindleStartStop(false);
         Activity::handleSettingsLowerSpindleStartStop(false);
-        *m_outputStream << "Settings Page: Lower Spindle: Stop" << endl;
+        writeLine(QString::fromUtf8("Settings Page: Lower Spindle: Stop"));
         return true;
     }
     if (cmd == "gas.pressure.status.normal") {
         Values::updateGasPanelGasPressureStatus(0);
-        *m_outputStream << "Gas Panel: Pressure Status: Normal" << endl;
+        writeLine(QString::fromUtf8("Gas Panel: Pressure Status: Normal"));
         return true;
     }
     if (cmd == "gas.pressure.status.low") {
         Values::updateGasPanelGasPressureStatus(1);
-        *m_outputStream << "Gas Panel: Pressure Status: Low" << endl;
+        writeLine(QString::fromUtf8("Gas Panel: Pressure Status: Low"));
         return true;
     }
     if (cmd == "gas.pressure.status.high") {
         Values::updateGasPanelGasPressureStatus(2);
-        *m_outputStream << "Gas Panel: Pressure Status: High" << endl;
+        writeLine(QString::fromUtf8("Gas Panel: Pressure Status: High"));
         return true;
     }
 
     // Error Log and Archive commands
     if (cmd == "log.add") {
         if (parts.size() < 2) {
-            *m_outputStream << "Error: Message required. Usage: log.add <message> [color] [0|1]" << endl;
+            writeLine(QString::fromUtf8("Error: Message required. Usage: log.add <message> [color] [0|1]"));
             return true;
         }
         QStringList msgParts = parts.mid(1);
@@ -913,87 +916,87 @@ bool DebugConsole::parseAndExecute(const QString &command)
         }
         QString message = msgParts.join(QString::fromUtf8(" ")).trimmed();
         if (message.isEmpty()) {
-            *m_outputStream << "Error: Message cannot be empty" << endl;
+            writeLine(QString::fromUtf8("Error: Message cannot be empty"));
             return true;
         }
         ErrorLogIO::appendToErrorsLog(message, color, resettable);
-        *m_outputStream << "Added to Error Log: " << message << endl;
+        writeLine(QString::fromUtf8("Added to Error Log: ") + message);
         return true;
     }
     if (cmd == "archive.add") {
         if (parts.size() < 2) {
-            *m_outputStream << "Error: Message required. Usage: archive.add <message>" << endl;
+            writeLine(QString::fromUtf8("Error: Message required. Usage: archive.add <message>"));
             return true;
         }
         QString message = parts.mid(1).join(QString::fromUtf8(" ")).trimmed();
         if (message.isEmpty()) {
-            *m_outputStream << "Error: Message cannot be empty" << endl;
+            writeLine(QString::fromUtf8("Error: Message cannot be empty"));
             return true;
         }
         ErrorLogIO::appendToArchive(message);
-        *m_outputStream << "Added to Archive: " << message << endl;
+        writeLine(QString::fromUtf8("Added to Archive: ") + message);
         return true;
     }
 
     // Vacuum Control commands
     if (cmd == "vacuum.pump.on") {
         Values::updateVacuumPumpSelector(true);
-        *m_outputStream << "Vacuum Pump: On" << endl;
+        writeLine(QString::fromUtf8("Vacuum Pump: On"));
         return true;
     }
     if (cmd == "vacuum.pump.off") {
         Values::updateVacuumPumpSelector(false);
-        *m_outputStream << "Vacuum Pump: Off" << endl;
+        writeLine(QString::fromUtf8("Vacuum Pump: Off"));
         return true;
     }
     if (cmd == "vacuum.valve.on") {
         Values::updateVacuumValveSelector(true);
-        *m_outputStream << "Vacuum Valve: On" << endl;
+        writeLine(QString::fromUtf8("Vacuum Valve: On"));
         return true;
     }
     if (cmd == "vacuum.valve.off") {
         Values::updateVacuumValveSelector(false);
-        *m_outputStream << "Vacuum Valve: Off" << endl;
+        writeLine(QString::fromUtf8("Vacuum Valve: Off"));
         return true;
     }
     if (cmd == "vacuum.autopump.on") {
         Values::updateAutoPumpDownSelector(true);
-        *m_outputStream << "Auto Pump Down: On" << endl;
+        writeLine(QString::fromUtf8("Auto Pump Down: On"));
         return true;
     }
     if (cmd == "vacuum.autopump.off") {
         Values::updateAutoPumpDownSelector(false);
-        *m_outputStream << "Auto Pump Down: Off" << endl;
+        writeLine(QString::fromUtf8("Auto Pump Down: Off"));
         return true;
     }
     if (cmd == "vacuum.upperdoor.open") {
         Values::updateUpperDoorSelector(true);
-        *m_outputStream << "Upper Door: Open" << endl;
+        writeLine(QString::fromUtf8("Upper Door: Open"));
         return true;
     }
     if (cmd == "vacuum.upperdoor.close") {
         Values::updateUpperDoorSelector(false);
-        *m_outputStream << "Upper Door: Close" << endl;
+        writeLine(QString::fromUtf8("Upper Door: Close"));
         return true;
     }
     if (cmd == "vacuum.lowerdoor.open") {
         Values::updateLowerDoorSelector(true);
-        *m_outputStream << "Lower Door: Open" << endl;
+        writeLine(QString::fromUtf8("Lower Door: Open"));
         return true;
     }
     if (cmd == "vacuum.lowerdoor.close") {
         Values::updateLowerDoorSelector(false);
-        *m_outputStream << "Lower Door: Close" << endl;
+        writeLine(QString::fromUtf8("Lower Door: Close"));
         return true;
     }
     if (cmd == "vacuum.maindoor.open") {
         Values::updateMainDoorStatus(true);
-        *m_outputStream << "Main Door Status: Open" << endl;
+        writeLine(QString::fromUtf8("Main Door Status: Open"));
         return true;
     }
     if (cmd == "vacuum.maindoor.close") {
         Values::updateMainDoorStatus(false);
-        *m_outputStream << "Main Door Status: Close" << endl;
+        writeLine(QString::fromUtf8("Main Door Status: Close"));
         return true;
     }
     if (cmd.startsWith("vacuum.lighting.")) {
@@ -1007,19 +1010,19 @@ bool DebugConsole::parseAndExecute(const QString &command)
                     int state = parts[1].toInt(&ok);
                     if (ok && (state == 0 || state == 1)) {
                         Values::updateLightingButton(index, state == 1);
-                        *m_outputStream << "Lighting Button " << index << ": " << (state == 1 ? "On" : "Off") << endl;
+                        writeLine(QString::fromUtf8("Lighting Button ") + QString::number(index) + QString::fromUtf8(": ") + (state == 1 ? QString::fromUtf8("On") : QString::fromUtf8("Off")));
                         return true;
                     } else {
-                        *m_outputStream << "Error: Invalid state. Use 0 (Off) or 1 (On)" << endl;
+                        writeLine(QString::fromUtf8("Error: Invalid state. Use 0 (Off) or 1 (On)"));
                         return true;
                     }
                 } else {
-                    *m_outputStream << "Error: Invalid button index. Use 0-3" << endl;
+                    writeLine(QString::fromUtf8("Error: Invalid button index. Use 0-3"));
                     return true;
                 }
             }
         } else {
-            *m_outputStream << "Error: State required. Usage: " << cmd << " <0|1>" << endl;
+            writeLine(QString::fromUtf8("Error: State required. Usage: ") + cmd + QString::fromUtf8(" <0|1>"));
             return true;
         }
     }
